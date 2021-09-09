@@ -5,7 +5,6 @@ import '../index.css';
 export default function Square(props) {
      return (
          <div
-              id={props.id}
               onDragOver={(e) => e.preventDefault()}
               onDrop={props.onDrop}
              className={props.class} onClick={props.onClick} style={props.style}>
