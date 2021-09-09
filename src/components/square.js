@@ -1,13 +1,20 @@
 import React from 'react';
-
+import { ItemTypes } from './constants'
 import '../index.css';
 
 export default function Square(props) {
-
-    return (
-        <button className={props.class} onClick={props.onClick} style={props.style}>
-            {props.value}
-        </button>
+     return (
+         <div
+              id={props.id}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={props.onDrop}
+             className={props.class} onClick={props.onClick} style={props.style}>
+             <div className="st"
+                 draggable
+                 onDragStart={props.onDragStart}>
+                {props.value}
+            </div>
+        </div>
     );
 
 }

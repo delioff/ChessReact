@@ -79,3 +79,7 @@ ol, ul {
     content: "";
     display: table;
 }
+
+.st{
+    background-color: transparent;
+}

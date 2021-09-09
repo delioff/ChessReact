@@ -30,6 +30,14 @@ export default class Game extends React.Component {
             stepnumber: 0
         };
     }
+    handleDrop(e,i) {
+        e.preventDefault();
+        this.handleClick(i);
+    }
+
+    handleDragStart(e,i) {
+        this.handleClick(i);
+    }
 
     handleClick(i) {
         const squares = [...this.state.squares];
@@ -175,6 +183,8 @@ export default class Game extends React.Component {
                     <Board
                         squares={this.state.squares}
                         onClick={(i) => this.handleClick(i)}
+                        onDrop={(e,i) => this.handleDrop(e,i)}
+                        onDragStart={(e,i) => this.handleDragStart(e,i)}
                     />
                 </div>
                 <div className="game-info">
