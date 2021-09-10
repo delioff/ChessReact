@@ -1,19 +1,11 @@
-import React from 'react';
-import { ItemTypes } from './constants'
-import '../index.css';
+import React from 'react'
 
-export default function Square(props) {
-     return (
-         <div
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={props.onDrop}
-             className={props.class} onClick={props.onClick} style={props.style}>
-             <div className="st"
-                 draggable
-                 onDragStart={props.onDragStart}>
-                {props.value}
-            </div>
+export default function Square({ children, black }) {
+    const bgClass = black ? 'square-black' : 'square-white'
+
+    return (
+        <div className={`${bgClass} board-square`}>
+            {children}
         </div>
-    );
-
+    )
 }

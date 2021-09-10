@@ -1,43 +1,46 @@
-﻿import React from 'react';
-import '../index.css';
-import Square from './square.js';
+import React, { useEffect, useState } from 'react'
+import BoardSquare from './boardsquare'
+export default function Board({ board, turn }) {
+    const [currBoard, setCurrBoard] = useState([])
 
-export default class Board 
- extends React.Component {
-    renderSquare(i, wb,pos) {
-        return(
-            <Square
-                id={i}
-                style={this.props.squares[i] ? this.props.squares[i].style : null}
-                value={this.props.squares[i] ? this.props.squares[i].value : null}
-                onClick={() => this.props.onClick(i)}
-                onDrop={(e) => this.props.onDrop(e,i)}
-                onDragStart={(e) => this.props.onDragStart(e,i)}
-                class={wb ? "white" : "black"}
-                 />)
+    useEffect(() => {
+        setCurrBoard(
+            turn === 'w' ? board.flat() : board.flat().reverse()
+        )
+    }, [board, turn])
 
+    function getXYPosition(i) {
+        const x = turn === 'w' ? i % 8 : Math.abs((i % 8) - 7)
+        const y =
+            turn === 'w'
+                ? Math.abs(Math.floor(i / 8) - 7)
+                : Math.floor(i / 8)
+        return { x, y }
     }
 
-    render() {
-        const board = [];
-        for (let i = 0; i < 8; i++) {
-            const squareRows = [];
-            for (let j = 0; j < 8; j++) {
-                const squareShade = (isEven(i) && isEven(j)) || (!isEven(i) && !isEven(j)) ? true : false;
-                board.push(this.renderSquare((i * 8) + j, squareShade));
-            }
+    function isBlack(i) {
+        const { x, y } = getXYPosition(i)
+        return (x + y) % 2 === 1
+    }
 
-        }
-        return (
-          
-                <div>
-                  {board}
+    function getPosition(i) {
+        const { x, y } = getXYPosition(i)
+        const letter = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'][
+            x
+        ]
+        return `${letter}${y + 1}`
+    }
+    return (
+        <div className="board">
+            {currBoard.map((piece, i) => (
+                <div key={i} className="square">
+                    <BoardSquare
+                        piece={piece}
+                        black={isBlack(i)}
+                        position={getPosition(i)}
+                    />
                 </div>
-           
-        );
-    }
-}
-
-function isEven(num) {
-    return num % 2 === 0
+            ))}
+        </div>
+    )
 }
