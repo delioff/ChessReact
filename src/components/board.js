@@ -5,16 +5,14 @@ export default function Board({ board, turn }) {
 
     useEffect(() => {
         setCurrBoard(
-            turn === 'w' ? board.flat() : board.flat().reverse()
+            board.flat()
         )
     }, [board, turn])
 
     function getXYPosition(i) {
-        const x = turn === 'w' ? i % 8 : Math.abs((i % 8) - 7)
-        const y =
-            turn === 'w'
-                ? Math.abs(Math.floor(i / 8) - 7)
-                : Math.floor(i / 8)
+        const x = i % 8 
+        const y = Math.abs(Math.floor(i / 8) - 7)
+               
         return { x, y }
     }
 
