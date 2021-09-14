@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import BoardSquare from './boardsquare'
-export default function Board({ board, turn }) {
+export default function Board({ board}) {
     const [currBoard, setCurrBoard] = useState([])
 
     useEffect(() => {
         setCurrBoard(
             board.flat()
         )
-    }, [board, turn])
+    }, [board])
 
     function getXYPosition(i) {
         const x = i % 8 

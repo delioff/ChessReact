@@ -12,17 +12,16 @@ export function initGame() {
     if (savedGame) {
         chess.load(savedGame)
     }
-    updateGame()
+    updateGame(null, []);
 }
 
 export function resetGame() {
     chess.reset()
-    updateGame()
+    updateGame(null, []);
 }
 
 export function handleMove(from, to) {
     const promotions = chess.moves({ verbose: true }).filter(m => m.promotion)
-    console.table(promotions)
     if (promotions.some(p => `${p.from}:${p.to}` === `${from}:${to}`)) {
         const pendingPromotion = { from, to, color: promotions[0].color }
         updateGame(pendingPromotion)
@@ -43,11 +42,19 @@ export function move(from, to, promotion) {
     const legalMove = chess.move(tempMove)
 
     if (legalMove) {
-        updateGame()
+        let { history } = gameSubject.getValue();
+        history = [...history,
+        {
+            id: history.length + 1,
+            fromPosition: from,
+            position: to
+        }
+        ]
+        updateGame(null,history);
     }
 }
 
-function updateGame(pendingPromotion) {
+function updateGame(pendingPromotion,history) {
     const isGameOver = chess.game_over()
 
     const newGame = {
@@ -55,7 +62,8 @@ function updateGame(pendingPromotion) {
         pendingPromotion,
         isGameOver,
         turn: chess.turn(),
-        result: isGameOver ? getGameResult() : null
+        result: isGameOver ? getGameResult() : null,
+        history
     }
 
     localStorage.setItem('savedGame', chess.fen())

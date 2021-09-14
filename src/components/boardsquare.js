@@ -11,12 +11,12 @@ export default function BoardSquare({
     black,
     position,
 }) {
-    const [promotion, setPromotion] = useState(null)
+    const [promotion, setPromotion] = useState(null);
     const [, drop] = useDrop({
         accept: ItemTypes.SQUARE,
         drop: (item) => {
             const [fromPosition] = item.id.split('_')
-            handleMove(fromPosition, position)
+            handleMove(fromPosition, position);
         },
     })
     useEffect(() => {
