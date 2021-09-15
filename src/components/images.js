@@ -27,6 +27,7 @@ export function retimages(type, color) {
         case "qw": result = qw; break;
         case "rb": result = rb; break;
         case "rw": result = rw; break;
+        default: result = pw;
     }
     return result;
 }
