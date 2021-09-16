@@ -35,11 +35,10 @@ function App() {
                    
                         <h2 className="vertical-text">
                              {isGameOver && ("GAME OVER")}
-                            <button onClick={resetGame}>
-                                <span className="vertical-text"> NEW GAME</span>
-                            </button>
                         </h2>
-                    
+                         <button onClick={resetGame}>
+                                <span className="vertical-text"> NEW GAME</span>
+                         </button>
                     <div className="board-container">
                         <Board board={board} turn={turn} />
                     </div>
@@ -49,25 +48,27 @@ function App() {
             </div>
             <div className="column">
                 <div className="itemcontainer">
-                    <table class="blueTable">
-                        <thead>
-                            <tr>
-                                <th>White</th>
-                                <th>Black</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            
+                    <div className="resp-table">
+                        <div className="resp-table-caption">
+                           Info
+                        </div>
+                        <div className="resp-table-header">
+                            <div className="table-header-cell">White</div>
+                            <div className="table-header-cell">Black</div>
+                        </div>
+                        <div className="resp-table-body">
                             {inf.map((item, i) => (
-                                <tr>
+                                <div className="resp-table-row">
                                     {item.w}
                                     {item.b}
-                                </tr>
+                                </div>
                             ))}
-                            
-                        </tbody>
-                    </table>
-                    <div className="board-row"></div>
+                        </div>
+                    </div>
+                    <div className="resp-table-footer">
+                        <div className="table-footer-cell">White</div>
+                        <div className="table-footer-cell">Black</div>
+                     </div>
                 </div>
              </div>  
          </div>

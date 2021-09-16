@@ -7,8 +7,8 @@ export default function inforow( move, i ) {
     }
 
     return (
-        <td>
-            <span>{row}</span>
-        </td>
+        <div className="table-body-cell">
+            {row}
+        </div>
     )
 }
