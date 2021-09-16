@@ -12,20 +12,19 @@ export function initGame() {
     if (savedGame) {
         chess.load(savedGame)
     }
-    updateGame(null, []);
+    updateGame();
 }
 
 export function resetGame() {
     chess.reset();
-    updateGame(null, []);
+    updateGame();
 }
 
 export function handleMove(from, to) {
     const promotions = chess.moves({ verbose: true }).filter(m => m.promotion)
     if (promotions.some(p => `${p.from}:${p.to}` === `${from}:${to}`)) {
         const pendingPromotion = { from, to, color: promotions[0].color }
-        let { history } = gameSubject.getValue();
-        updateGame(pendingPromotion,history)
+        updateGame(pendingPromotion)
     }
     const { pendingPromotion } = gameSubject.getValue()
 
@@ -43,28 +42,21 @@ export function move(from, to, promotion) {
     const legalMove = chess.move(tempMove)
 
     if (legalMove) {
-        let { history } = gameSubject.getValue();
-        history = [...history,
-        {
-            id: history.length + 1,
-            fromPosition: from,
-            position: to
-        }
-        ]
-        updateGame(null,history);
+        updateGame();
     }
 }
 
-function updateGame(pendingPromotion,history) {
+function updateGame(pendingPromotion) {
     const isGameOver = chess.game_over()
 
     const newGame = {
         board: chess.board(),
         pendingPromotion,
         isGameOver,
-        turn: chess.turn(),
+        turn: chess.turn() === "w" ? 'WHITE':'BLACK'  ,
         result: isGameOver ? getGameResult() : null,
-        history
+        history: chess.history({ verbose: true }),
+        incheck:getin_check()
     }
 
     localStorage.setItem('savedGame', chess.fen())
@@ -73,7 +65,7 @@ function updateGame(pendingPromotion,history) {
 }
 function getGameResult() {
     if (chess.in_checkmate()) {
-        const winner = chess.turn() === "w" ? 'BLACK' : 'WHITE'
+        const winner = chess.turn() === "w" ? 'TURN BLACK' : 'TURN WHITE'
         return `CHECKMATE - WINNER - ${winner}`
     } else if (chess.in_draw()) {
         let reason = '50 - MOVES - RULE'
@@ -87,5 +79,12 @@ function getGameResult() {
         return `DRAW - ${reason}`
     } else {
         return 'UNKNOWN REASON'
+    }
+}
+function getin_check() {
+    if (chess.in_check()) {
+        return `IN CHECK`
+    } else {
+        return ''
     }
 }

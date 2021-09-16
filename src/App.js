@@ -11,6 +11,7 @@ function App() {
     const [result, setResult] = useState()
     const [turn, setTurn] = useState()
     const [history, setHistory] = useState([])
+    const [incheck, setIncheck] = useState()
     useEffect(() => {
         initGame()
         const subscribe = gameSubject.subscribe((game) => {
@@ -19,15 +20,25 @@ function App() {
             setResult(game.result)
             setTurn(game.turn)
             setHistory(game.history)
+            setIncheck(game.incheck)
         })
         return () => subscribe.unsubscribe()
     }, [])
     let inf = [];
     for (var i = 0; i < history.length; i += 2) {
-        inf.push({
-            "w": inforow(history[i], i),
-            "b": inforow(history[i + 1] ? history[i + 1] : null, i+1)
-        })
+        if (history.color === 'w') {
+            inf.push({
+                "w": inforow(history[i], i),
+                "b": inforow(history[i + 1] ? history[i + 1] : null, i + 1)
+            })
+        }
+        else {
+            inf.push({
+                "w": inforow(history[i-1] ? history[i-1] : null, i-1),
+                "b": inforow(history[i] ? history[i] : null, i)
+            })
+        }
+    
     }
     return (
         <div className="row">
@@ -42,6 +53,7 @@ function App() {
                         <Board board={board} turn={turn} />
                     </div>
                     {result && <p className="vertical-text">{result}</p>}
+                    <p className="vertical-text">{turn+' '+incheck}</p>
                 </div>
                
             </div>
