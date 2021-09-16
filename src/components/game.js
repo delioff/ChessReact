@@ -16,7 +16,7 @@ export function initGame() {
 }
 
 export function resetGame() {
-    chess.reset()
+    chess.reset();
     updateGame(null, []);
 }
 

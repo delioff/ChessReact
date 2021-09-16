@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import './App.css'
-import { gameSubject, initGame, resetGame } from './components/game'
+import { gameSubject, initGame} from './components/game'
 import inforow from './components/inforow'
 import Board from './components/board'
+import NewButton from './components/newbutton'
 
 function App() {
     const [board, setBoard] = useState([])
@@ -36,9 +37,7 @@ function App() {
                         <h2 className="vertical-text">
                              {isGameOver && ("GAME OVER")}
                         </h2>
-                         <button onClick={resetGame}>
-                                <span className="vertical-text"> NEW GAME</span>
-                         </button>
+                    
                     <div className="board-container">
                         <Board board={board} turn={turn} />
                     </div>
@@ -50,14 +49,14 @@ function App() {
                 <div className="itemcontainer">
                     <div className="info-container">
                          <div className="resp-table">
-                                <div className="resp-table-caption">
-                                   Info
-                                </div>
-                                <div className="resp-table-header">
+                            <div className="resp-table-caption">
+                                <NewButton/>
+                             </div>
+                            <div className="resp-table-header">
                                     <div className="table-header-cell">White</div>
                                     <div className="table-header-cell">Black</div>
-                                </div>
-                                <div className="resp-table-body">
+                            </div>
+                            <div className="resp-table-body">
                                     {inf.map((item, i) => (
                                         <div className="resp-table-row">
                                             {item.w}
