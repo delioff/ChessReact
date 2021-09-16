@@ -48,31 +48,33 @@ function App() {
             </div>
             <div className="column">
                 <div className="itemcontainer">
-                    <div className="resp-table">
-                        <div className="resp-table-caption">
-                           Info
-                        </div>
-                        <div className="resp-table-header">
-                            <div className="table-header-cell">White</div>
-                            <div className="table-header-cell">Black</div>
-                        </div>
-                        <div className="resp-table-body">
-                            {inf.map((item, i) => (
-                                <div className="resp-table-row">
-                                    {item.w}
-                                    {item.b}
+                    <div className="info-container">
+                         <div className="resp-table">
+                                <div className="resp-table-caption">
+                                   Info
                                 </div>
-                            ))}
-                        </div>
+                                <div className="resp-table-header">
+                                    <div className="table-header-cell">White</div>
+                                    <div className="table-header-cell">Black</div>
+                                </div>
+                                <div className="resp-table-body">
+                                    {inf.map((item, i) => (
+                                        <div className="resp-table-row">
+                                            {item.w}
+                                            {item.b}
+                                        </div>
+                                    ))}
+                            </div>
+                            {/*<div className="resp-table-footer">*/}
+                            {/*    <div className="table-footer-cell">White</div>*/}
+                            {/*    <div className="table-footer-cell">Black</div>*/}
+                            {/*</div>*/}
+                          </div>
                     </div>
-                    <div className="resp-table-footer">
-                        <div className="table-footer-cell">White</div>
-                        <div className="table-footer-cell">Black</div>
-                     </div>
-                </div>
-             </div>  
-         </div>
-    )
+                 </div>
+             </div>
+         </div>  
+         )
 }
 
 export default App

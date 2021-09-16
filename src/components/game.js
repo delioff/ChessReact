@@ -24,7 +24,8 @@ export function handleMove(from, to) {
     const promotions = chess.moves({ verbose: true }).filter(m => m.promotion)
     if (promotions.some(p => `${p.from}:${p.to}` === `${from}:${to}`)) {
         const pendingPromotion = { from, to, color: promotions[0].color }
-        updateGame(pendingPromotion)
+        let { history } = gameSubject.getValue();
+        updateGame(pendingPromotion,history)
     }
     const { pendingPromotion } = gameSubject.getValue()
 
