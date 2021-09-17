@@ -1,14 +1,15 @@
 import React from 'react'
-import {resetGame} from './game'
+import { resetGame, unduLastMove} from './game'
 
 export default function newButton() {
-    const handleClick=(e)=> {
-        e.preventDefault();
-        resetGame();
-    }
-    return (
-        <button onClick={(e) => handleClick(e)}>
+     return (
+        <div>
+            <button onClick={resetGame}>
                <span>NEW GAME</span>
         </button>
+        <button onClick={unduLastMove}>
+               <span>UNDO</span>
+            </button>
+            </div>
     )
 }

@@ -19,6 +19,10 @@ export function resetGame() {
     chess.reset();
     updateGame();
 }
+export function unduLastMove() {
+    chess.undo();
+    updateGame();
+}
 
 export function handleMove(from, to) {
     const promotions = chess.moves({ verbose: true }).filter(m => m.promotion)
@@ -53,7 +57,7 @@ function updateGame(pendingPromotion) {
         board: chess.board(),
         pendingPromotion,
         isGameOver,
-        turn: chess.turn() === "w" ? 'WHITE':'BLACK'  ,
+        turn: chess.turn() === "w" ? 'TURN WHITE':'TURN BLACK'  ,
         result: isGameOver ? getGameResult() : null,
         history: chess.history({ verbose: true }),
         incheck:getin_check()
@@ -65,7 +69,7 @@ function updateGame(pendingPromotion) {
 }
 function getGameResult() {
     if (chess.in_checkmate()) {
-        const winner = chess.turn() === "w" ? 'TURN BLACK' : 'TURN WHITE'
+        const winner = chess.turn() === "w" ? 'BLACK' : 'WHITE'
         return `CHECKMATE - WINNER - ${winner}`
     } else if (chess.in_draw()) {
         let reason = '50 - MOVES - RULE'
