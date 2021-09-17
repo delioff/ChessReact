@@ -4,6 +4,7 @@ import { gameSubject, initGame} from './components/game'
 import inforow from './components/inforow'
 import Board from './components/board'
 import NewButton from './components/newbutton'
+import Coord from './components/coord'
 
 function App() {
     const [board, setBoard] = useState([])
@@ -25,11 +26,13 @@ function App() {
         return () => subscribe.unsubscribe()
     }, [])
     let inf = [];
+    let x = ["a", "b","c", "d","e","f", "g","h"];
+    let y = ["8", "7", "6", "5", "4", "3", "2", "1"];
     for (var i = 0; i < history.length; i += 2) {
-        if (history.color === 'b') {
+        if (history[i].color === 'w') {
             inf.push({
-                "w": inforow(history[i], i),
-                "b": inforow(history[i + 1] ? history[i + 1] : null, i + 1)
+                "w": inforow(history[i] ? history[i] : null, i),
+                "b": inforow(history[i+1] ? history[i+1] : null, i+1)
             })
         }
         else {
@@ -43,19 +46,53 @@ function App() {
     return (
         <div className="row">
             <div className="column">
+                
                 <div className="container">
-                   
-                        <h2 className="vertical-text">
-                             {isGameOver && ("GAME OVER")}
-                        </h2>
                     
-                    <div className="board-container">
-                        <Board board={board} turn={turn} />
-                    </div>
+                        <h2 className="vertical-text">
+                                 {isGameOver && ("GAME OVER")}
+                        </h2>
+                        <div className="row">
+                            <div className="column">
+                                <div className="cord-container">
+                                    {y.map((letter, i) => (
+                                        <Coord letter={letter} or={("v")}/>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="board-container">
+                            <div className="cord-container-x">
+                                <div className="row">
+                                    {x.map((letter, i) => (
+                                        <Coord letter={letter} />
+                                    ))}
+                                </div>
+                            </div>
+                            <Board board={board} turn={turn} />
+                            <div className="cord-container-x">
+                                <div className="row">
+                                    {x.map((letter, i) => (
+                                        <Coord letter={letter} />
+                                    ))}
+                                </div>
+                             </div>
+                         </div>
+                        <div className="row">
+                            <div className="column">
+                               <div className="cord-container">
+                                    {y.map((letter, i) => (
+                                        <Coord letter={letter} or={("v")}/>
+                                    ))}
+                                </div>
+                        </div>
                     {result && <p className="vertical-text">{result}</p>}
                     <p className="vertical-text">{turn+' '+incheck}</p>
-                </div>
+                    </div>
+                        
+                 </div>
                
+                
             </div>
             <div className="column">
                 <div className="itemcontainer">
@@ -84,7 +121,8 @@ function App() {
                     </div>
                  </div>
              </div>
-         </div>  
+            
+        </div>
          )
 }
 
