@@ -26,7 +26,7 @@ function App() {
     }, [])
     let inf = [];
     for (var i = 0; i < history.length; i += 2) {
-        if (history.color === 'w') {
+        if (history.color === 'b') {
             inf.push({
                 "w": inforow(history[i], i),
                 "b": inforow(history[i + 1] ? history[i + 1] : null, i + 1)
