@@ -8,7 +8,7 @@ const userinfo = JSON.parse(localStorage.getItem('userinfo'));
 const pubnub = new PubNub({
     publishKey: "pub-c-e0419b3b-6aa9-4e4f-af8a-8dc193d1805a",
     subscribeKey: "sub-c-ee3e0f22-18b4-11ec-901d-e20c06117408",
-    uuid: userinfo.username
+    uuid: userinfo&&userinfo.username ? userinfo.username : "test"
 });
 pubnub.addListener({
     status: function (statusEvent) {
@@ -26,7 +26,7 @@ pubnub.addListener({
 
 //Subscribes to the channel in our state
 pubnub.subscribe({
-    channels: userinfo.channel
+    channels: userinfo && userinfo.channel ? [userinfo.channel] : ["partia1"]
 });
 
 export const gameSubject = new BehaviorSubject()
