@@ -4,6 +4,30 @@ import PubNub from 'pubnub';
 
 
 const chess = new Chess()
+const userinfo = JSON.parse(localStorage.getItem('userinfo'));
+const pubnub = new PubNub({
+    publishKey: "pub-c-e0419b3b-6aa9-4e4f-af8a-8dc193d1805a",
+    subscribeKey: "sub-c-ee3e0f22-18b4-11ec-901d-e20c06117408",
+    uuid: userinfo.username
+});
+pubnub.addListener({
+    status: function (statusEvent) {
+        if (statusEvent.category === "PNConnectedCategory") {
+            console.log("Connected to PubNub!")
+        }
+    },
+    message: function (msg) {
+        if (msg.message.text) {
+            const mes = JSON.parse(msg.message.text)
+            handleMove(mes.from, mes.to);
+        }
+    }
+});
+
+//Subscribes to the channel in our state
+pubnub.subscribe({
+    channels: userinfo.channel
+});
 
 export const gameSubject = new BehaviorSubject()
 
@@ -39,21 +63,16 @@ export function handleMove(from, to) {
 }
 //Publishing messages via PubNub
 function publishMessage(from,to) {
-    const userinfo = JSON.parse(localStorage.getItem('userinfo'));
-    if (userinfo) {
+    const info = JSON.parse(localStorage.getItem('userinfo'));
+    if (info) {
         let messageObject = {
-            text: from + " " + to,
-            uuid: userinfo.username
+            text: JSON.stringify({ from:from,to:to}),
+            uuid: info.username
         };
 
-        const pubnub = new PubNub({
-            publishKey: "pub-c-e0419b3b-6aa9-4e4f-af8a-8dc193d1805a",
-            subscribeKey: "sub-c-ee3e0f22-18b4-11ec-901d-e20c06117408",
-            uuid: userinfo.username
-        });
         pubnub.publish({
             message: messageObject,
-            channel: userinfo.chanell
+            channel: info.chanell
         });
     }
 }
