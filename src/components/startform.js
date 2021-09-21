@@ -22,7 +22,7 @@ export default class StartForm extends React.Component {
         event.preventDefault();
         localStorage.setItem(
             'userinfo', JSON.stringify({
-            chanell: this.state.table,
+            channel: this.state.table,
             username: this.state.username,
             color: this.state.color,
         }));

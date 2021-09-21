@@ -16,7 +16,7 @@ export default function BoardSquare({
         accept: ItemTypes.SQUARE,
         drop: (item) => {
             const [fromPosition] = item.id.split('_')
-            handleMove(fromPosition, position);
+            handleMove(fromPosition, position,true);
         },
     })
     useEffect(() => {

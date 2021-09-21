@@ -4,16 +4,26 @@ import { NavLink, Switch, Route, BrowserRouter as Router } from 'react-router-do
 import GamePage from './components/gamepage'
 import ChatPage from './components/chatpage'
 import StartForm from './components/startform'
+import PubNub from 'pubnub';
+import { PubNubProvider, usePubNub } from 'pubnub-react';
 
-const App = () => (
-    <div className='app'>
+const App = () => {
+    const userinfo = JSON.parse(localStorage.getItem('userinfo'));
+    const pubnub = new PubNub({
+        publishKey: "pub-c-e0419b3b-6aa9-4e4f-af8a-8dc193d1805a",
+        subscribeKey: "sub-c-ee3e0f22-18b4-11ec-901d-e20c06117408",
+        uuid: userinfo && userinfo.username ? [userinfo.username] : ["user1"]
+    });
+    return( <div className='app'>
         <h1>Chess by oncle Tony</h1>
         <Router>
             <Navigation />
-            <Main />
+            <PubNubProvider client={pubnub}>
+                <Main />
+            </PubNubProvider>
         </Router>
-    </div>
-);
+    </div>)
+};
 
 const Navigation = () => (
     
@@ -26,29 +36,6 @@ const Navigation = () => (
         </nav>
    
 );
-
-//const Home = () => (
-//    <div className='home'>
-//        <h1>Welcome to my portfolio website</h1>
-//        <p> Feel free to browse around and learn more about me.</p>
-//    </div>
-//);
-
-//const About = () => (
-//    <div className='about'>
-//        <h1>About Me</h1>
-//        <p>Ipsum dolor dolorem consectetur est velit fugiat. Dolorem provident corporis fuga saepe distinctio ipsam? Et quos harum excepturi dolorum molestias?</p>
-//        <p>Ipsum dolor dolorem consectetur est velit fugiat. Dolorem provident corporis fuga saepe distinctio ipsam? Et quos harum excepturi dolorum molestias?</p>
-//    </div>
-//);
-
-//const Contact = () => (
-//    <div className='contact'>
-//        <h1>Contact Me</h1>
-//        <p>You can reach me via email: <strong>hello@example.com</strong></p>
-//    </div>
-//);
-
 const Main = () => (
     <Switch>
         <Route exact path='/' component={StartForm}></Route>

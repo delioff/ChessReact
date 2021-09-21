@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from 'react'
-import { gameSubject, initGame } from './game'
+import { gameSubject, initGame, handleMove } from './game'
 import inforow from './inforow'
 import Board from './board'
 import NewButton from './newbutton'
 import Coord from './coord'
+import { PubNubProvider, usePubNub } from 'pubnub-react';
 
 function GamePage() {
+   
+    const userinfo = JSON.parse(localStorage.getItem('userinfo'));
+    
     const [board, setBoard] = useState([])
     const [isGameOver, setIsGameOver] = useState()
     const [result, setResult] = useState()
     const [turn, setTurn] = useState()
     const [history, setHistory] = useState([])
     const [incheck, setIncheck] = useState()
+    const [channel,] = useState(userinfo && userinfo.channel ? [userinfo.channel] : ["table1"]);
+    const [messages, addMessage] = useState([]);
+    const [message, setMessage] = useState('');
     useEffect(() => {
         initGame()
         const subscribe = gameSubject.subscribe((game) => {
@@ -24,7 +31,32 @@ function GamePage() {
         })
         return () => subscribe.unsubscribe()
     }, [])
-   
+    const pubnub = usePubNub();
+    const handleMessage = event => {
+        const message = event.message;
+        if (typeof message === 'string' || message.hasOwnProperty('text')) {
+            const text = message.text || message;
+            if (text) {
+                const mes = JSON.parse(text)
+                addMessage(messages => [...messages, text]);
+                handleMove(mes.from, mes.to,false);
+            }
+        }
+    };
+    const sendMessage = message => {
+        if (message) {
+            pubnub
+                .publish({ channel: channel[0], message })
+                .then(() => setMessage(''));
+        }
+    };
+    useEffect(() => {
+        pubnub.addListener({ message: handleMessage });
+        pubnub.subscribe({
+            channels: [channel],
+            withPresence: true // Checks the number of people in the channel
+        });
+    }, [pubnub, channel]);
     let inf = [];
     let x = ["a", "b", "c", "d", "e", "f", "g", "h"];
     let y = ["8", "7", "6", "5", "4", "3", "2", "1"];
@@ -121,8 +153,7 @@ function GamePage() {
                     </div>
                 </div>
             </div>
+     </div>)
 
-        </div>
-    )
 }
 export default GamePage

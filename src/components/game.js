@@ -5,37 +5,14 @@ import PubNub from 'pubnub';
 
 const chess = new Chess()
 const userinfo = JSON.parse(localStorage.getItem('userinfo'));
-const pubnub = new PubNub({
-    publishKey: "pub-c-e0419b3b-6aa9-4e4f-af8a-8dc193d1805a",
-    subscribeKey: "sub-c-ee3e0f22-18b4-11ec-901d-e20c06117408",
-    uuid: userinfo&&userinfo.username ? userinfo.username : "test"
-});
-pubnub.addListener({
-    status: function (statusEvent) {
-        if (statusEvent.category === "PNConnectedCategory") {
-            console.log("Connected to PubNub!")
-        }
-    },
-    message: function (msg) {
-        if (msg.message.text) {
-            const mes = JSON.parse(msg.message.text)
-            handleMove(mes.from, mes.to);
-        }
-    }
-});
-
-//Subscribes to the channel in our state
-pubnub.subscribe({
-    channels: userinfo && userinfo.channel ? [userinfo.channel] : ["partia1"]
-});
 
 export const gameSubject = new BehaviorSubject()
 
 export function initGame() {
-    const savedGame = localStorage.getItem('savedGame')
-    if (savedGame) {
-        chess.load(savedGame)
-    }
+    //const savedGame = localStorage.getItem('savedGame')
+    //if (savedGame) {
+    //    chess.load(savedGame)
+    //}
     updateGame();
 }
 
@@ -48,7 +25,7 @@ export function unduLastMove() {
     updateGame();
 }
 
-export function handleMove(from, to) {
+export function handleMove(from, to,frompush) {
     const promotions = chess.moves({ verbose: true }).filter(m => m.promotion)
     if (promotions.some(p => `${p.from}:${p.to}` === `${from}:${to}`)) {
         const pendingPromotion = { from, to, color: promotions[0].color }
@@ -58,13 +35,18 @@ export function handleMove(from, to) {
 
     if (!pendingPromotion) {
         move(from, to)
-        publishMessage(from, to);
+        if (frompush) publishMessage(from, to);
     }
 }
 //Publishing messages via PubNub
 function publishMessage(from,to) {
     const info = JSON.parse(localStorage.getItem('userinfo'));
     if (info) {
+        const pubnub = new PubNub({
+            publishKey: "pub-c-e0419b3b-6aa9-4e4f-af8a-8dc193d1805a",
+            subscribeKey: "sub-c-ee3e0f22-18b4-11ec-901d-e20c06117408",
+            uuid: info && info.username ? info.username : "test"
+        });
         let messageObject = {
             text: JSON.stringify({ from:from,to:to}),
             uuid: info.username
@@ -72,7 +54,7 @@ function publishMessage(from,to) {
 
         pubnub.publish({
             message: messageObject,
-            channel: info.chanell
+            channel: info.channel
         });
     }
 }
@@ -82,7 +64,7 @@ export function move(from, to, promotion) {
     if (promotion) {
         tempMove.promotion = promotion
     }
-    const legalMove = chess.move(tempMove)
+    const legalMove = chess.move(tempMove, { sloppy: true })
 
     if (legalMove) {
         updateGame();
@@ -100,7 +82,7 @@ export function updateGame(pendingPromotion) {
         history: chess.history({ verbose: true }),
         incheck: getin_check(),
     }
-    localStorage.setItem('savedGame', chess.fen())
+    //localStorage.setItem('savedGame', chess.fen())
     gameSubject.next(newGame)
 }
 function getGameResult() {
