@@ -1,6 +1,6 @@
 import * as Chess from 'chess.js'
-import { BehaviorSubject } from 'rxjs'
-
+import { BehaviorSubject} from 'rxjs'
+import PubNub from 'pubnub';
 
 
 const chess = new Chess()
@@ -34,9 +34,29 @@ export function handleMove(from, to) {
 
     if (!pendingPromotion) {
         move(from, to)
+        publishMessage(from, to);
     }
 }
+//Publishing messages via PubNub
+function publishMessage(from,to) {
+    const userinfo = JSON.parse(localStorage.getItem('userinfo'));
+    if (userinfo) {
+        let messageObject = {
+            text: from + " " + to,
+            uuid: userinfo.username
+        };
 
+        const pubnub = new PubNub({
+            publishKey: "pub-c-e0419b3b-6aa9-4e4f-af8a-8dc193d1805a",
+            subscribeKey: "sub-c-ee3e0f22-18b4-11ec-901d-e20c06117408",
+            uuid: userinfo.username
+        });
+        pubnub.publish({
+            message: messageObject,
+            channel: userinfo.chanell
+        });
+    }
+}
 
 export function move(from, to, promotion) {
     let tempMove = { from, to }
@@ -50,9 +70,8 @@ export function move(from, to, promotion) {
     }
 }
 
-function updateGame(pendingPromotion) {
+export function updateGame(pendingPromotion) {
     const isGameOver = chess.game_over()
-
     const newGame = {
         board: chess.board(),
         pendingPromotion,
@@ -60,11 +79,9 @@ function updateGame(pendingPromotion) {
         turn: chess.turn() === "w" ? 'TURN WHITE':'TURN BLACK'  ,
         result: isGameOver ? getGameResult() : null,
         history: chess.history({ verbose: true }),
-        incheck:getin_check()
+        incheck: getin_check(),
     }
-
     localStorage.setItem('savedGame', chess.fen())
-
     gameSubject.next(newGame)
 }
 function getGameResult() {
