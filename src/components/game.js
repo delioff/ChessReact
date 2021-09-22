@@ -25,7 +25,9 @@ export function unduLastMove() {
     updateGame();
 }
 
-export function handleMove(from, to,frompush) {
+export function handleMove(from, to, frompush) {
+    const userinfo = JSON.parse(localStorage.getItem('userinfo'));
+    if ((userinfo.color === "White" && chess.turn === "b") || (userinfo.color === "Black" && chess.turn === "w")) return;
     const promotions = chess.moves({ verbose: true }).filter(m => m.promotion)
     if (promotions.some(p => `${p.from}:${p.to}` === `${from}:${to}`)) {
         const pendingPromotion = { from, to, color: promotions[0].color }

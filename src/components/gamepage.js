@@ -4,12 +4,20 @@ import inforow from './inforow'
 import Board from './board'
 import NewButton from './newbutton'
 import Coord from './coord'
-import { PubNubProvider, usePubNub } from 'pubnub-react';
+import { usePubNub } from 'pubnub-react';
+import { useLocation } from "react-router-dom";
+
 
 function GamePage() {
-   
-    const userinfo = JSON.parse(localStorage.getItem('userinfo'));
+    const search = useLocation().search;
+    const user = new URLSearchParams(search).get('user');
+    const color = new URLSearchParams(search).get('color');
     
+    const userinfo = JSON.parse(localStorage.getItem('userinfo'));
+    const localuser = userinfo && userinfo.username ? [userinfo.username] : ["You"];
+    const localcolor = userinfo && userinfo.color ? [userinfo.color] : ["White"]
+    const superuser = user ? user : localuser;
+    const supercolor = color ? color : localcolor;
     const [board, setBoard] = useState([])
     const [isGameOver, setIsGameOver] = useState()
     const [result, setResult] = useState()
@@ -17,8 +25,10 @@ function GamePage() {
     const [history, setHistory] = useState([])
     const [incheck, setIncheck] = useState()
     const [channel,] = useState(userinfo && userinfo.channel ? [userinfo.channel] : ["table1"]);
-    const [messages, addMessage] = useState([]);
-    const [message, setMessage] = useState('');
+    const [user1,] = useState(superuser);
+    const [color1,] = useState(supercolor);
+    const [user2, setUser2] = useState("He/She");
+    const [color2, setColor2] = useState("Black");
     useEffect(() => {
         initGame()
         const subscribe = gameSubject.subscribe((game) => {
@@ -37,17 +47,9 @@ function GamePage() {
         if (typeof message === 'string' || message.hasOwnProperty('text')) {
             const text = message.text || message;
             if (text) {
-                const mes = JSON.parse(text)
-                addMessage(messages => [...messages, text]);
+                const mes = JSON.parse(text);
                 handleMove(mes.from, mes.to,false);
             }
-        }
-    };
-    const sendMessage = message => {
-        if (message) {
-            pubnub
-                .publish({ channel: channel[0], message })
-                .then(() => setMessage(''));
         }
     };
     useEffect(() => {
@@ -130,12 +132,14 @@ function GamePage() {
                 <div className="itemcontainer">
                     <div className="info-container">
                         <div className="resp-table">
-                            <div className="resp-table-caption">
-                                <NewButton />
+                           
+                            <div className="resp-table-header">
+                                <div className="table-header-cell">{user1}</div>
+                                <div className="table-header-cell">{user2}</div>
                             </div>
                             <div className="resp-table-header">
-                                <div className="table-header-cell">White</div>
-                                <div className="table-header-cell">Black</div>
+                                <div className="table-header-cell">{color1}</div>
+                                <div className="table-header-cell">{color2}</div>
                             </div>
                             <div className="resp-table-body">
                                 {inf.map((item, i) => (
@@ -144,6 +148,12 @@ function GamePage() {
                                         {item.b}
                                     </div>
                                 ))}
+                            </div>
+                            <div className="resp-table-footer">
+                                <div className="table-footer-cell">
+                                    <NewButton />
+                                </div>
+                                
                             </div>
                             {/*<div className="resp-table-footer">*/}
                             {/*    <div className="table-footer-cell">White</div>*/}
