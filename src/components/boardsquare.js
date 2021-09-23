@@ -10,13 +10,17 @@ export default function BoardSquare({
     piece,
     black,
     position,
-}) {
+ }) {
     const [promotion, setPromotion] = useState(null);
     const [, drop] = useDrop({
         accept: ItemTypes.SQUARE,
         drop: (item) => {
             const [fromPosition] = item.id.split('_')
-            handleMove(fromPosition, position,true);
+            const userinfo = JSON.parse(localStorage.getItem('userinfo'));
+            if (userinfo) {
+               handleMove(fromPosition, position, true,userinfo.channel,userinfo.user);
+            }
+            
         },
     })
     useEffect(() => {
