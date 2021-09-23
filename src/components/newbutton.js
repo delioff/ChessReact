@@ -10,6 +10,6 @@ export default function newButton() {
         <button onClick={unduLastMove}>
                <span>UNDO</span>
             </button>
-            </div>
+         </div>
     )
 }

@@ -4,6 +4,7 @@ import { NavLink, Switch, Route, BrowserRouter as Router } from 'react-router-do
 import GamePage from './components/gamepage'
 import ChatPage from './components/chatpage'
 import StartForm from './components/startform'
+import Footer from './components/foother'
 import PubNub from 'pubnub';
 import { PubNubProvider, usePubNub } from 'pubnub-react';
 
@@ -14,15 +15,18 @@ const App = () => {
         subscribeKey: "sub-c-ee3e0f22-18b4-11ec-901d-e20c06117408",
         uuid: userinfo && userinfo.username ? [userinfo.username] : ["user1"]
     });
-    return( <div className='app'>
+    return(<div className='app'>
         <h1>Chess by oncle Tony</h1>
         <Router>
             <Navigation />
             <PubNubProvider client={pubnub}>
                 <Main />
             </PubNubProvider>
+           
         </Router>
-    </div>)
+        <Footer />
+    </div>
+   )
 };
 
 const Navigation = () => (
