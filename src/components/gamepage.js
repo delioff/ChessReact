@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { gameSubject, initGame, handleMove } from './game'
 import inforow from './inforow'
 import Board from './board'
-import NewButton from './newbutton'
 import Coord from './coord'
 import { usePubNub } from 'pubnub-react';
 import { useLocation } from "react-router-dom";
@@ -14,10 +13,10 @@ function GamePage() {
     const search = useLocation().search;
     const user = new URLSearchParams(search).get('user');
     const color = new URLSearchParams(search).get('color');
-    
+
     const userinfo = JSON.parse(localStorage.getItem('userinfo'));
-    const localuser = userinfo && userinfo.username ? [userinfo.username] : ["You"];
-    const localcolor = userinfo && userinfo.color ? [userinfo.color] : ["White"]
+    const localuser = userinfo && userinfo.username ? userinfo.username : "You";
+    const localcolor = userinfo && userinfo.color ? userinfo.color : "White";
     const superuser = user ? user : localuser;
     const supercolor = color ? color : localcolor;
     const [board, setBoard] = useState([])
@@ -30,11 +29,11 @@ function GamePage() {
     const [user1,] = useState(superuser);
     const [color1,] = useState(supercolor);
     const [user2, setUser2] = useState("He/She");
-    const [color2, setColor2] = useState("Black");
+    const [color2, setColor2] = useState(supercolor === "White" ? "Black" : "White");
     const [lobbyChannel, setlobbyChannel] = useState();
     const [gameChannel, setgameChannel] = useState();
     const [roomId, setroomId] = useState();
-    const [isDisabled,setisDisabled] = useState(false);
+    const [isDisabled, setisDisabled] = useState(false);
     useEffect(() => {
         initGame()
         const subscribe = gameSubject.subscribe((game) => {
@@ -87,9 +86,9 @@ function GamePage() {
     // Create a room channel
     const onPressCreate = (e) => {
         // Create a random name for the channel
-        const room=shortid.generate().substring(0, 5)
+        const room = shortid.generate().substring(0, 5)
         setroomId(room);
-        setlobbyChannel('chesslobby--'+room);
+        setlobbyChannel('chesslobby--' + room);
         setisDisabled(true);
         // Open the modal
         Swal.fire({
@@ -124,11 +123,33 @@ function GamePage() {
         pubnub.publish({
             message: {
                 command: "NEWGAME",
-                user:user1
+                user: user1
             },
             channel: 'chesslobby--' + roomId
         });
     }
+    const handleBaseMove = (fromPosition, position) => {
+        if ((turn === "TURN WHITE" && color1 === "White") || (turn === "TURN BLACK" && color1 === "Black")) {
+            handleMove(fromPosition, position, true, gameChannel, user1)
+        }
+        else {
+            Swal.fire({
+                position: 'top',
+                allowOutsideClick: false,
+                title: 'Not your turn',
+                width: 275,
+                padding: '0.7em',
+                // Custom CSS
+                customClass: {
+                    heightAuto: false,
+                    title: 'title-class',
+                    popup: 'popup-class',
+                    confirmButton: 'button-class'
+                }
+            })
+        }
+    }
+      
     // The 'Join' button was pressed
     const onPressJoin = (e) => {
         //Swal.fire({
@@ -183,7 +204,7 @@ function GamePage() {
             if (response.totalOccupancy < 2) {
                 setroomId(value);
                 setlobbyChannel('chesslobby--' + value);
-
+                setgameChannel('chessgame--' + value)
                 pubnub.publish({
                     message: {
                         cmd:"JOIN",
@@ -269,7 +290,7 @@ function GamePage() {
                                 ))}
                             </div>
                         </div>
-                        <Board board={board}/>
+                        <Board board={board} handlemove={handleBaseMove} />
                         <div className="cord-container-x">
                             <div className="row">
                                 {x.map((letter, i) => (
@@ -302,12 +323,12 @@ function GamePage() {
                                 Table {roomId}
                             </div>
                             <div className="resp-table-header">
-                                <div className="table-header-cell">{user1}</div>
-                                <div className="table-header-cell">{user2}</div>
+                                <div className="table-header-cell">{color1 === "White" ? user1 : user2}</div>
+                                <div className="table-header-cell">{color1 === "White" ? user2 : user1}</div>
                             </div>
                             <div className="resp-table-header">
-                                <div className="table-header-cell">{color1}</div>
-                                <div className="table-header-cell">{color2}</div>
+                                <div className="table-header-cell">"White"</div>
+                                <div className="table-header-cell">"Black"</div>
                             </div>
                             <div className="resp-table-body">
                                 {inf.map((item, i) => (
@@ -318,9 +339,23 @@ function GamePage() {
                                 ))}
                             </div>
                             <div className="resp-table-footer">
+                                <div className="table-footer-cell">
+                                    <button onClick={(e) => onPressNewGame()} >
+                                 <span>NEW GAME</span>
+                                    </button>
+                                 </div>
+                                 <div className="table-footer-cell">
+                                  
+                                    <button onClick={(e) => onPressUndo()}>
+                                       <span>UNDO</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="resp-table-footer">
                                 <div className="table-footer-cell"><button
                                     className="create-button "
                                     onClick={(e) => onPressCreate()}
+                                    disabled={isDisabled}
                                 > Create
                                 </button></div>
                                 <button
@@ -329,20 +364,7 @@ function GamePage() {
                                 > Join
                                 </button>
                             </div>
-                            <div className="resp-table-footer">
-                                <div className="table-footer-cell">
-                                    <button onClick={(e) => onPressNewGame()} disabled={isDisabled}>
-                                        
-                                    <span>NEW GAME</span>
-                                </button>
-                                    <button onClick={(e) => onPressUndo()}>
-                                       <span>UNDO</span>
-                                 </button>
-                                 </div>
-                                 <div className="table-footer-cell">
-                                    <NewButton />
-                                </div>
-                            </div>
+                           
                         </div>
                     </div>
                 </div>

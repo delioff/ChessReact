@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import BoardSquare from './boardsquare'
-export default function Board({ board}) {
+export default function Board({ board,handlemove}) {
     const [currBoard, setCurrBoard] = useState([])
     useEffect(() => {
         setCurrBoard(
@@ -35,7 +35,7 @@ export default function Board({ board}) {
                         piece={piece}
                         black={isBlack(i)}
                         position={getPosition(i)}
-                       
+                        handlemove={handlemove}
                     />
                 </div>
             ))}
