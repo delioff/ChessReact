@@ -34,6 +34,7 @@ function GamePage() {
     const [lobbyChannel, setlobbyChannel] = useState();
     const [gameChannel, setgameChannel] = useState();
     const [roomId, setroomId] = useState();
+    const [isDisabled,setisDisabled] = useState(false);
     useEffect(() => {
         initGame()
         const subscribe = gameSubject.subscribe((game) => {
@@ -64,9 +65,11 @@ function GamePage() {
             const userinfo = JSON.parse(localStorage.getItem('userinfo'));
             if (userinfo) {
                 userinfo.channel = 'chessgame--' + roomId
+                userinfo.username = message.user;
                 localStorage.setItem(
                     'userinfo', JSON.stringify(userinfo));
             }
+            setUser2(message.user)
             setgameChannel('chessgame--' + roomId)
         }
     };
@@ -87,13 +90,13 @@ function GamePage() {
         const room=shortid.generate().substring(0, 5)
         setroomId(room);
         setlobbyChannel('chesslobby--'+room);
-
+        setisDisabled(true);
         // Open the modal
         Swal.fire({
             position: 'top',
             allowOutsideClick: false,
             title: 'Share this room ID with your friend',
-            text: roomId,
+            text: room,
             width: 275,
             padding: '0.7em',
             // Custom CSS
@@ -106,52 +109,86 @@ function GamePage() {
         })
         // set some staff here 
     }
-
+    // Create a room channel
+    const onPressUndo = (e) => {
+        pubnub.publish({
+            message: {
+                command: "UNDO",
+                user: user1
+            },
+            channel: 'chesslobby--' + roomId
+        });
+    }
+    // Create a room channel
+    const onPressNewGame = (e) => {
+        pubnub.publish({
+            message: {
+                command: "NEWGAME",
+                user:user1
+            },
+            channel: 'chesslobby--' + roomId
+        });
+    }
     // The 'Join' button was pressed
     const onPressJoin = (e) => {
+        //Swal.fire({
+        //    position: 'top',
+        //    input: 'text',
+        //    allowOutsideClick: false,
+        //    inputPlaceholder: 'Enter the room id',
+        //    showCancelButton: true,
+        //    confirmButtonColor: 'rgb(208,33,41)',
+        //    confirmButtonText: 'OK',
+        //    width: 275,
+        //    padding: '0.7em',
+        //    customClass: {
+        //        heightAuto: false,
+        //        popup: 'popup-class',
+        //        confirmButton: 'join-button-class ',
+        //        cancelButton: 'join-button-class'
+        //    }
+        //}).then((result) => {
+        //    // Check if the user typed a value in the input field
+        //    if (result.value) {
+        //        joinRoom(result.value);
+        //    }
+        //})
         Swal.fire({
-            position: 'top',
-            input: 'text',
-            allowOutsideClick: false,
-            inputPlaceholder: 'Enter the room id',
-            showCancelButton: true,
-            confirmButtonColor: 'rgb(208,33,41)',
-            confirmButtonText: 'OK',
-            width: 275,
-            padding: '0.7em',
-            customClass: {
-                heightAuto: false,
-                popup: 'popup-class',
-                confirmButton: 'join-button-class ',
-                cancelButton: 'join-button-class'
+            title: 'Enter roomid and playername',
+            html:
+                '<input id="swal-input1" class="swal2-input">' +
+                '<input id="swal-input2" class="swal2-input">',
+            focusConfirm: false,
+            preConfirm: () => {
+                return {
+                    room:document.getElementById('swal-input1').value,
+                    user:document.getElementById('swal-input2').value
+                }
             }
-        }).then((result) => {
-            // Check if the user typed a value in the input field
-            if (result.value) {
-                joinRoom(result.value);
-            }
-        })
+        }).then((formValues) => {
+            if (formValues.value) {
+                joinRoom(formValues.value.room, formValues.value.user);
+         }})
+
+        
     }
     // Join a room channel
-    const joinRoom = (value) => {
-        setroomId(value);
-        setlobbyChannel('chesslobby--' + value);
+    const joinRoom = (value,user) => {
+        
 
         // Check the number of people in the channel
         pubnub.hereNow({
             channels: ['chesslobby--' + value],
         }).then((response) => {
             if (response.totalOccupancy < 2) {
-                pubnub.subscribe({
-                    channels: ['chesslobby--' + value],
-                    withPresence: true
-                });
-
-               //setstaff for second user
+                setroomId(value);
+                setlobbyChannel('chesslobby--' + value);
 
                 pubnub.publish({
                     message: {
-                        notRoomCreator: true,
+                        cmd:"JOIN",
+                        user:user,
+                        notRoomCreator: true
                     },
                     channel: 'chesslobby--' + value
                 });
@@ -262,7 +299,7 @@ function GamePage() {
                     <div className="info-container">
                         <div className="resp-table">
                             <div className="resp-table-caption">
-                                {gameChannel} {lobbyChannel}
+                                Table {roomId}
                             </div>
                             <div className="resp-table-header">
                                 <div className="table-header-cell">{user1}</div>
@@ -294,14 +331,18 @@ function GamePage() {
                             </div>
                             <div className="resp-table-footer">
                                 <div className="table-footer-cell">
+                                    <button onClick={(e) => onPressNewGame()} disabled={isDisabled}>
+                                        
+                                    <span>NEW GAME</span>
+                                </button>
+                                    <button onClick={(e) => onPressUndo()}>
+                                       <span>UNDO</span>
+                                 </button>
+                                 </div>
+                                 <div className="table-footer-cell">
                                     <NewButton />
                                 </div>
-                                
                             </div>
-                            {/*<div className="resp-table-footer">*/}
-                            {/*    <div className="table-footer-cell">White</div>*/}
-                            {/*    <div className="table-footer-cell">Black</div>*/}
-                            {/*</div>*/}
                         </div>
                     </div>
                 </div>

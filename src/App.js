@@ -6,10 +6,9 @@ import ChatPage from './components/chatpage'
 import StartForm from './components/startform'
 import Footer from './components/foother'
 import PubNub from 'pubnub';
-import { PubNubProvider, usePubNub } from 'pubnub-react';
+import { PubNubProvider} from 'pubnub-react';
 
 const App = () => {
-    const userinfo = JSON.parse(localStorage.getItem('userinfo'));
     const pubnub = new PubNub({
         publishKey: "pub-c-e0419b3b-6aa9-4e4f-af8a-8dc193d1805a",
         subscribeKey: "sub-c-ee3e0f22-18b4-11ec-901d-e20c06117408",
