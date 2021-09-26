@@ -3,7 +3,7 @@ import './App.css';
 import { NavLink, Switch, Route, BrowserRouter as Router } from 'react-router-dom';
 import GamePage from './components/gamepage'
 import ChatPage from './components/chatpage'
-import StartForm from './components/startform'
+import HomePage from './components/homepage'
 import Footer from './components/foother'
 import PubNub from 'pubnub';
 import { PubNubProvider} from 'pubnub-react';
@@ -30,7 +30,7 @@ const Navigation = () => (
     
     <nav>
         <ul>
-            <li><NavLink exact activeClassName="current" to='/'>Start</NavLink></li>
+            <li><NavLink exact activeClassName="current" to='/'>Trenning</NavLink></li>
             <li><NavLink exact activeClassName="current" to='/game'>Game</NavLink></li>
             <li><NavLink exact activeClassName="current" to='/chat'>Chat</NavLink></li>
         </ul>
@@ -39,7 +39,7 @@ const Navigation = () => (
 );
 const Main = () => (
     <Switch>
-        <Route exact path='/' component={StartForm}></Route>
+        <Route exact path='/' component={HomePage}></Route>
         <Route exact path='/game' component={GamePage}></Route>
         <Route exact path='/chat' component={ChatPage}></Route>
      </Switch>
