@@ -14,6 +14,7 @@ function GamePage() {
     const search = useLocation().search;
     const ouser = new URLSearchParams(search).get('user');
     const ocolor = new URLSearchParams(search).get('color');
+    const color=ocolor=="White"?"Black":"White" 
     const room= new URLSearchParams(search).get('room')
     const userinfo = JSON.parse(localStorage.getItem('userinfo'));
     const localuser = userinfo && userinfo.username ? userinfo.username : "You";
@@ -25,7 +26,7 @@ function GamePage() {
     const [history, setHistory] = useState([])
     const [incheck, setIncheck] = useState()
     const [user1,setUser1] = useState(localuser);
-    const [color1,setColor1] = useState(ocolor?ocolor:localcolor);
+    const [color1, setColor1] = useState(color);
     const [user2, setUser2] = useState(ouser);
     const [lobbyChannel, setlobbyChannel] = useState('chesslobby--'+room);
     const [gameChannel, setgameChannel] = useState('chessgame--'+room);
