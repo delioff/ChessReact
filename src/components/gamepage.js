@@ -78,7 +78,7 @@ function GamePage() {
                     if (result.isConfirmed) {
                         pubnub.publish({
                             message: {
-                                command: "ACSEPTUNDO",
+                                cmd: "ACSEPTUNDO",
                                 user: user1
                             },
                             channel: 'chesslobby--' + roomId
@@ -99,14 +99,14 @@ function GamePage() {
                     if (result.isConfirmed) {
                         pubnub.publish({
                             message: {
-                                command: "ACSEPTNEWGAME",
+                                cmd: "ACSEPTNEWGAME",
                                 user: user1
                             },
                             channel: 'chesslobby--' + roomId
                         })
                     }
                 })}
-            if (message.cmd == "ACEPTNEGAME") {
+            if (message.cmd == "ACEPTNEWGAME") {
                 resetGame()
             }
             if (message.cmd == "ACSEPTUNDO") {
