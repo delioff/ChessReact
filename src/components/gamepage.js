@@ -155,7 +155,7 @@ function GamePage() {
     const onPressUndo = (e) => {
         pubnub.publish({
             message: {
-                command: "UNDO",
+                cmd: "UNDO",
                 user: user1
             },
             channel: 'chesslobby--' + roomId
@@ -165,7 +165,7 @@ function GamePage() {
     const onPressNewGame = (e) => {
         pubnub.publish({
             message: {
-                command: "NEWGAME",
+                cmd: "NEWGAME",
                 user: user1
             },
             channel: 'chesslobby--' + roomId
