@@ -1,7 +1,7 @@
 import React from 'react'
 import { resetGame, unduLastMove} from './game'
 
-export default function newButton() {
+export default function NewButton() {
      return (
         <div>
             <button onClick={resetGame}>

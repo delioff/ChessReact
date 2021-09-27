@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { gameSubject, initGame, handleMove } from './game'
+import { gameSubject, initGame, handleMove, resetGame, unduLastMove} from './game'
 import inforow from './inforow'
 import Board from './board'
 import Coord from './coord'
@@ -7,32 +7,29 @@ import { usePubNub } from 'pubnub-react';
 import { useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import shortid from 'shortid';
+import StartForm from './startform'
 
 
 function GamePage() {
     const search = useLocation().search;
-    const user = new URLSearchParams(search).get('user');
-    const color = new URLSearchParams(search).get('color');
-    const roomid = new URLSearchParams(search).get('channel');
+    const ouser = new URLSearchParams(search).get('user');
+    const ocolor = new URLSearchParams(search).get('color');
+    const room= new URLSearchParams(search).get('room')
     const userinfo = JSON.parse(localStorage.getItem('userinfo'));
     const localuser = userinfo && userinfo.username ? userinfo.username : "You";
     const localcolor = userinfo && userinfo.color ? userinfo.color : "White";
-    const superuser = user ? user : localuser;
-    const supercolor = color ? color : localcolor;
     const [board, setBoard] = useState([])
     const [isGameOver, setIsGameOver] = useState()
     const [result, setResult] = useState()
     const [turn, setTurn] = useState()
     const [history, setHistory] = useState([])
     const [incheck, setIncheck] = useState()
-    const [channel,] = useState(userinfo && userinfo.channel ? [userinfo.channel] : ["table1"]);
-    const [user1,] = useState(superuser);
-    const [color1,] = useState(supercolor);
-    const [user2, setUser2] = useState("He/She");
-    const [color2, setColor2] = useState(supercolor === "White" ? "Black" : "White");
-    const [lobbyChannel, setlobbyChannel] = useState('chesslobby--' + roomid);
-    const [gameChannel, setgameChannel] = useState('chessgame--' + roomid);
-    const [roomId, setroomId] = useState(roomid);
+    const [user1,setUser1] = useState(localuser);
+    const [color1,setColor1] = useState(ocolor?ocolor:localcolor);
+    const [user2, setUser2] = useState(ouser);
+    const [lobbyChannel, setlobbyChannel] = useState('chesslobby--'+room);
+    const [gameChannel, setgameChannel] = useState('chessgame--'+room);
+    const [roomId, setroomId] = useState(room);
     const [isDisabled, setisDisabled] = useState(false);
     useEffect(() => {
         initGame()
@@ -47,7 +44,7 @@ function GamePage() {
         return () => subscribe.unsubscribe()
     }, [])
     const pubnub = usePubNub();
-    pubnub.setUUID(superuser);
+    pubnub.setUUID(user1);
     const handleMessage = event => {
         const message = event.message;
         const chanellname = event.channel;
@@ -61,15 +58,59 @@ function GamePage() {
             }
         }
         if (chanellname === lobbyChannel) {
-            const userinfo = JSON.parse(localStorage.getItem('userinfo'));
-            if (userinfo) {
-                userinfo.channel = 'chessgame--' + roomId
-                userinfo.username = message.user;
-                localStorage.setItem(
-                    'userinfo', JSON.stringify(userinfo));
+            if (message.user !== user1) {
+                setUser2(message.user)
             }
-            setUser2(message.user)
-            setgameChannel('chessgame--' + roomId)
+            if (message.cmd == "JOIN") {
+                setgameChannel('chessgame--' + roomId)
+            }
+            if (message.cmd == "UNDO" && message.user !== user1) {
+                Swal.fire({
+                    title: "Your oponent want's undo last move!",
+                    text: "Do you agree?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, undo!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        pubnub.publish({
+                            message: {
+                                command: "ACSEPTUNDO",
+                                user: user1
+                            },
+                            channel: 'chesslobby--' + roomId
+                        })
+                    }
+                })
+            }
+            if (message.cmd == "NENGAME" && message.user !== user1) {
+                Swal.fire({
+                    title: "Your oponent want's new game!",
+                    text: "Do you agree?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, new!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        pubnub.publish({
+                            message: {
+                                command: "ACSEPTNEWGAME",
+                                user: user1
+                            },
+                            channel: 'chesslobby--' + roomId
+                        })
+                    }
+                })}
+            if (message.cmd == "ACEPTNEGAME") {
+                resetGame()
+            }
+            if (message.cmd == "ACSEPTUNDO") {
+                unduLastMove()
+            }
         }
     };
     useEffect(() => {
@@ -78,11 +119,12 @@ function GamePage() {
             channels: [lobbyChannel, gameChannel],
             withPresence: true // Checks the number of people in the channel
         });
+        if (room) joinRoom(room, user1);
         return function cleanup() {
             pubnub.unsubscribeAll();
         }
     }, [pubnub, lobbyChannel, gameChannel]);
-
+    
     // Create a room channel
     const onPressCreate = (e) => {
         // Create a random name for the channel
@@ -152,28 +194,6 @@ function GamePage() {
       
     // The 'Join' button was pressed
     const onPressJoin = (e) => {
-        //Swal.fire({
-        //    position: 'top',
-        //    input: 'text',
-        //    allowOutsideClick: false,
-        //    inputPlaceholder: 'Enter the room id',
-        //    showCancelButton: true,
-        //    confirmButtonColor: 'rgb(208,33,41)',
-        //    confirmButtonText: 'OK',
-        //    width: 275,
-        //    padding: '0.7em',
-        //    customClass: {
-        //        heightAuto: false,
-        //        popup: 'popup-class',
-        //        confirmButton: 'join-button-class ',
-        //        cancelButton: 'join-button-class'
-        //    }
-        //}).then((result) => {
-        //    // Check if the user typed a value in the input field
-        //    if (result.value) {
-        //        joinRoom(result.value);
-        //    }
-        //})
         Swal.fire({
             title: 'Enter roomid and playername',
             html:
@@ -193,6 +213,7 @@ function GamePage() {
 
         
     }
+    const setUserCol = (user, col) => { setUser1(user); setColor1(col);}
     // Join a room channel
     const joinRoom = (value,user) => {
         
@@ -234,17 +255,6 @@ function GamePage() {
         }).catch((error) => {
             console.log(error);
         });
-    }
-    // Reset everything
-    const endGame = () => {
-        pubnub.unsubscribe({
-            channels: [lobbyChannel,gameChannel]
-        });
-        setlobbyChannel(null);
-        setgameChannel(null);
-        setroomId(null);
-
-        
     }
     let inf = [];
     let x = ["a", "b", "c", "d", "e", "f", "g", "h"];
@@ -366,6 +376,7 @@ function GamePage() {
                             </div>
                            
                         </div>
+                        <StartForm User={user1} Color={color1} RoomID={roomId} SetColorUser={setUserCol}/>
                     </div>
                 </div>
             </div>

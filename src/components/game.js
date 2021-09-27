@@ -37,7 +37,7 @@ export function handleMove(from, to, frompush,channel,user) {
 
     if (!pendingPromotion) {
         move(from, to)
-        if (frompush) publishMessage(from, to, userinfo.channel, userinfo.username);
+        if (frompush) publishMessage(from, to, channel, user);
     }
 }
 //Publishing messages via PubNub

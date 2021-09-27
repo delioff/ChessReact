@@ -1,75 +1,64 @@
-import React from 'react';
+import React, { useEffect, useState }  from 'react';
 
-export default class StartForm extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            table: 'table1', username: 'player1', color: 'White', url: window.location.href+ "game?user=tolup&color=black&channel=table1"
-        };
-
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
-
-    handleChange(event) {
+export default function StartForm({User, Color,RoomID,SetColorUser}) {
+    const [luser, setLuser] = useState();
+    const [lcolor, setLcolor] = useState();
+    const [lroomid, setLroomid] = useState();
+    const [url, seturl] = useState();
+    useEffect(() => {
+        setLcolor(Color);
+        setLuser(User);
+        setLroomid(RoomID);
+        seturl(window.location.href + "?user=" + User + "&color=" + Color + "&room=" + RoomID)
+    }, [User, Color, RoomID])
+    const handleChange=(event)=>{
         const value =  event.target.value;
         const name = event.target.name;
        
-        if (name === "table") {
-            const color = this.state.color === "White" ? "Black" : "White"
-            const url = window.location.href + "/game?user=tolup&color=" + color + "&channel=" + value
-            this.setState({
-                [name]: value,
-                url: url
-            })
+        if (name === "username") {
+            setLuser(value)
+            seturl(window.location.href + "?user=" + value + "&color=" + lcolor + "&room=" + lroomid)
+            
         }
         else {
-            const color = value === "White" ? "Black" : "White"
-            const url = window.location.href + "/game?user=tolup&color=" + color + "&channel=" + this.state.table
-            this.setState({
-                [name]: value,
-                url: url
-            })
+            setLcolor(value)
+            seturl(window.location.href + "?user=" + luser + "&color=" + value + "&room=" + lroomid)
+           
         }
  
     }
 
-    handleSubmit(event) {
-        //alert('A name was submitted: ' + this.state.table+' '+this.state.username+' '+this.state.color);
+    const handleSubmit=(event) => {
         event.preventDefault();
         localStorage.setItem(
             'userinfo', JSON.stringify({
-            channel: this.state.table,
-            username: this.state.username,
-            color: this.state.color,
-        }));
-        this.props.history.push("/game");
+                username: luser,
+                color: lcolor,
+            }));
+        SetColorUser(luser,lcolor)
     }
+    
 
-    render() {
-        return (
-            <form onSubmit={this.handleSubmit}>
+    return (
+        <form onSubmit={handleSubmit}>
+                
                 <label>
-                    Table:
-                    <input type="text" name="table" value={this.state.table} onChange={this.handleChange} />
-                </label>
-                <label>
-                    UserName:
-                    <input type="text" name="username" value={this.state.username} onChange={this.handleChange} />
+                    Current Player
+                    <input type="text" name="username" value={luser} onChange={handleChange} />
                 </label>
                 <label>
                     Color:
-                    <select  name="color" value={this.state.color} onChange={this.handleChange}>
+                    <select  name="color" value={lcolor} onChange={handleChange}>
                         <option value="White">White</option>
                         <option value="Black">Black</option>
                     </select>
                 </label>
                 <label>
                     Invitation link:
-                    <input type="text" name="link" value={this.state.url} />
+                    <input type="text" name="link" value={url} />
                 </label>
-                <input type="submit" value="Submit" />
-            </form>
+                <input type="submit" value="Set" />
+           </form>
         );
-    }
+   
 }
