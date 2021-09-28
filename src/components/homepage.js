@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { gameSubject, initGame, handleMove } from './game'
+import { gameSubject, initGame, handleMove } from './game1'
 import inforow from './inforow'
-import Board from './board'
+import Board from './board1'
 import Coord from './coord'
 import NewButton from './newbutton'
 

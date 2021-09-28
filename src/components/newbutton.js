@@ -1,5 +1,5 @@
 import React from 'react'
-import { resetGame, unduLastMove} from './game'
+import { resetGame, unduLastMove} from './game1'
 
 export default function NewButton() {
      return (

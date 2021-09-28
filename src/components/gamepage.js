@@ -32,6 +32,7 @@ function GamePage() {
     const [gameChannel, setgameChannel] = useState('chessgame--'+room);
     const [roomId, setroomId] = useState(room);
     const [isDisabled, setisDisabled] = useState(false);
+    const [messages, setMessages] = useState([]);
     useEffect(() => {
         initGame()
         const subscribe = gameSubject.subscribe((game) => {
@@ -78,7 +79,7 @@ function GamePage() {
                     if (result.isConfirmed) {
                         pubnub.publish({
                             message: {
-                                cmd: "ACSEPTUNDO",
+                                cmd: "ACCEPTUNDO",
                                 user: user1
                             },
                             channel: 'chesslobby--' + roomId
@@ -99,17 +100,18 @@ function GamePage() {
                     if (result.isConfirmed) {
                         pubnub.publish({
                             message: {
-                                cmd: "ACSEPTNEWGAME",
-                                user: user1
+                                cmd: "ACCEPTNEWGAME",
+                                user: user1,
+                                msg: "New game accepted"
                             },
                             channel: 'chesslobby--' + roomId
                         })
                     }
                 })}
-            if (message.cmd == "ACEPTNEWGAME") {
+            if (message.cmd == "ACCEPTNEWGAME") {
                 resetGame()
             }
-            if (message.cmd == "ACSEPTUNDO") {
+            if (message.cmd == "ACCEPTUNDO") {
                 unduLastMove()
             }
         }
@@ -120,11 +122,29 @@ function GamePage() {
             channels: [lobbyChannel, gameChannel],
             withPresence: true // Checks the number of people in the channel
         });
+        pubnub.history(
+            {
+                channel: lobbyChannel,
+                count: 10, // 100 is the default
+                stringifiedTimeToken: true // false is the default
+            }, function (status, response) {
+                let newMessages = [];
+                if (response && response.messages) {
+                    for (let i = 0; i < response.messages.length; i++) {
+                        newMessages.push({
+                            user: response.messages[i].entry.user,
+                            msg: response.messages[i].entry.msg
+                        });
+                    }
+                    setMessages(messages => messages.concat(newMessages));
+                }
+            }
+        );
         if (room) joinRoom(room, user1);
         return function cleanup() {
             pubnub.unsubscribeAll();
         }
-    }, [pubnub, lobbyChannel, gameChannel]);
+            }, [pubnub, lobbyChannel, gameChannel]);
     
     // Create a room channel
     const onPressCreate = (e) => {
@@ -132,6 +152,7 @@ function GamePage() {
         const room = shortid.generate().substring(0, 5)
         setroomId(room);
         setlobbyChannel('chesslobby--' + room);
+        setgameChannel('chessgame--' + room);
         setisDisabled(true);
         // Open the modal
         Swal.fire({
@@ -156,7 +177,8 @@ function GamePage() {
         pubnub.publish({
             message: {
                 cmd: "UNDO",
-                user: user1
+                user: user1,
+                msg:user1+"whant's undo last move"
             },
             channel: 'chesslobby--' + roomId
         });
@@ -166,7 +188,8 @@ function GamePage() {
         pubnub.publish({
             message: {
                 cmd: "NEWGAME",
-                user: user1
+                user: user1,
+                msg: user1 + "whant's new game"
             },
             channel: 'chesslobby--' + roomId
         });
@@ -231,7 +254,7 @@ function GamePage() {
                     message: {
                         cmd:"JOIN",
                         user:user,
-                        notRoomCreator: true
+                        msg: user + "join the game"
                     },
                     channel: 'chesslobby--' + value
                 });
@@ -276,6 +299,7 @@ function GamePage() {
 
     }
     return (
+        <div>
         <div className="row">
             <div className="column">
 
@@ -352,7 +376,7 @@ function GamePage() {
                             <div className="resp-table-footer">
                                 <div className="table-footer-cell">
                                     <button onClick={(e) => onPressNewGame()} >
-                                 <span>NEW GAME</span>
+                                        <span>NEW GAME</span>
                                     </button>
                                  </div>
                                  <div className="table-footer-cell">
@@ -375,13 +399,28 @@ function GamePage() {
                                 > Join
                                 </button>
                             </div>
-                           
+                            <div className="resp-table-body">
+                                <div className="resp-table-row">
+                                    <div className="table-body-cell">{lobbyChannel}</div>
+                                    <div className="table-body-cell">{gameChannel}</div>
+                                    </div>
+                             </div>
                         </div>
                         <StartForm User={user1} Color={color1} RoomID={roomId} SetColorUser={setUserCol}/>
                     </div>
                 </div>
             </div>
-     </div>)
+            </div>
+            <div className="resp-table-body">
+                {messages.map((item, i) => (
+                    <div className="resp-table-row">
+                        <div className="table-body-cell">{item.user}</div>
+                        <div className="table-body-cell">{item.msg}</div>
+                    </div>
+                ))}
+            </div>
+    </div>
+            )
 
 }
 export default GamePage
