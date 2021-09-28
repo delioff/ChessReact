@@ -49,7 +49,7 @@ function publishMessage(from, to, channel, user) {
     });
     let messageObject = {
         text: JSON.stringify({ from: from, to: to, user: user }),
-        uuid: user
+        user: user
     };
 
     pubnub.publish({

@@ -125,7 +125,12 @@
 .column {
     flex: 50%;
  }
-
+.log {
+    width: 100%;
+    height: 100px;
+    overflow-x: scroll;
+    background-color:yellow;
+}
 .resp-table {
     width: 100%;
     display: table;

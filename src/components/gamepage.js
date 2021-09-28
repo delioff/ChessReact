@@ -50,6 +50,9 @@ function GamePage() {
     const handleMessage = event => {
         const message = event.message;
         const chanellname = event.channel;
+        if (message.user !== user1) {
+            setUser2(message.user)
+        }
         if (chanellname === gameChannel) {
             if (typeof message === 'string' || message.hasOwnProperty('text')) {
                 const text = message.text || message;
@@ -60,13 +63,12 @@ function GamePage() {
             }
         }
         if (chanellname === lobbyChannel) {
-            if (message.user !== user1) {
-                setUser2(message.user)
-            }
-            if (message.cmd == "JOIN") {
+            let newMessages = [message];
+            setMessages(messages => messages.concat(newMessages));
+            if (message.cmd === "JOIN") {
                 setgameChannel('chessgame--' + roomId)
             }
-            if (message.cmd == "UNDO" && message.user !== user1) {
+            if (message.cmd === "UNDO" && message.user !== user1) {
                 Swal.fire({
                     title: "Your oponent want's undo last move!",
                     text: "Do you agree?",
@@ -82,12 +84,12 @@ function GamePage() {
                                 cmd: "ACCEPTUNDO",
                                 user: user1
                             },
-                            channel: 'chesslobby--' + roomId
+                            channel: lobbyChannel
                         })
                     }
                 })
             }
-            if (message.cmd == "NENGAME" && message.user !== user1) {
+            if (message.cmd === "NEWGAME" && message.user !== user1) {
                 Swal.fire({
                     title: "Your oponent want's new game!",
                     text: "Do you agree?",
@@ -102,16 +104,16 @@ function GamePage() {
                             message: {
                                 cmd: "ACCEPTNEWGAME",
                                 user: user1,
-                                msg: "New game accepted"
+                                msg: " New game accepted"
                             },
-                            channel: 'chesslobby--' + roomId
+                            channel: lobbyChannel
                         })
                     }
                 })}
-            if (message.cmd == "ACCEPTNEWGAME") {
+            if (message.cmd === "ACCEPTNEWGAME") {
                 resetGame()
             }
-            if (message.cmd == "ACCEPTUNDO") {
+            if (message.cmd === "ACCEPTUNDO") {
                 unduLastMove()
             }
         }
@@ -122,24 +124,6 @@ function GamePage() {
             channels: [lobbyChannel, gameChannel],
             withPresence: true // Checks the number of people in the channel
         });
-        pubnub.history(
-            {
-                channel: lobbyChannel,
-                count: 10, // 100 is the default
-                stringifiedTimeToken: true // false is the default
-            }, function (status, response) {
-                let newMessages = [];
-                if (response && response.messages) {
-                    for (let i = 0; i < response.messages.length; i++) {
-                        newMessages.push({
-                            user: response.messages[i].entry.user,
-                            msg: response.messages[i].entry.msg
-                        });
-                    }
-                    setMessages(messages => messages.concat(newMessages));
-                }
-            }
-        );
         if (room) joinRoom(room, user1);
         return function cleanup() {
             pubnub.unsubscribeAll();
@@ -174,14 +158,32 @@ function GamePage() {
     }
     // Create a room channel
     const onPressUndo = (e) => {
-        pubnub.publish({
-            message: {
-                cmd: "UNDO",
-                user: user1,
-                msg:user1+"whant's undo last move"
-            },
-            channel: 'chesslobby--' + roomId
-        });
+        if (!((turn === "TURN WHITE" && color1 === "White") || (turn === "TURN BLACK" && color1 === "Black"))) {
+            pubnub.publish({
+                message: {
+                    cmd: "UNDO",
+                    user: user1,
+                    msg: " whant's undo last move"
+                },
+                channel: 'chesslobby--' + roomId
+            });
+        }
+        else {
+            Swal.fire({
+                position: 'top',
+                allowOutsideClick: false,
+                title: "Can't UNDO at this stage",
+                width: 275,
+                padding: '0.7em',
+                // Custom CSS
+                customClass: {
+                    heightAuto: false,
+                    title: 'title-class',
+                    popup: 'popup-class',
+                    confirmButton: 'button-class'
+                }
+            })
+        }
     }
     // Create a room channel
     const onPressNewGame = (e) => {
@@ -189,7 +191,7 @@ function GamePage() {
             message: {
                 cmd: "NEWGAME",
                 user: user1,
-                msg: user1 + "whant's new game"
+                msg:  " whant's new game"
             },
             channel: 'chesslobby--' + roomId
         });
@@ -254,7 +256,7 @@ function GamePage() {
                     message: {
                         cmd:"JOIN",
                         user:user,
-                        msg: user + "join the game"
+                        msg: " join the game"
                     },
                     channel: 'chesslobby--' + value
                 });
@@ -411,7 +413,7 @@ function GamePage() {
                 </div>
             </div>
             </div>
-            <div className="resp-table-body">
+            <div className="log">
                 {messages.map((item, i) => (
                     <div className="resp-table-row">
                         <div className="table-body-cell">{item.user}</div>
