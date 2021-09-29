@@ -72,6 +72,9 @@ export function move(from, to, promotion) {
 
 export function updateGame(pendingPromotion) {
     const isGameOver = chess.game_over()
+    const currgame = gameSubject.getValue()
+    const curruserscore1 = currgame && currgame.user1score ? currgame.user1score : 0
+    const curruserscore2 = currgame && currgame.user2score ? currgame.user2score : 0
     const newGame = {
         board: chess.board(),
         pendingPromotion,
@@ -80,9 +83,21 @@ export function updateGame(pendingPromotion) {
         result: isGameOver ? getGameResult() : null,
         history: chess.history({ verbose: true }),
         incheck: getin_check(),
+        user1score: curruserscore1 + getPointResult("w"),
+        user2score: curruserscore2 + getPointResult("b")
     }
     //localStorage.setItem('savedGame', chess.fen())
     gameSubject.next(newGame)
+}
+function getPointResult(color) {
+    if (chess.in_checkmate()) {
+        const winner = chess.turn() === color ? 0 : 1
+        return winner
+    } else if (chess.in_draw()) {
+        return 0.5
+    } else {
+        return 0
+    }
 }
 function getGameResult() {
     if (chess.in_checkmate()) {

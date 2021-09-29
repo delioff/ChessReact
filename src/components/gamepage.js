@@ -33,6 +33,8 @@ function GamePage() {
     const [roomId, setroomId] = useState(room);
     const [isDisabled, setisDisabled] = useState(false);
     const [messages, setMessages] = useState([]);
+    const [user1score, setuser1score] = useState(0);
+    const [user2score, setuser2score] = useState(0);
     useEffect(() => {
         initGame()
         const subscribe = gameSubject.subscribe((game) => {
@@ -42,6 +44,8 @@ function GamePage() {
             setTurn(game.turn)
             setHistory(game.history)
             setIncheck(game.incheck)
+            setuser1score(game.user1score)
+            setuser2score(game.user2score)
         })
         return () => subscribe.unsubscribe()
     }, [])
@@ -360,12 +364,8 @@ function GamePage() {
                                 Table {roomId}
                             </div>
                             <div className="resp-table-header">
-                                <div className="table-header-cell">{color1 === "White" ? user1 : user2}</div>
-                                <div className="table-header-cell">{color1 === "White" ? user2 : user1}</div>
-                            </div>
-                            <div className="resp-table-header">
-                                <div className="table-header-cell">"White"</div>
-                                <div className="table-header-cell">"Black"</div>
+                                <div className="table-header-cell">White</div>
+                                <div className="table-header-cell">Black</div>
                             </div>
                             <div className="resp-table-body">
                                 {inf.map((item, i) => (
@@ -401,25 +401,54 @@ function GamePage() {
                                 > Join
                                 </button>
                             </div>
-                            <div className="resp-table-body">
-                                <div className="resp-table-row">
-                                    <div className="table-body-cell">{lobbyChannel}</div>
-                                    <div className="table-body-cell">{gameChannel}</div>
-                                    </div>
-                             </div>
+                           
                         </div>
-                        <StartForm User={user1} Color={color1} RoomID={roomId} SetColorUser={setUserCol}/>
+                        
                     </div>
                 </div>
             </div>
             </div>
+            <div className="scoreboard">
+                <div className="resp-table">
+                    <div className="resp-table-caption">
+                        Score
+                    </div>
+                    <div className="resp-table-header">
+                        <div className="table-header-cell">{color1 === "White" ? user1 +" White" : user2 +"White"}</div>
+                        <div className="table-header-cell">{color1 === "White" ? user2 +" Black": user1+" Black"}</div>
+                     </div>
+                    <div className="resp-table-header">
+                        <div className="table-header-cell">{user1score}</div>
+                        <div className="table-header-cell">{user2score}</div>
+                    </div>
+                 </div>
+                <StartForm User={user1}
+                    Color={color1}
+                    RoomID={roomId}
+                    IsDisabled={isDisabled}
+                    SetColorUser={setUserCol} />
+                <div className="resp-table">
+                    <div className="resp-table-body">
+                        <div className="resp-table-row">
+                            <div className="table-body-cell">Channels</div>
+                            <div className="table-body-cell">{lobbyChannel}</div>
+                            <div className="table-body-cell">{gameChannel}</div>
+                        </div>
+                    </div>
+                </div>
+             </div>
             <div className="log">
+                <div className="resp-table">
+                    <div className="resp-table-caption">
+                        Game log
+                    </div>
                 {messages.map((item, i) => (
                     <div className="resp-table-row">
                         <div className="table-body-cell">{item.user}</div>
                         <div className="table-body-cell">{item.msg}</div>
                     </div>
                 ))}
+                </div>
             </div>
     </div>
             )
