@@ -62,7 +62,7 @@ function GamePage() {
                 const text = message.text || message;
                 if (text) {
                     const mes = JSON.parse(text);
-                    handleMove(mes.from, mes.to, false);
+                    handleMove(mes.from, mes.to, false, "", "", mes.promotion);
                 }
             }
         }
@@ -200,9 +200,9 @@ function GamePage() {
             channel: 'chesslobby--' + roomId
         });
     }
-    const handleBaseMove = (fromPosition, position) => {
+    const handleBaseMove = (fromPosition, position,promotion) => {
         if ((turn === "TURN WHITE" && color1 === "White") || (turn === "TURN BLACK" && color1 === "Black")) {
-            handleMove(fromPosition, position, true, gameChannel, user1)
+            handleMove(fromPosition, position, true, gameChannel, user1, promotion)
         }
         else {
             Swal.fire({

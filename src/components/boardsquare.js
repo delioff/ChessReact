@@ -33,7 +33,7 @@ export default function BoardSquare({
         <div className="board-square" ref={drop}>
             <Square black={black}>
                 {promotion ? (
-                    <Promote promotion={promotion} />
+                    <Promote promotion={promotion} handlemove={handlemove} />
                 ) : piece ? (
                     <Piece piece={piece} position={position} />
                 ) : null}

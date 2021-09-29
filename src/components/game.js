@@ -25,9 +25,12 @@ export function unduLastMove() {
     updateGame();
 }
 
-export function handleMove(from, to, frompush,channel,user) {
-    const userinfo = JSON.parse(localStorage.getItem('userinfo'));
-    if ((userinfo.color === "White" && chess.turn === "b") || (userinfo.color === "Black" && chess.turn === "w")) return;
+export function handleMove(from, to, frompush, channel, user, promotion) {
+    if (promotion) {
+        move(from, to, promotion)
+        if (frompush) publishMessage(from, to, channel, user, promotion);
+        return;
+    }
     const promotions = chess.moves({ verbose: true }).filter(m => m.promotion)
     if (promotions.some(p => `${p.from}:${p.to}` === `${from}:${to}`)) {
         const pendingPromotion = { from, to, color: promotions[0].color }
@@ -41,14 +44,14 @@ export function handleMove(from, to, frompush,channel,user) {
     }
 }
 //Publishing messages via PubNub
-function publishMessage(from, to, channel, user) {
+function publishMessage(from, to, channel, user,promotion) {
     const pubnub = new PubNub({
         publishKey: "pub-c-e0419b3b-6aa9-4e4f-af8a-8dc193d1805a",
         subscribeKey: "sub-c-ee3e0f22-18b4-11ec-901d-e20c06117408",
         uuid: user
     });
     let messageObject = {
-        text: JSON.stringify({ from: from, to: to, user: user }),
+        text: JSON.stringify({ from: from, to: to, user: user, promotion: promotion }),
         user: user
     };
 

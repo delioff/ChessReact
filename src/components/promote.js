@@ -1,11 +1,10 @@
 import React from 'react'
 import Square from './square'
-import { move } from './game'
 import { retimages } from './images'
 const promotionPieces = ['r', 'n', 'b', 'q']
 
 export default function Promote({
-    promotion: { from, to, color },
+    promotion: { from, to, color,},handlemove
 }) {
     return (
         <div className="board">
@@ -14,7 +13,7 @@ export default function Promote({
                     <Square black={i % 3 === 0}>
                         <div
                             className="piece-container"
-                            onClick={() => move(from, to, p)}
+                            onClick={() => handlemove(from, to, p)}
                         >
                             <img
                                 src={retimages(p,color)}
