@@ -9,7 +9,8 @@ export default function BoardSquare({
     piece,
     black,
     position,
-    handlemove
+    handlemove,
+    handleclick
  }) {
     const [promotion, setPromotion] = useState(null);
     const [, drop] = useDrop({
@@ -29,8 +30,11 @@ export default function BoardSquare({
         )
         return () => subscribe.unsubscribe()
     }, [position])
+    function handlelocalclick() {
+        handleclick(position)
+    }
     return (
-        <div className="board-square" ref={drop}>
+        <div className="board-square" ref={drop} onClick={handlelocalclick}>
             <Square black={black}>
                 {promotion ? (
                     <Promote promotion={promotion} handlemove={handlemove} />

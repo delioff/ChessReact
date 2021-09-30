@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import BoardSquare from './boardsquare1'
 export default function Board({ board,handlemove}) {
     const [currBoard, setCurrBoard] = useState([])
+    const [currSelection, setCurrSelection] = useState(null)
     useEffect(() => {
         setCurrBoard(
             board.flat()
@@ -27,6 +28,15 @@ export default function Board({ board,handlemove}) {
         ]
         return `${letter}${y + 1}`
     }
+    function handleclick(fromto) {
+        if (currSelection) {
+            handlemove(currSelection, fromto)
+            setCurrSelection(null);
+        }
+        else {
+            setCurrSelection(fromto);
+        }
+    }
     return (
         <div className="board">
             {currBoard.map((piece, i) => (
@@ -36,6 +46,7 @@ export default function Board({ board,handlemove}) {
                         black={isBlack(i)}
                         position={getPosition(i)}
                         handlemove={handlemove}
+                        handleclick={handleclick}
                     />
                 </div>
             ))}
