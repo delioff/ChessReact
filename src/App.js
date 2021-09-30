@@ -8,6 +8,7 @@ import Footer from './components/foother'
 import PubNub from 'pubnub';
 import { PubNubProvider} from 'pubnub-react';
 
+
 const App = () => {
     const pubnub = new PubNub({
         publishKey: "pub-c-e0419b3b-6aa9-4e4f-af8a-8dc193d1805a",
@@ -30,7 +31,7 @@ const Navigation = () => (
     
     <nav>
         <ul>
-            <li><NavLink exact activeClassName="current" to='/'>Trenning</NavLink></li>
+            <li><NavLink exact activeClassName="current" to='/'>Training</NavLink></li>
             <li><NavLink exact activeClassName="current" to='/game'>Game</NavLink></li>
             <li><NavLink exact activeClassName="current" to='/chat'>Chat</NavLink></li>
         </ul>
