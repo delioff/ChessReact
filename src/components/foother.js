@@ -16,7 +16,7 @@ const Footer = () => {
                 textAlign: "center",
                 marginTop: "-50px"
             }}>
-                Oncle Tony: React Chess
+                uncle Tony: React Chess
             </h1>
             <Container>
                 <Row>

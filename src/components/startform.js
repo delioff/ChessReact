@@ -1,4 +1,69 @@
-import React, { useEffect, useState }  from 'react';
+﻿import React, { useEffect, useState } from 'react';
+
+const expanderStyle = {
+    margin: '6px 0',
+    padding: '2px',
+    border: '1px solid #85C1E9'
+};
+
+const headerStyle = {
+    display: 'flex',
+    cursor: 'pointer'
+};
+
+const titleStyle = {
+    padding: '3px',
+    flex: 'none'
+};
+
+const spacerStyle = {
+    flex: '1'
+};
+
+const iconStyle = {
+    padding: '3px',
+    flex: 'none'
+};
+
+const contentStyle = {
+    overflow: 'hidden',
+    transition: 'all 0.3s'
+};
+
+const contentExpandedStyle = {
+    ...contentStyle,
+    padding: '4px 0',
+    border: '1px solid #85C1E9',
+    height: 'auto',
+    filter: 'opacity(1)'
+};
+
+const contentCollapsedStyle = {
+    ...contentStyle,
+    padding: '0 0',
+    border: '1px solid transparent',
+    height: '0',
+    filter: 'opacity(0)'
+};
+
+const Expander = ({ title, children }) => {
+    const [expanded, setExpanded] = React.useState(false);
+    const handleHeaderClick = () => {
+        setExpanded(expanded => !expanded);
+    };
+    return (
+        <div style={expanderStyle}>
+            <div style={headerStyle} onClick={handleHeaderClick}>
+                <div style={titleStyle}>{title}</div>
+                <div style={spacerStyle} />
+                <div style={iconStyle}>{expanded ? '🔺' : '🔻'}</div>
+            </div>
+            <div style={expanded ? contentExpandedStyle : contentCollapsedStyle}>
+                {children}
+            </div>
+        </div>
+    );
+};
 export default function StartForm({ User, Color, RoomID, SetColorUser, IsDisabled }) {
     const [luser, setLuser] = useState();
     const [lcolor, setLcolor] = useState();
@@ -41,51 +106,39 @@ export default function StartForm({ User, Color, RoomID, SetColorUser, IsDisable
  
     }
 
-    //const handleSubmit=(event) => {
-    //    event.preventDefault();
-    //    localStorage.setItem(
-    //        'userinfo', JSON.stringify({
-    //            username: luser,
-    //            color: lcolor,
-    //        }));
-    //}
+    const handleSubmit=(event) => {
+        event.preventDefault();
+        localStorage.setItem(
+            'userinfo', JSON.stringify({
+                username: luser,
+                color: lcolor,
+            }));
+    }
     
 
     return (
-        
-            <div className="resp-table">
-            <div className="resp-table-body">
-                <div className="table-body-cell">Current Player</div>
-                <div className="table-body-cell">                      
-                        <input type="text" name="username" value={luser} onChange={handleChange} />
-                </div>
-                <div className="table-body-cell">Color</div>
-                <div className="table-body-cell">
-
+        <Expander title="Currentplayer details">
+            <form onSubmit={handleSubmit}>
+                <label>
+                    Current Player:
+                    <input type="text" name="username" value={luser} onChange={handleChange} />
+                </label>
+                <label>
+                    Color:
                     <select name="color" value={lcolor} onChange={handleChange} disabled={isDisabled}>
                         <option value="White">White</option>
                         <option value="Black">Black</option>
                     </select>
-                   
-                </div>
-                
-               {/*<div className="table-body-cell">  <button onClick={handleSubmit}>*/}
-               {/*     <span>Save in local storage</span>*/}
-               {/* </button></div>*/}
-                
-            </div >
-            <div className="resp-table-body">
-                <div className="table-body-cell">Scan qrcode to join by mobile</div>
-                <div className="table-body-cell">
-                    <img src={qrCode} alt="" />
-                </div>
-                <div className="table-body-cell">Invitation link</div>
-                <div className="table-body-cell">
+                </label>
+                <label>
+                    Invitation link:
                     <input type="text" name="link" value={url} />
-                </div>
-                
-            </div>
-            </div >
+                </label>
+                <img src={qrCode} alt="" />
+                <input type="submit" value="Submit" />
+            </form>
+           
+        </Expander>
         );
    
 }

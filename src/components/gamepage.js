@@ -27,11 +27,14 @@ function GamePage() {
     const [incheck, setIncheck] = useState()
     const [user1,setUser1] = useState(localuser);
     const [color1, setColor1] = useState(color);
-    const [user2, setUser2] = useState(ouser);
+    const [user2, setUser2] = useState(ouser ? ouser :"Opponent");
     const [lobbyChannel, setlobbyChannel] = useState('chesslobby--'+room);
     const [gameChannel, setgameChannel] = useState('chessgame--'+room);
     const [roomId, setroomId] = useState(room);
     const [isDisabled, setisDisabled] = useState(false);
+    const [isDisabledUndo, setisDisabledUndo] = useState(false);
+    const [isDisabledJoin, setisDisabledJoin] = useState(ouser ? true:false);
+    const [isDisabledNewGame, setisDisabledNewGame] = useState(false);
     const [messages, setMessages] = useState([]);
     const [user1score, setuser1score] = useState(0);
     const [user2score, setuser2score] = useState(0);
@@ -86,7 +89,18 @@ function GamePage() {
                         pubnub.publish({
                             message: {
                                 cmd: "ACCEPTUNDO",
-                                user: user1
+                                user: user1,
+                                msg: " Undo accepted"
+                            },
+                            channel: lobbyChannel
+                        })
+                    }
+                    else {
+                        pubnub.publish({
+                            message: {
+                                cmd: "NOTACCEPTUNDO",
+                                user: user1,
+                                msg: " Undo aborted"
                             },
                             channel: lobbyChannel
                         })
@@ -113,12 +127,30 @@ function GamePage() {
                             channel: lobbyChannel
                         })
                     }
+                    else {
+                        pubnub.publish({
+                            message: {
+                                cmd: "NOTACCEPTNEWGAME",
+                                user: user1,
+                                msg: " New game aborted"
+                            },
+                            channel: lobbyChannel
+                        })
+                    }
                 })}
             if (message.cmd === "ACCEPTNEWGAME") {
                 resetGame()
+                setisDisabledNewGame(false)
             }
             if (message.cmd === "ACCEPTUNDO") {
                 unduLastMove()
+                setisDisabledUndo(false)
+            }
+            if (message.cmd === "NOTACCEPTNEWGAME") {
+                setisDisabledNewGame(false)
+            }
+            if (message.cmd === "NOTACCEPTUNDO") {
+                setisDisabledUndo(false)
             }
         }
     };
@@ -171,6 +203,7 @@ function GamePage() {
                 },
                 channel: 'chesslobby--' + roomId
             });
+            setisDisabledUndo(true);
         }
         else {
             Swal.fire({
@@ -199,6 +232,7 @@ function GamePage() {
             },
             channel: 'chesslobby--' + roomId
         });
+        setisDisabledNewGame(true);
     }
     const handleBaseMove = (fromPosition, position,promotion) => {
         if ((turn === "TURN WHITE" && color1 === "White") || (turn === "TURN BLACK" && color1 === "Black")) {
@@ -306,10 +340,12 @@ function GamePage() {
     }
     return (
         <div>
-        <div className="row">
-            <div className="column">
-
-                <div className="container">
+            <StartForm User={user1}
+                Color={color1}
+                RoomID={roomId}
+                IsDisabled={isDisabled}
+                SetColorUser={setUserCol} />
+             <div className="container">
 
                     <h2 className="vertical-text">
                         {isGameOver && ("GAME OVER")}
@@ -353,104 +389,126 @@ function GamePage() {
                     </div>
 
                 </div>
-
-
-            </div>
-            <div className="column">
-                <div className="itemcontainer">
-                    <div className="info-container">
-                        <div className="resp-table">
-                            <div className="resp-table-caption">
-                                Table {roomId}
-                            </div>
-                            <div className="resp-table-header">
-                                <div className="table-header-cell">White</div>
-                                <div className="table-header-cell">Black</div>
-                            </div>
-                            <div className="resp-table-body">
-                                {inf.map((item, i) => (
-                                    <div className="resp-table-row">
-                                        {item.w}
-                                        {item.b}
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="resp-table-footer">
-                                <div className="table-footer-cell">
-                                    <button onClick={(e) => onPressNewGame()} >
-                                        <span>NEW GAME</span>
-                                    </button>
-                                 </div>
-                                 <div className="table-footer-cell">
-                                  
-                                    <button onClick={(e) => onPressUndo()}>
-                                       <span>UNDO</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="resp-table-footer">
-                                <div className="table-footer-cell"><button
-                                    className="create-button "
-                                    onClick={(e) => onPressCreate()}
-                                    disabled={isDisabled}
-                                > Create
-                                </button></div>
-                                <button
-                                    className="join-button"
-                                    onClick={(e) => onPressJoin()}
-                                > Join
-                                </button>
-                            </div>
-                           
-                        </div>
-                        
-                    </div>
-                </div>
-            </div>
-            </div>
-            <div className="scoreboard">
+             <div>
                 <div className="resp-table">
-                    <div className="resp-table-caption">
+                    <div className="resp-table-header">
+                        <div className="table-header-cell">
                         Score
+                        </div>
+                        <div className="table-header-cell">
+                            
+                            <div className="board-square">
+                                <div className="square-user-white">{user1score}</div>
+                             </div>
+     
+                        </div>
+                        <div className="table-header-cell">{color1 === "White" ? user1 : user2}</div>
+                        <div className="table-header-cell">
+                           
+                            <div className="board-square">
+                                <div className="square-user-black">{user2score}</div>
+                             </div>
+                            
+                        </div>
+                        <div className="table-header-cell">{color1 === "White" ? user2 : user1}</div>
                     </div>
-                    <div className="resp-table-header">
-                        <div className="table-header-cell">{color1 === "White" ? user1 +" White" : user2 +"White"}</div>
-                        <div className="table-header-cell">{color1 === "White" ? user2 +" Black": user1+" Black"}</div>
-                     </div>
-                    <div className="resp-table-header">
-                        <div className="table-header-cell">{user1score}</div>
-                        <div className="table-header-cell">{user2score}</div>
+                    <div className="resp-table-footer">
+                        <div className="table-header-cell">
+                            Actions
+                        </div>
+                        <div className="table-footer-cell">
+                            <button className="buttongreen"
+                                onClick={(e) => onPressNewGame()}
+                                disabled={isDisabledNewGame}
+                            >
+                                NEW GAME
+                            </button>
+                        </div>
+                        <div className="table-footer-cell">
+
+                            <button
+                                className="buttongreen"
+                                onClick={(e) => onPressUndo()}
+                                disabled={isDisabledUndo}                            >
+                                UNDO
+                            </button>
+                        </div>
+                        <div className="table-footer-cell">
+                        <button
+                            className="buttongreen"
+                            onClick={(e) => onPressCreate()}
+                            disabled={isDisabled}
+                        > CREATE
+                        </button></div>
+                        <button
+                            className="buttongreen"
+                            onClick={(e) => onPressJoin()}
+                            disabled={isDisabledJoin}
+                        > JOIN
+                        </button>
                     </div>
                  </div>
-                <StartForm User={user1}
-                    Color={color1}
-                    RoomID={roomId}
-                    IsDisabled={isDisabled}
-                    SetColorUser={setUserCol} />
-                <div className="resp-table">
-                    <div className="resp-table-body">
-                        <div className="resp-table-row">
-                            <div className="table-body-cell">Channels</div>
-                            <div className="table-body-cell">{lobbyChannel}</div>
-                            <div className="table-body-cell">{gameChannel}</div>
-                        </div>
-                    </div>
-                </div>
+                
+               
              </div>
-            <div className="log">
-                <div className="resp-table">
-                    <div className="resp-table-caption">
-                        Game log
+             <div className="log">
+                <div className="row">
+                    <div className="column">
+                        <div className="resp-table">
+                            <div className="resp-table-caption">
+                                Game log
+                            </div>
+                        {messages.map((item, i) => (
+                            <div className="resp-table-row">
+                                <div className="table-body-cell">{i}</div>
+                                <div className="table-body-cell">{item.user}</div>
+                                <div className="table-body-cell">{item.msg}</div>
+                            </div>
+                        ))}
+                                        
+                                    <div className="resp-table-row">
+                                        <div className="table-body-cell">Channels</div>
+                                        <div className="table-body-cell">{lobbyChannel}</div>
+                                        <div className="table-body-cell">{gameChannel}</div>
+                                    </div>
+                               
+                            
+                        </div>
+                  </div>
+                    <div className="column">
+                    
+                            <div className="resp-table">
+                                <div className="resp-table-caption">
+                                    Table {roomId}
+                                </div>
+                                
+                            <div className="resp-table-body">
+                                <div className="resp-table-row">
+                                    <div className="table-body-cell">
+                                        <div className="board-square">
+                                            <div className="square-user-white"></div>
+                                        </div>
+                                    </div>
+                                    <div className="table-body-cell">
+                                        <div className="board-square">
+                                            <div className="square-user-black"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                    {inf.map((item, i) => (
+                                        <div className="resp-table-row">
+                                            {item.w}
+                                            {item.b}
+                                        </div>
+                                    ))}
+                                </div>
+
+
+                            </div>
                     </div>
-                {messages.map((item, i) => (
-                    <div className="resp-table-row">
-                        <div className="table-body-cell">{item.user}</div>
-                        <div className="table-body-cell">{item.msg}</div>
-                    </div>
-                ))}
-                </div>
-            </div>
-    </div>
+                 </div>
+             </div>
+         </div>
             )
 
 }

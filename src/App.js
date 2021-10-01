@@ -15,7 +15,7 @@ const App = () => {
         subscribeKey: "sub-c-ee3e0f22-18b4-11ec-901d-e20c06117408",
     });
     return(<div className='app'>
-        <h1>Chess by oncle Tony</h1>
+        <h1>Chess by uncle Tony</h1>
         <Router>
             <Navigation />
             <PubNubProvider client={pubnub}>
