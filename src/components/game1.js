@@ -57,7 +57,18 @@ function publishMessage(from, to, channel, user) {
         channel: channel
     });
 }
-
+export function loadGame(gamename) {
+    const savedGame = localStorage.getItem(gamename)
+    if (savedGame) {
+        chess.load(savedGame)
+        updateGame()
+        return true
+    }
+    else return false
+}
+export function saveGame(gamename) {
+    localStorage.setItem(gamename, chess.fen())
+}
 export function move(from, to, promotion) {
     let tempMove = { from, to }
     if (promotion) {

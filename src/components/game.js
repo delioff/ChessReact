@@ -60,7 +60,31 @@ function publishMessage(from, to, channel, user,promotion) {
         channel: channel
     });
 }
-
+export function loadGame(gamename) {
+    const savedGame = localStorage.getItem(gamename)
+    if (savedGame) {
+        chess.load(savedGame)
+        updateGame()
+        return true
+    }
+    else return false
+}
+export function loadFen(gamename) {
+    try {
+        chess.load(gamename)
+        updateGame()
+    }
+    catch (e) {
+        return false
+    }
+    return true
+}
+export function showFen(gamename) {
+    return chess.fen();
+}
+export function saveGame(gamename) {
+    localStorage.setItem(gamename, chess.fen())
+}
 export function move(from, to, promotion) {
     let tempMove = { from, to }
     if (promotion) {

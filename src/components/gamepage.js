@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { gameSubject, initGame, handleMove, resetGame, unduLastMove} from './game'
+import { gameSubject, initGame, handleMove, resetGame, unduLastMove,saveGame,loadGame,loadFen,showFen} from './game'
 import inforow from './inforow'
 import Board from './board'
 import Coord from './coord'
@@ -255,27 +255,137 @@ function GamePage() {
             })
         }
     }
-      
-    // The 'Join' button was pressed
-    const onPressJoin = (e) => {
+
+    const onPressLF = (e) => {
         Swal.fire({
-            title: 'Enter roomid and playername',
+            title: 'Enter Fen',
             html:
-                '<input id="swal-input1" class="swal2-input">' +
-                '<input id="swal-input2" class="swal2-input">',
+                '<input id="swal-input1" class="swal2-input">',
             focusConfirm: false,
             preConfirm: () => {
                 return {
-                    room:document.getElementById('swal-input1').value,
-                    user:document.getElementById('swal-input2').value
+                    filename: document.getElementById('swal-input1').value,
+
                 }
             }
         }).then((formValues) => {
             if (formValues.value) {
-                joinRoom(formValues.value.room, formValues.value.user);
-         }})
+                if (!loadFen(formValues.value.filename)) {
+                    // Game in progress
+                    Swal.fire({
+                        position: 'top',
+                        allowOutsideClick: false,
+                        title: 'Error',
+                        text: 'Game ' + formValues.value.filename + ' not valid fen. Try another name.',
+                        width: 275,
+                        padding: '0.7em',
+                        customClass: {
+                            heightAuto: false,
+                            title: 'title-class',
+                            popup: 'popup-class',
+                            confirmButton: 'button-class'
+                        }
+                    })
+                }
+            }
+        })
+    }
+    // Create a room channel
+    const onPressSF = (e) => {
+        // Create a random name for the channel
+        
+        // Open the modal
+        Swal.fire({
+            position: 'top',
+            allowOutsideClick: false,
+            title: 'Share this room ID with your friend',
+            text: showFen(),
+            width: 275,
+            padding: '0.7em',
+            // Custom CSS
+            customClass: {
+                heightAuto: false,
+                title: 'title-class',
+                popup: 'popup-class',
+                confirmButton: 'button-class'
+            }
+        })
+        // set some staff here 
+    }
+    //// The 'Join' button was pressed
+    //const onPressJoin = (e) => {
+    //    Swal.fire({
+    //        title: 'Enter roomid and playername',
+    //        html:
+    //            '<input id="swal-input1" class="swal2-input">' +
+    //            '<input id="swal-input2" class="swal2-input">',
+    //        focusConfirm: false,
+    //        preConfirm: () => {
+    //            return {
+    //                room:document.getElementById('swal-input1').value,
+    //                user:document.getElementById('swal-input2').value
+    //            }
+    //        }
+    //    }).then((formValues) => {
+    //        if (formValues.value) {
+    //            joinRoom(formValues.value.room, formValues.value.user);
+    //     }})
 
         
+    //}
+    // The 'Save' button was pressed
+    const onPressSave = (e) => {
+        Swal.fire({
+            title: 'Enter name of the game',
+            html:
+                '<input id="swal-input1" class="swal2-input">',
+            focusConfirm: false,
+            preConfirm: () => {
+                return {
+                    filename: document.getElementById('swal-input1').value,
+                    
+                }
+            }
+        }).then((formValues) => {
+            if (formValues.value) {
+                saveGame(formValues.value.filename);
+            }
+        })
+    }
+    // The 'Load' button was pressed
+    const onPressLoad = (e) => {
+        Swal.fire({
+            title: 'Enter name of the game',
+            html:
+                '<input id="swal-input1" class="swal2-input">',
+            focusConfirm: false,
+            preConfirm: () => {
+                return {
+                    filename: document.getElementById('swal-input1').value,
+
+                }
+            }
+        }).then((formValues) => {
+            if (formValues.value) {
+                if (!loadGame(formValues.value.filename)) {
+                    // Game in progress
+                    Swal.fire({
+                        position: 'top',
+                        allowOutsideClick: false,
+                        title: 'Error',
+                        text: 'Game ' + formValues.value.filename +' not found. Try another name.',
+                        width: 275,
+                        padding: '0.7em',
+                        customClass: {
+                            heightAuto: false,
+                            title: 'title-class',
+                            popup: 'popup-class',
+                            confirmButton: 'button-class'
+                        }
+                    })
+                }
+            }
+        })
     }
     const setUserCol = (user, col) => { setUser1(user); setColor1(col);}
     // Join a room channel
@@ -413,9 +523,6 @@ function GamePage() {
                         <div className="table-header-cell">{color1 === "White" ? user2 : user1}</div>
                     </div>
                     <div className="resp-table-footer">
-                        <div className="table-header-cell">
-                            Actions
-                        </div>
                         <div className="table-footer-cell">
                             <button className="buttongreen"
                                 onClick={(e) => onPressNewGame()}
@@ -423,9 +530,6 @@ function GamePage() {
                             >
                                 NEW GAME
                             </button>
-                        </div>
-                        <div className="table-footer-cell">
-
                             <button
                                 className="buttongreen"
                                 onClick={(e) => onPressUndo()}
@@ -434,18 +538,37 @@ function GamePage() {
                             </button>
                         </div>
                         <div className="table-footer-cell">
-                        <button
-                            className="buttongreen"
-                            onClick={(e) => onPressCreate()}
-                            disabled={isDisabled}
-                        > CREATE
-                        </button></div>
-                        <button
-                            className="buttongreen"
-                            onClick={(e) => onPressJoin()}
-                            disabled={isDisabledJoin}
-                        > JOIN
-                        </button>
+                            <button
+                                className="buttongreen"
+                                onClick={(e) => onPressCreate()}
+                                disabled={isDisabled}
+                            > CREATE
+                            </button>
+                        </div>
+                        <div className="table-footer-cell">
+                            <button
+                                className="buttongreen"
+                                onClick={(e) => onPressLF()}
+                                
+                            > LOAD FROM FEN
+                                </button><button
+                                className="buttongreen"
+                                onClick={(e) => onPressSF()}
+                               
+                            > SHOW FEN
+                                </button>
+                        </div>
+                        <div className="table-footer-cell"><button
+                                className="buttongreen"
+                                onClick={(e) => onPressSave()}
+                            > SAVE
+                            </button>
+                            <button
+                                className="buttongreen"
+                                onClick={(e) => onPressLoad()}
+                            > LOAD
+                                </button>
+                        </div>
                     </div>
                  </div>
                 
