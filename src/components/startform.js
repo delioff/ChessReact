@@ -76,9 +76,9 @@ export default function StartForm({ User, Color, RoomID, SetColorUser, IsDisable
         setLuser(User);
         setLroomid(RoomID);
         setisDisabled(IsDisabled)
-        seturl(window.location.href + "?user=" + User + "&color=" + Color + "&room=" + RoomID)
-        let url1 = encodeURIComponent(window.location.href + "?user=" + User + "&color=" + Color + "&room=" + RoomID)
-        setQrCode(`http://api.qrserver.com/v1/create-qr-code/?data=${url1}!&size=150x150`);
+        seturl(window.location.origin + window.location.pathname + "?user=" + User + "&color=" + Color + "&room=" + RoomID)
+        let url1 = encodeURIComponent(window.location.origin + window.location.pathname + "?user=" + User + "&color=" + Color + "&room=" + RoomID)
+        setQrCode(`http://api.qrserver.com/v1/create-qr-code/?data=${url1}&size=150x150`);
     }, [User, Color, RoomID, IsDisabled])
     const handleChange=(event)=>{
         const value =  event.target.value;
@@ -86,7 +86,7 @@ export default function StartForm({ User, Color, RoomID, SetColorUser, IsDisable
        
         if (name === "username") {
             setLuser(value)
-            seturl(window.location.href + "?user=" + value + "&color=" + lcolor + "&room=" + lroomid)
+            seturl(window.location.origin + window.location.pathname + "?user=" + value + "&color=" + lcolor + "&room=" + lroomid)
             SetColorUser(value, lcolor)
             localStorage.setItem(
                 'userinfo', JSON.stringify({

@@ -503,9 +503,6 @@ function GamePage() {
                 <div className="resp-table">
                     <div className="resp-table-header">
                         <div className="table-header-cell">
-                        Score
-                        </div>
-                        <div className="table-header-cell">
                             
                             <div className="board-square">
                                 <div className="square-user-white">{user1score}</div>
