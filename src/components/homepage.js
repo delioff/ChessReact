@@ -3,7 +3,6 @@ import { gameSubject, initGame, handleMove, resetGame, unduLastMove, saveGame, l
 import inforow from './inforow'
 import Board from './board1'
 import Coord from './coord'
-import NewButton from './newbutton'
 import Swal from "sweetalert2";
 
 function HomePage() {

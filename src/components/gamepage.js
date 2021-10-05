@@ -14,11 +14,14 @@ function GamePage() {
     const search = useLocation().search;
     const ouser = new URLSearchParams(search).get('user');
     const ocolor = new URLSearchParams(search).get('color');
-    const color=ocolor=="White"?"Black":"White" 
     const room= new URLSearchParams(search).get('room')
     const userinfo = JSON.parse(localStorage.getItem('userinfo'));
-    const localuser = userinfo && userinfo.username ? userinfo.username : "You";
+    const localuser = userinfo && userinfo.username ? userinfo.username : "You " + shortid.generate().substring(0, 5);
     const localcolor = userinfo && userinfo.color ? userinfo.color : "White";
+    let color = localcolor;
+    if (ocolor) {
+       color = ocolor === "White" ? "Black" : "White"
+    }
     const [board, setBoard] = useState([])
     const [isGameOver, setIsGameOver] = useState()
     const [result, setResult] = useState()
@@ -33,11 +36,12 @@ function GamePage() {
     const [roomId, setroomId] = useState(room);
     const [isDisabled, setisDisabled] = useState(false);
     const [isDisabledUndo, setisDisabledUndo] = useState(false);
-    const [isDisabledJoin, setisDisabledJoin] = useState(ouser ? true:false);
+    //const [isDisabledJoin, setisDisabledJoin] = useState(ouser ? true:false);
     const [isDisabledNewGame, setisDisabledNewGame] = useState(false);
     const [messages, setMessages] = useState([]);
     const [user1score, setuser1score] = useState(0);
     const [user2score, setuser2score] = useState(0);
+    const [isLooker, setisLooker] = useState(false);
     useEffect(() => {
         initGame()
         const subscribe = gameSubject.subscribe((game) => {
@@ -72,6 +76,7 @@ function GamePage() {
         if (chanellname === lobbyChannel) {
             let newMessages = [message];
             setMessages(messages => messages.concat(newMessages));
+            if (isLooker) return;
             if (message.cmd === "JOIN") {
                 setgameChannel('chessgame--' + roomId)
             }
@@ -154,6 +159,47 @@ function GamePage() {
             }
         }
     };
+    const joinRoom = (value, user) => {
+        // Check the number of people in the channel
+        pubnub.hereNow({
+            channels: ['chesslobby--' + value],
+        }).then((response) => {
+            setroomId(value);
+            setlobbyChannel('chesslobby--' + value);
+            setgameChannel('chessgame--' + value)
+
+            if (response.totalOccupancy < 2) {
+                pubnub.publish({
+                    message: {
+                        cmd: "JOIN",
+                        user: user,
+                        msg: " join the game"
+                    },
+                    channel: 'chesslobby--' + value
+                });
+            }
+            else {
+                // Game in progress
+                setisLooker(true);
+                Swal.fire({
+                    position: 'top',
+                    allowOutsideClick: false,
+                    title: 'Error',
+                    text: 'Game in progress. Try another room. You can only watch',
+                    width: 275,
+                    padding: '0.7em',
+                    customClass: {
+                        heightAuto: false,
+                        title: 'title-class',
+                        popup: 'popup-class',
+                        confirmButton: 'button-class'
+                    }
+                })
+            }
+        }).catch((error) => {
+            console.log(error);
+        });
+    }
     useEffect(() => {
         pubnub.addListener({ message: handleMessage });
         pubnub.subscribe({
@@ -164,11 +210,12 @@ function GamePage() {
         return function cleanup() {
             pubnub.unsubscribeAll();
         }
-            }, [pubnub, lobbyChannel, gameChannel]);
+    }, [pubnub, lobbyChannel, gameChannel,user1]);
     
     // Create a room channel
     const onPressCreate = (e) => {
         // Create a random name for the channel
+        setisLooker(false);
         const room = shortid.generate().substring(0, 5)
         setroomId(room);
         setlobbyChannel('chesslobby--' + room);
@@ -194,7 +241,8 @@ function GamePage() {
     }
     // Create a room channel
     const onPressUndo = (e) => {
-        if (!((turn === "TURN WHITE" && color1 === "White") || (turn === "TURN BLACK" && color1 === "Black"))) {
+        if (isLooker) return;
+        if ((turn === "TURN WHITE" && color1 === "White") || (turn === "TURN BLACK" && color1 === "Black")) {
             pubnub.publish({
                 message: {
                     cmd: "UNDO",
@@ -209,7 +257,7 @@ function GamePage() {
             Swal.fire({
                 position: 'top',
                 allowOutsideClick: false,
-                title: "Can't UNDO at this stage",
+                title: isLooker ?"Can't UNDO you are Looker":"Can't UNDO at this stage",
                 width: 275,
                 padding: '0.7em',
                 // Custom CSS
@@ -224,17 +272,20 @@ function GamePage() {
     }
     // Create a room channel
     const onPressNewGame = (e) => {
-        pubnub.publish({
-            message: {
-                cmd: "NEWGAME",
-                user: user1,
-                msg:  " whant's new game"
-            },
-            channel: 'chesslobby--' + roomId
-        });
-        setisDisabledNewGame(true);
+        if (isLooker) return;
+            pubnub.publish({
+                message: {
+                    cmd: "NEWGAME",
+                    user: user1,
+                    msg: " whant's new game"
+                },
+                channel: 'chesslobby--' + roomId
+            });
+            setisDisabledNewGame(true);
+        
     }
-    const handleBaseMove = (fromPosition, position,promotion) => {
+    const handleBaseMove = (fromPosition, position, promotion) => {
+        if (isLooker) return;
         if ((turn === "TURN WHITE" && color1 === "White") || (turn === "TURN BLACK" && color1 === "Black")) {
             handleMove(fromPosition, position, true, gameChannel, user1, promotion)
         }
@@ -242,7 +293,7 @@ function GamePage() {
             Swal.fire({
                 position: 'top',
                 allowOutsideClick: false,
-                title: 'Not your turn',
+                title: 'Not your turn!',
                 width: 275,
                 padding: '0.7em',
                 // Custom CSS
@@ -257,6 +308,7 @@ function GamePage() {
     }
 
     const onPressLF = (e) => {
+        if (isLooker) return;
         Swal.fire({
             title: 'Enter Fen',
             html:
@@ -292,7 +344,7 @@ function GamePage() {
     }
     // Create a room channel
     const onPressSF = (e) => {
-        // Create a random name for the channel
+        if (isLooker) return;
         
         // Open the modal
         Swal.fire({
@@ -354,6 +406,7 @@ function GamePage() {
     }
     // The 'Load' button was pressed
     const onPressLoad = (e) => {
+        if (isLooker) return;
         Swal.fire({
             title: 'Enter name of the game',
             html:
@@ -389,47 +442,7 @@ function GamePage() {
     }
     const setUserCol = (user, col) => { setUser1(user); setColor1(col);}
     // Join a room channel
-    const joinRoom = (value,user) => {
-        
-
-        // Check the number of people in the channel
-        pubnub.hereNow({
-            channels: ['chesslobby--' + value],
-        }).then((response) => {
-            if (response.totalOccupancy < 2) {
-                setroomId(value);
-                setlobbyChannel('chesslobby--' + value);
-                setgameChannel('chessgame--' + value)
-                pubnub.publish({
-                    message: {
-                        cmd:"JOIN",
-                        user:user,
-                        msg: " join the game"
-                    },
-                    channel: 'chesslobby--' + value
-                });
-            }
-            else {
-                // Game in progress
-                Swal.fire({
-                    position: 'top',
-                    allowOutsideClick: false,
-                    title: 'Error',
-                    text: 'Game in progress. Try another room.',
-                    width: 275,
-                    padding: '0.7em',
-                    customClass: {
-                        heightAuto: false,
-                        title: 'title-class',
-                        popup: 'popup-class',
-                        confirmButton: 'button-class'
-                    }
-                })
-            }
-        }).catch((error) => {
-            console.log(error);
-        });
-    }
+   
     let inf = [];
     let x = ["a", "b", "c", "d", "e", "f", "g", "h"];
     let y = ["8", "7", "6", "5", "4", "3", "2", "1"];
@@ -586,8 +599,8 @@ function GamePage() {
                             </div>
                         ))}
                                         
-                                    <div className="resp-table-row">
-                                        <div className="table-body-cell">Channels</div>
+                            <div className="resp-table-row">
+                                <div className="table-body-cell">Channels {isLooker ? (<span>Looker</span>):(<span>Player</span>)}</div>
                                         <div className="table-body-cell">{lobbyChannel}</div>
                                         <div className="table-body-cell">{gameChannel}</div>
                                     </div>
