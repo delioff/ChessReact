@@ -96,7 +96,7 @@ export default function StartForm({ User, Color, RoomID, SetColorUser, IsDisable
         }
         else {
             setLcolor(value)
-            seturl(window.location.href + "?user=" + luser + "&color=" + value + "&room=" + lroomid)
+            seturl(window.location.origin + window.location.pathname + "?user=" + luser + "&color=" + value + "&room=" + lroomid)
             SetColorUser(luser, value)
             localStorage.setItem(
                 'userinfo', JSON.stringify({
@@ -136,7 +136,7 @@ export default function StartForm({ User, Color, RoomID, SetColorUser, IsDisable
                     <input type="text" name="link" value={url} />
                 </label>
                 <img src={qrCode} alt="" />
-                <input type="submit" value="Submit" />
+                <input type="submit" value="Save curren user setup in LS" />
             </form>
            
         </Expander>

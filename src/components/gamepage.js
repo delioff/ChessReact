@@ -16,8 +16,9 @@ function GamePage() {
     const ocolor = new URLSearchParams(search).get('color');
     const room= new URLSearchParams(search).get('room')
     const userinfo = JSON.parse(localStorage.getItem('userinfo'));
-    const localuser = userinfo && userinfo.username ? userinfo.username : "You " + shortid.generate().substring(0, 5);
+    let localuser = userinfo && userinfo.username ? userinfo.username : shortid.generate().substring(0, 5);
     const localcolor = userinfo && userinfo.color ? userinfo.color : "White";
+    if (localuser === ouser) localuser = localuser + shortid.generate().substring(0, 5);
     let color = localcolor;
     if (ocolor) {
        color = ocolor === "White" ? "Black" : "White"
@@ -58,6 +59,7 @@ function GamePage() {
     }, [])
     const pubnub = usePubNub();
     pubnub.setUUID(user1);
+    const getIsLocker=()=> { return isLooker }
     const handleMessage = event => {
         const message = event.message;
         const chanellname = event.channel;
@@ -76,11 +78,11 @@ function GamePage() {
         if (chanellname === lobbyChannel) {
             let newMessages = [message];
             setMessages(messages => messages.concat(newMessages));
-            if (isLooker) return;
             if (message.cmd === "JOIN") {
                 setgameChannel('chessgame--' + roomId)
             }
             if (message.cmd === "UNDO" && message.user !== user1) {
+                if (getIsLocker()) return;
                 Swal.fire({
                     title: "Your oponent want's undo last move!",
                     text: "Do you agree?",
@@ -113,6 +115,7 @@ function GamePage() {
                 })
             }
             if (message.cmd === "NEWGAME" && message.user !== user1) {
+                if (getIsLocker()) return;
                 Swal.fire({
                     title: "Your oponent want's new game!",
                     text: "Do you agree?",
@@ -156,6 +159,9 @@ function GamePage() {
             }
             if (message.cmd === "NOTACCEPTUNDO") {
                 setisDisabledUndo(false)
+            }
+            if (message.cmd === "SENDPOSITION" && message.user !== user1) {
+                loadFen(message.fen);
             }
         }
     };
@@ -201,12 +207,13 @@ function GamePage() {
         });
     }
     useEffect(() => {
+        if (room) joinRoom(room, user1);
         pubnub.addListener({ message: handleMessage });
         pubnub.subscribe({
             channels: [lobbyChannel, gameChannel],
             withPresence: true // Checks the number of people in the channel
         });
-        if (room) joinRoom(room, user1);
+       
         return function cleanup() {
             pubnub.unsubscribeAll();
         }
@@ -225,8 +232,8 @@ function GamePage() {
         Swal.fire({
             position: 'top',
             allowOutsideClick: false,
-            title: 'Share this room ID with your friend',
-            text: room,
+            title: 'Share this link with your friend. Also it avalable in expander user details',
+            text: window.location.origin + window.location.pathname + "?user=" + user1 + "&color=" + color1 + "&room=" + room,
             width: 275,
             padding: '0.7em',
             // Custom CSS
@@ -238,6 +245,30 @@ function GamePage() {
             }
         })
         // set some staff here 
+    }
+    const onPressRepear = (e) => {
+        Swal.fire({
+            title: "This feature use to send your position to oponet in case some movements lost in internet or in case to continue saved game:)!",
+            text: "Are you sure that you want to use this feature?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, new!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                pubnub.publish({
+                    message: {
+                        cmd: "SENDPOSITION",
+                        user: user1,
+                        msg: " New position send from " + user1,
+                        fen:showFen()
+                    },
+                    channel: lobbyChannel
+                })
+            }
+            
+        })
     }
     // Create a room channel
     const onPressUndo = (e) => {
@@ -553,6 +584,12 @@ function GamePage() {
                                 onClick={(e) => onPressCreate()}
                                 disabled={isDisabled}
                             > CREATE
+                            </button>
+                            <button
+                                className="buttongreen"
+                                onClick={(e) => onPressRepear()}
+                                disabled={isDisabled}
+                            > REPEAR POSITION
                             </button>
                         </div>
                         <div className="table-footer-cell">
