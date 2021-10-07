@@ -22,7 +22,7 @@
 
 .board-container {
     width: 85vmin;
-    height: 85vmin;
+    height: 82vmin;
     background-color: #dcebf7;
 }
 .cord-container {
@@ -46,11 +46,33 @@
     height: 100%;
     display: flex;
     flex-wrap: wrap;
+    background-color: #670404;
 }
 
 .square {
-    width: 12.5%;
+    width: 12%;
     height: 12.5%;
+}
+.cord-squarexxx {
+    width: 2%;
+    height: 2%;
+    background-color: #670404;
+    align-items: center;
+    justify-content: center;
+}
+.cord-squarexx {
+    width: 2%;
+    height: 12.5%;
+    background-color: #670404;
+    align-items: center;
+    justify-content: center;
+}
+.cord-squareyy{
+    width: 12%;
+    height: 2%;
+    background-color: #670404;
+    align-items: center;
+    justify-content: center;
 }
 .cord-square {
     width: 100%;

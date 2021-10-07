@@ -8,7 +8,7 @@ import { useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import shortid from 'shortid';
 import StartForm from './startform'
-
+import { BrowserView, MobileView } from 'react-device-detect';
 
 function GamePage() {
     const search = useLocation().search;
@@ -504,40 +504,13 @@ function GamePage() {
                     <h2 className="vertical-text">
                         {isGameOver && ("GAME OVER")}
                     </h2>
-                    <div className="row">
-                        <div className="column">
-                            <div className="cord-container">
-                                {y.map((letter, i) => (
-                                    <Coord letter={letter} or={("v")} />
-                                ))}
-                            </div>
-                        </div>
-                    </div>
+                    
                     <div className="board-container">
-                        <div className="cord-container-x">
-                            <div className="row">
-                                {x.map((letter, i) => (
-                                    <Coord letter={letter} />
-                                ))}
-                            </div>
-                        </div>
-                        <Board board={board} handlemove={handleBaseMove} />
-                        <div className="cord-container-x">
-                            <div className="row">
-                                {x.map((letter, i) => (
-                                    <Coord letter={letter} />
-                                ))}
-                            </div>
-                        </div>
+                        
+                    <Board board={board} handlemove={handleBaseMove} color={color1} />
+                        
                     </div>
                     <div className="row">
-                        <div className="column">
-                            <div className="cord-container">
-                                {y.map((letter, i) => (
-                                    <Coord letter={letter} or={("v")} />
-                                ))}
-                            </div>
-                        </div>
                         {result && <p className="vertical-text">{result}</p>}
                         <p className="vertical-text">{turn + ' ' + incheck}</p>
                     </div>
@@ -620,11 +593,10 @@ function GamePage() {
                  </div>
                 
                
-             </div>
+            </div>
+            <BrowserView>
              <div className="log">
-                <div className="row">
-                    <div className="column">
-                        <div className="resp-table">
+                  <div className="resp-table">
                             <div className="resp-table-caption">
                                 Game log
                             </div>
@@ -644,9 +616,6 @@ function GamePage() {
                                
                             
                         </div>
-                  </div>
-                    <div className="column">
-                    
                             <div className="resp-table">
                                 <div className="resp-table-caption">
                                     Table {roomId}
@@ -675,9 +644,9 @@ function GamePage() {
 
 
                             </div>
-                    </div>
-                 </div>
-             </div>
+                   
+                </div>
+             </BrowserView>
          </div>
             )
 

@@ -4,15 +4,24 @@ import inforow from './inforow'
 import Board from './board1'
 import Coord from './coord'
 import Swal from "sweetalert2";
+import { useLocation } from "react-router-dom";
 
 function HomePage() {
-   
+    const search = useLocation().search;
+    const ocolor = new URLSearchParams(search).get('color');
+    const userinfo = JSON.parse(localStorage.getItem('userinfo'));
+    const localcolor = userinfo && userinfo.color ? userinfo.color : "White";
+    let color = localcolor;
+    if (ocolor) {
+        color = ocolor === "White" ? "Black" : "White"
+    }
     const [board, setBoard] = useState([])
     const [isGameOver, setIsGameOver] = useState()
     const [result, setResult] = useState()
     const [turn, setTurn] = useState()
     const [history, setHistory] = useState([])
     const [incheck, setIncheck] = useState()
+    const [color1, setColor1] = useState(color);
     useEffect(() => {
         initGame()
         const subscribe = gameSubject.subscribe((game) => {
@@ -33,8 +42,6 @@ function HomePage() {
       
    
     let inf = [];
-    let x = ["a", "b", "c", "d", "e", "f", "g", "h"];
-    let y = ["8", "7", "6", "5", "4", "3", "2", "1"];
     for (var i = 0; i < history.length; i += 2) {
         if (history[i].color === 'w') {
             inf.push({
@@ -58,7 +65,10 @@ function HomePage() {
     const onPressNewGame = (e) => {
         resetGame()
     }
-       
+    // The 'Reverse' button was pressed
+    const onPressReverse = (e) => {
+        color1 === "White" ? setColor1("Black"):setColor1("White")
+    }   
     // The 'Save' button was pressed
     const onPressSave = (e) => {
         Swal.fire({
@@ -114,55 +124,21 @@ function HomePage() {
         })
     }
     return (
+        <div>
         <div className="row">
             <div className="column">
-
                 <div className="container">
-
                     <h2 className="vertical-text">
                         {isGameOver && ("GAME OVER")}
                     </h2>
-                    <div className="row">
-                        <div className="column">
-                            <div className="cord-container">
-                                {y.map((letter, i) => (
-                                    <Coord letter={letter} or={("v")} />
-                                ))}
-                            </div>
-                        </div>
-                    </div>
                     <div className="board-container">
-                        <div className="cord-container-x">
-                            <div className="row">
-                                {x.map((letter, i) => (
-                                    <Coord letter={letter} />
-                                ))}
-                            </div>
-                        </div>
-                        <Board board={board} handlemove={handleBaseMove} />
-                        <div className="cord-container-x">
-                            <div className="row">
-                                {x.map((letter, i) => (
-                                    <Coord letter={letter} />
-                                ))}
-                            </div>
-                        </div>
+                        <Board board={board} handlemove={handleBaseMove} color={color1}/>
                     </div>
                     <div className="row">
-                        <div className="column">
-                            <div className="cord-container">
-                                {y.map((letter, i) => (
-                                    <Coord letter={letter} or={("v")} />
-                                ))}
-                            </div>
-                        </div>
                         {result && <p className="vertical-text">{result}</p>}
                         <p className="vertical-text">{turn + ' ' + incheck}</p>
                     </div>
-
                 </div>
-
-
             </div>
             <div className="column">
                 <div className="itemcontainer">
@@ -183,47 +159,57 @@ function HomePage() {
                                     </div>
                                 ))}
                             </div>
-                            <div className="resp-table-footer">
-                                <div className="table-footer-cell">
-                                    <button className="buttongreen"
-                                        onClick={(e) => onPressNewGame()}
-                                        
-                                    >
-                                        NEW GAME
-                                    </button>
-                                </div>
-                                <div className="table-footer-cell">
-
-                                    <button
-                                        className="buttongreen"
-                                        onClick={(e) => onPressUndo()}
-                                                                  >
-                                        UNDO
-                                    </button>
-                                </div>
-                              </div>   
-                             <div className="resp-table-footer">   
-                                <div className="table-footer-cell">
-                                    <button
-                                        className="buttongreen"
-                                        onClick={(e) => onPressSave()}
-                                    > SAVE
-                                    </button>
-                                </div>
-                                <div className="table-footer-cell">
-                                    <button
-                                        className="buttongreen"
-                                        onClick={(e) => onPressLoad()}
-                                    > LOAD
-                                    </button>
-                                </div>
-                            </div>
-                       
-                        </div>
+                         </div>
                     </div>
                 </div>
             </div>
-     </div>)
+            </div>
+            <div className="resp-table">
+            <div className="resp-table-footer">
+                <div className="table-footer-cell">
+                    <button className="buttongreen"
+                        onClick={(e) => onPressNewGame()}
+
+                    >
+                        NEW GAME
+                    </button>
+                </div>
+                <div className="table-footer-cell">
+
+                    <button
+                        className="buttongreen"
+                        onClick={(e) => onPressUndo()}
+                    >
+                        UNDO
+                    </button>
+                </div>
+           
+                <div className="table-footer-cell">
+                    <button
+                        className="buttongreen"
+                        onClick={(e) => onPressSave()}
+                    > SAVE
+                    </button>
+                </div>
+                <div className="table-footer-cell">
+                    <button
+                        className="buttongreen"
+                        onClick={(e) => onPressLoad()}
+                    > LOAD
+                    </button>
+                </div>
+           
+           
+                <div className="table-footer-cell">
+                    <button
+                        className="buttongreen"
+                        onClick={(e) => onPressReverse()}
+                    > REVERSE BOARD
+                    </button>
+                </div>
+                </div>
+            </div>
+         </div>   )
 
 }
 export default HomePage

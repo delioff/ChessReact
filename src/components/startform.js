@@ -118,7 +118,7 @@ export default function StartForm({ User, Color, RoomID, SetColorUser, IsDisable
     
 
     return (
-        <Expander title="Currentplayer details">
+        <Expander title={"Currentplayer details ===== Invitation link ===="+url}>
             <form onSubmit={handleSubmit}>
                 <label>
                     Current Player:

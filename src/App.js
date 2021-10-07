@@ -6,7 +6,8 @@ import ChatPage from './components/chatpage'
 import HomePage from './components/homepage'
 import Footer from './components/foother'
 import PubNub from 'pubnub';
-import { PubNubProvider} from 'pubnub-react';
+import { PubNubProvider } from 'pubnub-react';
+import { BrowserView, MobileView } from 'react-device-detect';
 
 
 const App = () => {
@@ -22,7 +23,9 @@ const App = () => {
             <Main />
              </PubNubProvider>
         </Router>
-        <Footer />
+        <BrowserView>
+            <Footer />
+        </BrowserView> 
     </div>
    )
 };
