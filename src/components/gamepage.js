@@ -273,7 +273,7 @@ function GamePage() {
     // Create a room channel
     const onPressUndo = (e) => {
         if (isLooker) return;
-        if ((turn === "TURN WHITE" && color1 === "White") || (turn === "TURN BLACK" && color1 === "Black")) {
+        if (!((turn === "TURN WHITE" && color1 === "White") || (turn === "TURN BLACK" && color1 === "Black"))) {
             pubnub.publish({
                 message: {
                     cmd: "UNDO",
@@ -561,7 +561,6 @@ function GamePage() {
                             <button
                                 className="buttongreen"
                                 onClick={(e) => onPressRepear()}
-                                disabled={isDisabled}
                             > REPEAR POSITION
                             </button>
                         </div>
