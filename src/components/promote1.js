@@ -1,6 +1,6 @@
 import React from 'react'
 import Square from './square'
-import { move } from './game'
+import { move } from './game1'
 import { retimages } from './images'
 const promotionPieces = ['r', 'n', 'b', 'q']
 
