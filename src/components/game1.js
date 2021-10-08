@@ -33,6 +33,7 @@ export function handleMove(from, to, frompush,channel,user) {
         const pendingPromotion = { from, to, color: promotions[0].color }
         updateGame(pendingPromotion)
     }
+
     const { pendingPromotion } = gameSubject.getValue()
 
     if (!pendingPromotion) {
@@ -56,6 +57,10 @@ function publishMessage(from, to, channel, user) {
         message: messageObject,
         channel: channel
     });
+}
+export function canMovePiece(from, to) {
+    const moves = chess.moves({ verbose: true }).filter(m => m.from===from);
+    return moves.some(p => p.to===to);
 }
 export function loadGame(gamename) {
     const savedGame = localStorage.getItem(gamename)

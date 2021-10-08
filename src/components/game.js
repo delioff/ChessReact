@@ -69,6 +69,10 @@ export function loadGame(gamename) {
     }
     else return false
 }
+export function canMovePiece(from, to) {
+    const moves = chess.moves({ verbose: true }).filter(m => m.from === from);
+    return moves.some(p => p.to === to);
+}
 export function loadFen(gamename) {
     try {
         chess.load(gamename)
