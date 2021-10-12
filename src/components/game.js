@@ -63,7 +63,7 @@ function publishMessage(from, to, channel, user,promotion) {
 export function loadGame(gamename) {
     const savedGame = localStorage.getItem(gamename)
     if (savedGame) {
-        chess.load(savedGame)
+        chess.load_pgn(savedGame)
         updateGame()
         return true
     }
@@ -87,7 +87,7 @@ export function showFen(gamename) {
     return chess.fen();
 }
 export function saveGame(gamename) {
-    localStorage.setItem(gamename, chess.fen())
+    localStorage.setItem(gamename,chess.pgn())
 }
 export function move(from, to, promotion) {
     let tempMove = { from, to }
