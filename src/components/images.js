@@ -10,6 +10,8 @@ import qb from './assets/q_b.png';
 import qw from './assets/q_w.png';
 import rb from './assets/r_b.png';
 import rw from './assets/r_w.png';
+import wc from './assets/wc.png';
+import bc from './assets/bc.png';
 
 export function retimages(type, color) {
     var t = type + color;
@@ -27,6 +29,15 @@ export function retimages(type, color) {
         case "qw": result = qw; break;
         case "rb": result = rb; break;
         case "rw": result = rw; break;
+        default: result = pw;
+    }
+    return result;
+}
+export function retbgimages(type) {
+    var result = pb;
+    switch (type) {
+        case "w": result = wc; break;
+        case "b": result = bc; break;
         default: result = pw;
     }
     return result;

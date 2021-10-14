@@ -67,6 +67,35 @@
     align-items: center;
     justify-content: center;
 }
+.cord-bg {
+    width: 8.33%;
+    height: 2%;
+    background-color: #670404;
+    align-items: center;
+    justify-content: center;
+}
+.bgcolumn {
+    width: 8.33%;
+    height: 48%;
+    display: flex;
+    background-color: #F0D9B5;
+    flex-direction: column;
+    background-image: url("./components/assets/trb.png");
+    background-repeat: no-repeat;
+    background-position: top;
+    background-size: auto;
+}
+.bgcolumnr {
+    width: 8.33%;
+    height: 48%;
+    display: flex;
+    background-color: #F0D9B5;
+    flex-direction: column-reverse;
+    background-image: url("./components/assets/tr.png");
+    background-repeat: no-repeat;
+    background-position: bottom;
+    background-size: auto;
+}
 .cord-squareyy{
     width: 12%;
     height: 2%;

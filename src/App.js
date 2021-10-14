@@ -4,6 +4,7 @@ import { NavLink, Switch, Route, BrowserRouter as Router } from 'react-router-do
 import GamePage from './components/gamepage'
 import ChatPage from './components/chatpage'
 import HomePage from './components/homepage'
+import BackamonPage from './components/bgamon/backgamonpage'
 import Footer from './components/foother'
 import PubNub from 'pubnub';
 import { PubNubProvider } from 'pubnub-react';
@@ -37,6 +38,7 @@ const Navigation = () => (
             <li><NavLink exact activeClassName="current" to='/'>Training</NavLink></li>
             <li><NavLink exact activeClassName="current" to='/game'>Game</NavLink></li>
             <li><NavLink exact activeClassName="current" to='/chat'>Chat</NavLink></li>
+            <li><NavLink exact activeClassName="current" to='/bg'>Backgammon</NavLink></li>
         </ul>
         </nav>
    
@@ -46,6 +48,7 @@ const Main = () => (
         <Route exact path='/' component={HomePage}></Route>
         <Route exact path='/game' component={GamePage}></Route>
         <Route exact path='/chat' component={ChatPage}></Route>
+        <Route exact path='/bg' component={BackamonPage}></Route>
      </Switch>
 );
 
