@@ -15,3 +15,9 @@ export function updateGame() {
     //localStorage.setItem('savedGame', chess.fen())
     backgamonsubject.next(newGame)
 }
+
+export function move(i, j) {
+    if (backgamon.move(i, j)) {
+        updateGame()
+    }
+}

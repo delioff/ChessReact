@@ -54,7 +54,32 @@
     }
     getboard=()=> {
         return this.board;
-    }
+     }
+     move = (i, j) => {
+         if (this.islegalmove(i, j)) {
+             var source = this.board[i];
+             var dest = this.board[j];
+
+             if (source) {
+                 if (!dest) {
+                     dest = "";
+                 }
+                 dest += source.slice(-1);
+
+                 if (source.length === 0) source = null;
+                 this.board[i] = source;
+                 this.board[j] = dest;
+                 return true;
+             }
+             return false
+
+         }
+         else return false;
+         
+     }
+     islegalmove = (i,j) => {
+         return true;
+     }
 }
 
 export default Backgammon;

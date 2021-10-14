@@ -9,33 +9,28 @@ export default function BgPiece({
 }) {
     const [CurrPiece, setCurrPiece] = useState([])
     useEffect(() => {
-        setCurrPiece(piece.split(""))
+        setCurrPiece(piece)
     }, [piece])
     const [{ isDragging }, drag, preview] = useDrag({
         type: ItemTypes.SQUARE,
         item: {
             type: ItemTypes.SQUARE ,
-            id: `${position}`,
+            id: position,
         },
         collect: (monitor) => {
             return { isDragging: !!monitor.isDragging() }
         },
     })
 
-    return (<div className="board-square">
-        {   CurrPiece.map((piece, i) =>
-                <>
-                <DragPreviewImage connect={preview} src={retbgimages(piece)} />
+    return (
+        <div className="board-square">
+               <DragPreviewImage connect={preview} src={retbgimages(CurrPiece)} />
                     <div
                         ref={drag}
                         style={{ opacity: isDragging ? 0 : 1 }}
                     >
-                    <img src={retbgimages(piece)} alt="" className="piece" />
+                    <img src={retbgimages(CurrPiece)} alt="" className="piece" />
                 </div>
-                </>  
-            )  
-            }
-       </div>
-        
+    </div>
     )
 }
