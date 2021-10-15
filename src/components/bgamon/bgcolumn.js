@@ -1,33 +1,30 @@
 import React, { useEffect, useState } from 'react'
 import BgPiece from './bgpiece'
+import BgSquare from './bgsquare'
 import { useDrop } from 'react-dnd'
+import {move} from './bggame'
 import { ItemTypes } from '../constants'
-import { move } from './bggame'
 export default function BoardColumn({
     piece,
     position
 }) {
-    const [CurrPiece, setCurrPiece] = useState([])
-    useEffect(() => {
-        setCurrPiece(piece?piece.split(""):[])
-    }, [piece])
     const [{ isOver, canDrop }, drop] = useDrop({
         accept: ItemTypes.SQUARE,
         drop: (item) => {
-             move(item.id,position)
+            move(item.id, position)
         },
-       
+
         collect: (monitor) => ({
             isOver: !!monitor.isOver(),
             canDrop: !!monitor.canDrop()
         })
     })
-   
+    const bgClass=position<12?"board-squaret":"board-squareb"
     return (
-        <div ref={drop} data-testid={position}>
-            <div>
-                {CurrPiece.map((item, i) => (<BgPiece piece={item} position={position} />))}
-             </div>
+        <div className={bgClass} ref={drop} data-testid={position}>
+            <BgSquare top={position<12}>
+                  {piece.map((item, i) => <BgPiece piece={item} position={position} />)}
+             </BgSquare>
         </div>
     )
 }

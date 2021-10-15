@@ -8,9 +8,6 @@ export default function BgPiece({
     position,
 }) {
     const [CurrPiece, setCurrPiece] = useState([])
-    useEffect(() => {
-        setCurrPiece(piece)
-    }, [piece])
     const [{ isDragging }, drag, preview] = useDrag({
         type: ItemTypes.SQUARE,
         item: {
@@ -23,14 +20,14 @@ export default function BgPiece({
     })
 
     return (
-        <div className="board-square">
-               <DragPreviewImage connect={preview} src={retbgimages(CurrPiece)} />
-                    <div
+        <>
+            <DragPreviewImage connect={preview} src={retbgimages(piece)} />
+            <div
                         ref={drag}
                         style={{ opacity: isDragging ? 0 : 1 }}
                     >
-                    <img src={retbgimages(CurrPiece)} alt="" className="piece" />
-                </div>
-    </div>
+                    <img src={retbgimages(piece)} alt="" className="piece" />
+             </div>
+        </>
     )
 }

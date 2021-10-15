@@ -41,10 +41,10 @@
         for (var i = 0; i < tokens.length; i++) {
             var toki = tokens[i];
             if (toki === "0") {
-                continue;
+                this.board[i] = new Array()
             }
             else {
-                this.board[i] = toki;
+                this.board[i] = toki.split('');
                 //for (var j = 0; j <= toki.length; j++) {
 
                 //    this.board[i].push(toki.charAt(j))
@@ -60,13 +60,9 @@
              var source = this.board[i];
              var dest = this.board[j];
 
-             if (source) {
-                 if (!dest) {
-                     dest = "";
-                 }
-                 dest += source.slice(-1);
-
-                 if (source.length === 0) source = null;
+             if (source.length>0) {
+                
+                 dest.push(source.pop());
                  this.board[i] = source;
                  this.board[j] = dest;
                  return true;
