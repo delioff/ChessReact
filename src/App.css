@@ -24,6 +24,14 @@
     width: 85vmin;
     height: 82vmin;
     background-color: #dcebf7;
+
+}
+
+.bg-container {
+    width: 85vmin;
+    height: 100vmin;
+    background-image: url("./components/assets/oac.png");
+    padding:1.5%;
 }
 .cord-container {
     width: 20px;
@@ -74,9 +82,29 @@
     align-items: center;
     justify-content: center;
 }
+.mid {
+    width: 15.3%;
+    height: 50%;
+    display: flex;
+    flex-direction: row
+}
+.bgcolumnmidle {
+    width: 50%;
+    height: 100%;
+    background-image: url("./components/assets/oac.png");
+}
+.bgcolumnmm {
+    width: 50%;
+    height: 100%;
+    background-color: #F0D9B5;
+    background-image: url("./components/assets/trb.png");
+    background-repeat: no-repeat;
+    background-position: top;
+    background-size: auto;
+}
 .bgcolumn {
-    width: 8.33%;
-    height: 48%;
+    width: 7.69%;
+    height: 50%;
     background-color: #F0D9B5;
     background-image: url("./components/assets/trb.png");
     background-repeat: no-repeat;
@@ -84,8 +112,17 @@
     background-size: auto;
 }
 .bgcolumnr {
-    width: 8.33%;
-    height: 48%;
+    width: 7.69%;
+    height: 50%;
+    background-image: url("./components/assets/tr.png");
+    background-repeat: no-repeat;
+    background-position: bottom;
+    background-size: auto;
+    background-color: #F0D9B5;
+}
+.bgcolumnrmm {
+    width: 50%;
+    height: 100%;
     background-image: url("./components/assets/tr.png");
     background-repeat: no-repeat;
     background-position: bottom;

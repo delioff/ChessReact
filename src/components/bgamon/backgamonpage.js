@@ -23,7 +23,7 @@ function BackamonPage() {
 
                    
                     
-                    <div className="board-container">
+                <div className="bg-container">
                         
                     <Board board={board} />
                         

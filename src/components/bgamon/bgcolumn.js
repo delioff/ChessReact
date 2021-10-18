@@ -22,7 +22,7 @@ export default function BoardColumn({
     const bgClass=position<12?"board-squaret":"board-squareb"
     return (
         <div className={bgClass} ref={drop} data-testid={position}>
-            <BgSquare top={position<12}>
+            <BgSquare>
                   {piece.map((item, i) => <BgPiece piece={item} position={position} />)}
              </BgSquare>
         </div>
