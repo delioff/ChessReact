@@ -14,6 +14,7 @@
     "pubnub-react": "^2.1.0",
     "react": "^17.0.2",
     "react-device-detect": "^2.0.1",
+    "react-dice-roll": "^1.2.2",
     "react-dnd": "^14.0.3",
     "react-dnd-html5-backend": "^14.0.1",
     "react-dnd-html5-touch-backend": "^1.5.0",

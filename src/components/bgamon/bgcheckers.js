@@ -4,7 +4,7 @@ import BgSquare from './bgsquare'
 import { useDrop } from 'react-dnd'
 import { move, canmovepiece} from './bggame'
 import { ItemTypes } from '../constants'
-export default function BoardColumn({
+export default function BoardCheckers({
     piece,
     position
 }) {
@@ -21,15 +21,12 @@ export default function BoardColumn({
             canDrop: !!monitor.canDrop()
         })
     })
-    let bgClass = position < 12 ? "board-squaret" : "board-squareb"
-    if (position > 25) {
-        bgClass = "square"
-    }
+    const clname = "squarebg";
     return (
-        <div className={bgClass} ref={drop} data-testid={position}>
-            <BgSquare>
-                {piece.map((item, i) => <BgPiece piece={item} position={position} />)}
-           </BgSquare>
+        <div className="boardbg" ref={drop} data-testid={position}>
+            
+            {piece.map((item, i) => <BgSquare top={clname}><BgPiece piece={item} position={position} /></BgSquare>)}
+           
            {/*{!isOver && canDrop && <div*/}
            {/*     style={{*/}
            {/*         position: 'absolute',*/}
