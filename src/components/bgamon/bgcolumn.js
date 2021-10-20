@@ -6,12 +6,13 @@ import { move, canmovepiece} from './bggame'
 import { ItemTypes } from '../constants'
 export default function BoardColumn({
     piece,
-    position
+    position,
+    handlemove
 }) {
     const [{ isOver, canDrop }, drop] = useDrop({
         accept: ItemTypes.SQUARE,
         drop: (item) => {
-            move(item.id, position)
+            handlemove(item.id, position);
         },
         //canDrop: (item, monitor) => {
         //    return canmovepiece(item.id, position)

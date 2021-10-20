@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import BoardColumn from './bgcolumn'
 
-export default function Board({ board }) {
+export default function Board({ board,handlemove }) {
     const [currBoard, setCurrBoard] = useState([])
     useEffect(() => {
         setCurrBoard(board)
@@ -21,7 +21,8 @@ export default function Board({ board }) {
                         <div key={i} className="bgcolumnmm">
                             < BoardColumn
                                 piece={piece}
-                                position={i}
+                                        position={i}
+                                        handlemove={handlemove}
                             />
                         </div>
                         </div>
@@ -31,7 +32,8 @@ export default function Board({ board }) {
                         <div key={i} className="bgcolumn">
                             < BoardColumn
                                 piece={piece}
-                                position={i}
+                                    position={i}
+                                    handlemove={handlemove}
                             />
                         </div>
                     )
@@ -47,6 +49,7 @@ export default function Board({ board }) {
                                         < BoardColumn
                                             piece={piece}
                                             position={i}
+                                            handlemove={handlemove}
                                         />
                                     </div>
                                 </div>
@@ -54,7 +57,8 @@ export default function Board({ board }) {
                             (<div key={i} className="bgcolumnr">
                            < BoardColumn
                                 piece={piece}
-                                position={i}
+                                    position={i}
+                                    handlemove={handlemove}
                                 />
                         
                         </div>
