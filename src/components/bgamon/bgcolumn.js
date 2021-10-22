@@ -9,6 +9,10 @@ export default function BoardColumn({
     position,
     handlemove
 }) {
+    const [currPiece, setCurrPiece] = useState([])
+    useEffect(() => {
+        setCurrPiece(piece)
+    }, [piece])
     const [{ isOver, canDrop }, drop] = useDrop({
         accept: ItemTypes.SQUARE,
         drop: (item) => {
@@ -29,7 +33,7 @@ export default function BoardColumn({
     return (
         <div className={bgClass} ref={drop} data-testid={position}>
             <BgSquare>
-                {piece.map((item, i) => <BgPiece piece={item} position={position} />)}
+                {currPiece.map((item, i) => <BgPiece piece={item} position={position} />)}
            </BgSquare>
            {/*{!isOver && canDrop && <div*/}
            {/*     style={{*/}

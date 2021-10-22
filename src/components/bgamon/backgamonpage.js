@@ -50,7 +50,8 @@ function BackamonPage() {
     const [messages, setMessages] = useState([]);
     const [isDisabled, setisDisabled] = useState(false);
     const [isDisabledUndo, setisDisabledUndo] = useState(false);
-    //const [isDisabledJoin, setisDisabledJoin] = useState(ouser ? true:false);
+    const [counmoves, setcounmoves] = useState("");
+    const [winner, setwinner] = useState("");
     const [isDisabledNewGame, setisDisabledNewGame] = useState(false);
     useEffect(() => {
         updateGame()
@@ -62,6 +63,10 @@ function BackamonPage() {
             setoutb(game.outb)
             setoutw(game.outw)
             setgameover(game.gameover)
+            setcounmoves(game.counmoves)
+            setwinner(game.winner)
+            setuser1score(game.user1score)
+            setuser2score(game.user2score)
         })
         return () => subscribe.unsubscribe()
     }, [])
@@ -562,12 +567,13 @@ function BackamonPage() {
     return (
         <div>
          <div className="container">
-            <div className="leftbox">
-                    {turn === "w" ? (<p className="textw">Turn White</p>) : (<div><p className="textw">Turn Black</p><button className="buttongreen" onClick={onRollb}>Roll!</button></div>)}
+                <div className="leftbox">
+                    {turn === "w" ? (<p className="textw">Turn White {counmoves}</p>) : (<div><p className="textw">Turn Black {counmoves}</p><button className="buttongreen" onClick={onRollb}>Roll!</button></div>)}
                 <div className="check-container">
                     < BoardCheckers
                     piece={handleb}
-                    position={31}
+                            position={31}
+                            handlemove={handleBaseMove}
                     />
                  </div>
                  {color1 === "White" ? (
@@ -584,22 +590,24 @@ function BackamonPage() {
                 <div className="check-container">
                     < BoardCheckers
                     piece={outb}
-                    position={41}
+                            position={41}
+                            handlemove={handleBaseMove}
                     />
                 </div>
             </div>
-            <div className="middlebox">
-                {gameover ? (<div><p className="textw">Gameover Winner {turn === "w" ? ("White"):("Black")}</p><button className="buttongreen" onClick={onNewGame}>New Game!</button></div>) : null}
+                <div className="middlebox">
+                    {gameover ? (<div><p className="textw">Gameover Winner {winner}</p><button className="buttongreen" onClick={onNewGame}>New Game!</button></div>) : null}
                 <div className="bg-container">
                         <Board board={board} handlemove={handleBaseMove}/>
                 </div>
             </div>
             <div className="rightbox">
-                    {turn === "w" ? (<div><p className="textb">Turn White</p> <button className="buttongreen" onClick={onRollw}>Roll!</button></div>) : (<p className="textb">Turn Black</p>)}
+                    {turn === "w" ? (<div><p className="textb">Turn White {counmoves}</p> <button className="buttongreen" onClick={onRollw}>Roll!</button></div>) : (<p className="textb">Turn Black {counmoves}</p>)}
                 <div className="check-container">
                     <BoardCheckers
                     piece={handlew}
-                    position={32}
+                            position={32}
+                            handlemove={handleBaseMove}
                     />
                     </div>
                     {color1 === "White" ? ((<div>
@@ -615,7 +623,8 @@ function BackamonPage() {
                 <div className="check-container">
                     <BoardCheckers
                     piece={outw}
-                    position={42}
+                            position={42}
+                            handlemove={handleBaseMove}
                     />
                 </div>
             </div>
