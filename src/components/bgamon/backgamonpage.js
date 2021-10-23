@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { backgamonsubject, updateGame, setdiceb, setdicew,newGame,move} from './bggame'
+import { backgamonsubject, updateGame, setdiceb, setdicew, newGame, move, undo, resendlastmove} from './bggame'
 import Board from './bgboard'
 import Dice from "react-dice-roll";
 import BoardCheckers from './bgcheckers'
@@ -178,7 +178,7 @@ function BackamonPage() {
                 setisDisabledNewGame(false)
             }
             if (message.cmd === "ACCEPTUNDO") {
-                //unduLastMove()
+                undo()
                 setisDisabledUndo(false)
             }
             if (message.cmd === "NOTACCEPTNEWGAME") {
@@ -300,7 +300,7 @@ function BackamonPage() {
     // Create a room channel
     const onPressUndo = (e) => {
         if (isLooker) return;
-        if (!((turn === "TURN WHITE" && color1 === "White") || (turn === "TURN BLACK" && color1 === "Black"))) {
+        if (!((turn === "w" && color1 === "White") || (turn === "b" && color1 === "Black"))) {
             pubnub.publish({
                 message: {
                     cmd: "UNDO",
@@ -403,23 +403,23 @@ function BackamonPage() {
     // Create a room channel
     const onPressSF = (e) => {
         if (isLooker) return;
-
+        resendlastmove(gameChannel,user1)
         // Open the modal
-        Swal.fire({
-            position: 'top',
-            allowOutsideClick: false,
-            title: 'Share this room ID with your friend',
-            text: "",//showFen(),
-            width: 275,
-            padding: '0.7em',
-            // Custom CSS
-            customClass: {
-                heightAuto: false,
-                title: 'title-class',
-                popup: 'popup-class',
-                confirmButton: 'button-class'
-            }
-        })
+        //Swal.fire({
+        //    position: 'top',
+        //    allowOutsideClick: false,
+        //    title: 'Share this room ID with your friend',
+        //    text: "",//showFen(),
+        //    width: 275,
+        //    padding: '0.7em',
+        //    // Custom CSS
+        //    customClass: {
+        //        heightAuto: false,
+        //        title: 'title-class',
+        //        popup: 'popup-class',
+        //        confirmButton: 'button-class'
+        //    }
+        //})
         // set some staff here 
     }
     //// The 'Join' button was pressed
@@ -568,24 +568,26 @@ function BackamonPage() {
         <div>
          <div className="container">
                 <div className="leftbox">
-                    {turn === "w" ? (<p className="textw">Turn White {counmoves}</p>) : (<div><p className="textw">Turn Black {counmoves}</p><button className="buttongreen" onClick={onRollb}>Roll!</button></div>)}
+                    {turn === "w" ? (<p className="textw">Turn White {counmoves}</p>) : (<p className="textw">Turn Black {counmoves}</p>)}
+                    
                 <div className="check-container">
                     < BoardCheckers
                     piece={handleb}
                             position={31}
                             handlemove={handleBaseMove}
                     />
-                 </div>
-                 {color1 === "White" ? (
+                    </div>
+                    {color1 !== "White" && turn === "b"? (<button className="buttongreen" onClick={onRollb}>Roll!</button>):null}
+                    {color1 === "White" ? (
                         <div ref={diceRefbf} style={{ pointerEvents: "none" }} >
                             <Dice size={100} cheatValue={cheatvalb1} />
                             <Dice size={100} cheatValue={cheatvalb2} />
-                </div>
-                ) : (<div>
-                    <div ref={diceRefb} style={{ pointerEvents: "none" }}>
+                        </div>
+                    ) : (
+                     <div ref={diceRefb} style={{ pointerEvents: "none" }}>
                         <Dice size={100} onRoll={(value) => onSetDiceb(0,value)}/>
                         <Dice size={100} onRoll={(value) => onSetDiceb(1,value)}/>
-                </div></div>
+                     </div>
                 )}
                 <div className="check-container">
                     < BoardCheckers
@@ -596,13 +598,13 @@ function BackamonPage() {
                 </div>
             </div>
                 <div className="middlebox">
-                    {gameover ? (<div><p className="textw">Gameover Winner {winner}</p><button className="buttongreen" onClick={onNewGame}>New Game!</button></div>) : null}
+                    {gameover ? (<div><p className="textw">Gameover Winner {winner}</p></div>) : null}
                 <div className="bg-container">
                         <Board board={board} handlemove={handleBaseMove}/>
                 </div>
             </div>
             <div className="rightbox">
-                    {turn === "w" ? (<div><p className="textb">Turn White {counmoves}</p> <button className="buttongreen" onClick={onRollw}>Roll!</button></div>) : (<p className="textb">Turn Black {counmoves}</p>)}
+                    {turn === "w" ? (<div><p className="textb">Turn White {counmoves}</p> </div>) : (<p className="textb">Turn Black {counmoves}</p>)}
                 <div className="check-container">
                     <BoardCheckers
                     piece={handlew}
@@ -610,6 +612,7 @@ function BackamonPage() {
                             handlemove={handleBaseMove}
                     />
                     </div>
+                    {color1 === "White" && turn === "w" ? (<button className="buttongreen" onClick={onRollw}>Roll!</button>) : null}
                     {color1 === "White" ? ((<div>
                         <div ref={diceRefw} style={{ pointerEvents: "none" }}>
                             <Dice size={100} onRoll={(value) => onSetDicew(0, value)} />
@@ -695,7 +698,7 @@ function BackamonPage() {
                         className="buttongreen"
                         onClick={(e) => onPressSF()}
 
-                    > SHOW FEN
+                    > RESEND LAST MOVE
                     </button>
                 </div>
                 <div className="table-footer-cell">

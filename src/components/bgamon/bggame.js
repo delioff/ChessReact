@@ -63,10 +63,13 @@ export function updateGame() {
     //localStorage.setItem('savedGame', chess.fen())
     backgamonsubject.next(newGame)
 }
-
+export function resendlastmove(channel, user) {
+    const move = backgamon.getlastmove()
+    if (move) publishMessage(move.i,move.j,channel, user)
+}
 export function move(i, j,frompush, channel, user) {
     if (backgamon.move(i, j)) {
-        if (frompush) publishMessage(i, j,channel, user);
+        if (frompush)  publishMessage(i,j,channel, user);
         updateGame()
         return true;
     }
@@ -92,5 +95,9 @@ export function canmovepiece(s, d) {
 }
 export function newGame() {
     backgamon.newgame();
+    updateGame();
+}
+export function undo() {
+    backgamon.undo();
     updateGame();
 }

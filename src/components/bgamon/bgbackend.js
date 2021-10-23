@@ -26,7 +26,8 @@
  *----------------------------------------------------------------------------*/
 class Backgammon {
     constructor(initposition) {
-        this.DEFAULT_POSITION = 'ww*0*0*0*0*bbbbb*0*bbb*0*0*0*wwwww*bb*0*0*0*0*wwwww*0*www*0*0*0*bbbbb';
+        this.DEFAULT_POSITION = 'ww*0*0*0*0*bbbbb*0*bbb*0*0*0*wwwww*bb*0*0*0*0*wwwww*0*www*0*0*0*bbbbb|0*0*0*0*0*0*w';
+        //this.DEFAULT_POSITION = 'bb*bbb*bb*bb*bbb*bbb*0*0*0*0*0*wwwww*0*0*0*0*0*wwwww*0*www*0*0*0*0|0*0*0*0*ww*0*w';
         //this.DEFAULT_POSITION = 'bbbbb*bbbb*bb*b*b*bbb*0*0*0*0*0*0*wwwww*ww*www*ww*ww*w*0*0*0*0*0*0';
         this.board = new Array(24).fill(null);
         this.outb = new Array();
@@ -41,7 +42,8 @@ class Backgammon {
         this.mapw = [23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
         this.handlemapw = [0, 0, 1, 2, 3, 4, 5];
         this.handlemapb = [0, 12, 13, 14, 15, 16, 17];
-
+        this.history = new Array()
+        this.historimove = new Array()
         this.turn = 'w';
         if (typeof fen === 'undefined') {
             this.load(this.DEFAULT_POSITION);
@@ -50,7 +52,7 @@ class Backgammon {
         }
     }
     newgame = (initposition) => {
-        this.DEFAULT_POSITION = 'ww*0*0*0*0*bbbbb*0*bbb*0*0*0*wwwww*bb*0*0*0*0*wwwww*0*www*0*0*0*bbbbb';
+       
         this.board = new Array(24).fill(null);
         this.outb = new Array();
         this.outw = new Array();
@@ -60,20 +62,20 @@ class Backgammon {
         this.handlew = new Array();
         this.dicesw = new Array(4).fill(0);
         this.dicesb = new Array(4).fill(0);
-        this.mapb = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12];
-        this.mapw = [23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-        this.handlemapw = [0, 0, 1, 2, 3, 4, 5];
-        this.handlemapb = [0, 12, 13, 14, 15, 16, 17];
-
+        this.history = new Array()
+        this.historimove = new Array()
         this.turn = 'w';
         if (typeof fen === 'undefined') {
             this.load(this.DEFAULT_POSITION);
         } else {
             this.load(initposition);
         }
+        this.putinhistory();
     }
     load(fen) {
-        var tokens = fen.split("*")
+        var parts=fen.split("|")
+        var tokens = parts[0].split("*")
+        var tokens1 = parts[1].split("*")
         for (var i = 0; i < tokens.length; i++) {
             var toki = tokens[i];
             if (toki === "0") {
@@ -87,18 +89,83 @@ class Backgammon {
                 //}
             }
         }
+        if (tokens1[0] !== "0") {
+            var toki = tokens1[0];
+            this.outw = toki.split('');
+        }
+        if (tokens1[1] !== "0") {
+            var toki = tokens1[1];
+            this.outb = toki.split('');
+        }
+        if (tokens1[2] !== "0") {
+            var toki = tokens1[2];
+            this.inputb = toki.split('');
+        }
+        if (tokens1[3] !== "0") {
+            var toki = tokens1[3];
+            this.inputw = toki.split('');
+        }
+        if (tokens1[4] !== "0") {
+            var toki = tokens1[4];
+            this.handlew = toki.split('');
+        }
+        if (tokens1[5] !== "0") {
+            var toki = tokens1[5];
+            this.handleb = toki.split('');
+        }
+        this.turn = tokens1[6];
     }
-    getboard = () => {
-        return this.board;
+    undo = () => {
+        const previus = this.history.pop();
+        if (previus) {
+            this.board = previus.board
+            this.outb = previus.outb
+            this.outw = previus.outw
+            this.inputb = previus.inputb
+            this.inputw = previus.inputw
+            this.handleb = previus.handleb
+            this.handlew = previus.handlew
+            this.dicesw = previus.dicesw
+            this.dicesb = previus.dicesb
+            this.turn = previus.turn
+        }
     }
-    getturn = () => {
-        return this.turn;
+    putinhistory = () => {
+        const state = {
+            board: this.board,
+            outb: this.outb,
+            outw: this.outw,
+            inputb: this.inputb,
+            inputw: this.inputw,
+            handleb: this.handleb,
+            handlew: this.handlew,
+            dicesw: this.dicesw,
+            dicesb: this.dicesb,
+            turn: this.turn
+        }
+        this.history.push(state)
+    }
+    putinmovrhistory = (i, j) => {
+        this.historimove.push({i:i,j:j})
+    }
+    getlastmove = () => {
+        return this.historimove[this.historimove.length - 1];
     }
     move = (i, j) => {
         if (this.havehandle() && this.dohandle(i, j)) {
+            if (this.turn === "w" && this.instackw()) { this.dicesw = new Array().fill(0) }
+            if (this.turn === "b" && this.instackb()) { this.dicesb = new Array().fill(0) }
+            this.switchturn();
+            //this.putinhistory();
+            this.putinmovrhistory(i,j);
             return true;
         }
         else if (this.cancollect() && this.collect(i)) {
+            if (this.turn === "w" && this.instackw()) { this.dicesw = new Array().fill(0) }
+            if (this.turn === "b" && this.instackb()) { this.dicesb = new Array().fill(0) }
+            this.switchturn();
+            this.putinmovrhistory(i, j);
+            //this.putinhistory()
             return true;
         }
         else {
@@ -114,6 +181,8 @@ class Backgammon {
                     if (this.turn === "w" && this.instackw()) { this.dicesw = new Array().fill(0) }
                     if (this.turn === "b" && this.instackb()) { this.dicesb = new Array().fill(0) }
                     this.switchturn();
+                    this.putinmovrhistory(i,j);
+                    //this.putinhistory();
                     return true;
                 }
                 return false
@@ -131,8 +200,8 @@ class Backgammon {
             this.dicesb[3] = val;
         }
         if ((this.dicesb[0] !== 0) && (this.dicesb[1] !== 0)) {
-            if (this.instackw()) {
-                this.dicesw = new Array(4).fill(0);
+            if (this.instackb()) {
+                this.dicesb = new Array(4).fill(0);
                 this.switchturn();
             }
         }
@@ -144,9 +213,9 @@ class Backgammon {
             this.dicesw[2] = val;
             this.dicesw[3] = val;
         }
-        if ((this.dicesb[0] !== 0) && (this.dicesb[1] !== 0)) {
-            if (this.instackb()) {
-                this.dicesb = new Array(4).fill(0);
+        if ((this.dicesw[0] !== 0) && (this.dicesw[1] !== 0)) {
+            if (this.instackw()) {
+                this.dicesw = new Array(4).fill(0);
                 this.switchturn();
             }
         }
@@ -258,29 +327,17 @@ class Backgammon {
         return count+" moves - "+res;
     }
     instackw = () => {
+        if (this.cancollectw()) return false
         if (this.handlew.length > 0) {
-            if (this.handlew.length > 1) {
-                var free = 0;
-                for (var j = 0; j < this.dicesw.length; j++) {
-                    if (this.dicesw[j] === 0) continue;
-                    var d = this.handlemapw[this.dicesw[j]];
-                    var dest = this.board[d];
-                    if (dest.length === 0) free++;
-                    if (dest.length === 1 && dest[dest.length - 1] !== 'w') free++;
-                    if (dest.length > 1 && dest[dest.length - 1] === 'w') free++;
-                    if (free > 1) return false
-                }
-            }
-            else {
-                for (var j = 0; j < this.dicesw.length; j++) {
+            var free = 0;
+            for (var j = 0; j < this.dicesw.length; j++) {
                     if (this.dicesw[j] === 0) continue;
                     var d = this.handlemapw[this.dicesw[j]];
                     var dest = this.board[d];
                     if (dest.length === 0) return false;
                     if (dest.length === 1 && dest[dest.length - 1] !== 'w') return false;
                     if (dest.length > 1 && dest[dest.length - 1] === 'w') return false;
-                    if (free > 1) return false
-                }
+                    if (free > 0) return false
             }
         }
         else {
@@ -301,8 +358,8 @@ class Backgammon {
         return true;
     }
     instackb = () => {
+        if (this.cancollectb()) return false
         if (this.handleb.length > 0) {
-            if (this.handleb.length > 1) {
                 var free = 0;
                 for (var j = 0; j < this.dicesb.length; j++) {
                     if (this.dicesb[j] === 0) continue;
@@ -311,20 +368,9 @@ class Backgammon {
                     if (dest.length === 0) free++;
                     if (dest.length === 1 && dest[dest.length - 1] !== 'b') free++;
                     if (dest.length > 1 && dest[dest.length - 1] === 'b') free++;
-                    if (free > 1) return false
+                    if (free > 0) return false
                 }
-            }
-            else {
-                for (var j = 0; j < this.dicesb.length; j++) {
-                    if (this.dicesb[j] === 0) continue;
-                    var d = this.handlemapw[this.dicesb[j]];
-                    var dest = this.board[d];
-                    if (dest.length === 0) return false;
-                    if (dest.length === 1 && dest[dest.length - 1] !== 'b') return false;
-                    if (dest.length > 1 && dest[dest.length - 1] === 'b') return false;
-                    if (free > 1) return false
-                }
-            }
+            
         }
         else {
             for (var i = 0; i < this.board.length; i++) {
@@ -377,7 +423,7 @@ class Backgammon {
     stackhandleb = () => {
         let locked = 0;
         let dices = 0;
-        for (var i = 0; i < this.dicesw.length; i++) {
+        for (var i = 0; i < this.dicesb.length; i++) {
             if (this.dicesb[i] === 0) continue;
             dices++;
             var dest = this.board[this.handlemapb[this.dicesb[i]]];
@@ -447,7 +493,8 @@ class Backgammon {
         }
         return false
     }
-     cancollectw = () => {
+    cancollectw = () => {
+        if (this.handlew.length>0) return false
          for (var i = 0; i < this.board.length; i++) {
              if (i > 11 && i < 18) continue
              var dest = this.board[i];
@@ -456,7 +503,8 @@ class Backgammon {
          }
          return true;
      }
-     cancollectb = () => {
+    cancollectb = () => {
+        if (this.handleb.length > 0) return false
          for (var i = 6; i < this.board.length; i++) {
              var dest = this.board[i];
              if (dest.length === 0) continue;
@@ -495,15 +543,15 @@ class Backgammon {
              var work = this.board[s];
              var curr = this.mapw[s]+1;
              if (curr === this.dicesw[j]) {
+                 if (work[work.length - 1] !== 'w') continue
                  this.dicesw[j] = 0;
                  this.outw.push(work.pop());
-                 this.switchturn();
                  return true;
              }
              if (curr < this.dicesw[j] && this.dicesw[j] >= this.maxoutw()) {
+                 if (work[work.length - 1] !== 'w') continue
                  this.dicesw[j] = 0;
                  this.outw.push(work.pop());
-                 this.switchturn();
                  return true;
              }
          }
@@ -517,16 +565,16 @@ class Backgammon {
              if (this.dicesb[j] === 0) continue;
              var work = this.board[s];
              var curr = this.mapb[s]+1;
-             if (curr<=this.dicesb[j]) {
+             if (curr <= this.dicesb[j]) {
+                 if (work[work.length - 1] === 'w') continue
                  this.dicesb[j] = 0;
                  this.outb.push(work.pop());
-                 this.switchturn();
                  return true;
              }
              if (curr < this.dicesb[j] && this.dicesb[j] >= this.maxoutb()) {
+                 if (work[work.length - 1] === 'w') continue
                  this.dicesb[j] = 0;
                  this.outb.push(work.pop());
-                 this.switchturn();
                  return true;
              }
          }
