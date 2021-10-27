@@ -7,6 +7,7 @@ import { usePubNub } from 'pubnub-react';
 import { useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import shortid from 'shortid';
+import { BrowserView, MobileView } from 'react-device-detect';
 
 function BackamonPage() {
     const search = useLocation().search;
@@ -79,31 +80,36 @@ function BackamonPage() {
         if (message.user !== user1) {
             setUser2(message.user)
         }
+        let newMessages = [message];
+        setMessages(messages => messages.concat(newMessages));
         if (chanellname === gameChannel) {
             if (message.user === user1) return;
             if (typeof message === 'string' || message.hasOwnProperty('text')) {
                 const text = message.text || message;
                 if (text) {
                     const mes = JSON.parse(text);
-                    if (mes.dice) {
-                        if (mes.dice === "w") {
-                            mes.from === 0 ? setcheatvalw1(mes.to):setcheatvalw2(mes.to)
-                            setdicew(mes.from, mes.to, false)
-                             mes.from === 0 ?onRollwf0():onRollwf1()
-                        } else {
-                            mes.from === 0 ? setcheatvalb1(mes.to) : setcheatvalb2(mes.to)
-                            setdiceb(mes.from, mes.to, false)
-                             mes.from === 0 ?onRollbf0():onRollbf1()
-                        }
-                    }
-                    else
                     move(mes.from, mes.to, false, "", "");
                 }
             }
         }
         if (chanellname === lobbyChannel) {
-            let newMessages = [message];
-            setMessages(messages => messages.concat(newMessages));
+            if (message.cmd === "SETDICE") {
+                if (typeof message === 'string' || message.hasOwnProperty('text')) {
+                    const text = message.text || message;
+                    if (text) {
+                        const mes = JSON.parse(text);
+                        if (mes.dice === "w") {
+                            mes.from === 0 ? setcheatvalw1(mes.to) : setcheatvalw2(mes.to)
+                            setdicew(mes.from, mes.to, false)
+                            mes.from === 0 ? onRollwf0() : onRollwf1()
+                        } else {
+                            mes.from === 0 ? setcheatvalb1(mes.to) : setcheatvalb2(mes.to)
+                            setdiceb(mes.from, mes.to, false)
+                            mes.from === 0 ? onRollbf0() : onRollbf1()
+                        }
+                    }
+                }
+            }
             if (message.cmd === "JOIN") {
                 setgameChannel('chessgame--' + roomId)
             }
@@ -501,7 +507,6 @@ function BackamonPage() {
     const setUserCol = (user, col) => { setUser1(user); setColor1(col); }
     const onRollw = () => {
         if (diceRefw && diceRefw.current) {
-            setdisabledb(false);
             setdisabledw(true);
             diceRefw.current.style.pointerEvents = "auto";
             diceRefw.current.children[0].click();
@@ -512,7 +517,6 @@ function BackamonPage() {
     const onRollb = () => {
         if (diceRefb && diceRefb.current) {
             setdisabledb(true);
-            setdisabledw(false);
             diceRefb.current.style.pointerEvents = "auto";
             diceRefb.current.children[0].click();
             diceRefb.current.children[1].click();
@@ -522,7 +526,6 @@ function BackamonPage() {
     const onRollwf0 = () => {
         if (diceRefwf && diceRefwf.current) {
             setdisabledb(false);
-            setdisabledw(true);
             diceRefwf.current.style.pointerEvents = "auto";
             diceRefwf.current.children[0].click();
             diceRefwf.current.style.pointerEvents = "none";
@@ -531,7 +534,6 @@ function BackamonPage() {
     const onRollwf1 = () => {
         if (diceRefwf && diceRefwf.current) {
             setdisabledb(false);
-            setdisabledw(true);
             diceRefwf.current.style.pointerEvents = "auto";
             diceRefwf.current.children[1].click();
             diceRefwf.current.style.pointerEvents = "none";
@@ -539,7 +541,6 @@ function BackamonPage() {
     };
     const onRollbf0 = () => {
         if (diceRefbf && diceRefbf.current) {
-            setdisabledb(true);
             setdisabledw(false);
             diceRefbf.current.style.pointerEvents = "auto";
             diceRefbf.current.children[0].click();
@@ -548,7 +549,6 @@ function BackamonPage() {
     };
     const onRollbf1 = () => {
         if (diceRefbf && diceRefbf.current) {
-            setdisabledb(true);
             setdisabledw(false);
             diceRefbf.current.style.pointerEvents = "auto";
             diceRefbf.current.children[1].click();
@@ -558,11 +558,11 @@ function BackamonPage() {
     const onNewGame = () => {
         newGame();
     };
-    const onSetDiceb = (pos,val) => {
-        setdiceb(pos, val, true, gameChannel, user1)
+    const onSetDiceb = (pos, val) => {
+        setdiceb(pos, val, true, lobbyChannel, user1)
     };
     const onSetDicew = (pos, val) => {
-        setdicew(pos, val, true, gameChannel, user1)
+        setdicew(pos, val, true, lobbyChannel, user1)
     };
     return (
         <div>
@@ -577,16 +577,16 @@ function BackamonPage() {
                             handlemove={handleBaseMove}
                     />
                     </div>
-                    {color1 !== "White" && turn === "b"? (<button className="buttongreen" onClick={onRollb}>Roll!</button>):null}
+                    <button className="buttongreen" onClick={onRollb} disabled={color1 === "White" || turn === "w" || disabledb}>Roll!</button>
                     {color1 === "White" ? (
-                        <div ref={diceRefbf} style={{ pointerEvents: "none" }} >
-                            <Dice size={100} cheatValue={cheatvalb1} />
-                            <Dice size={100} cheatValue={cheatvalb2} />
+                        <div ref={diceRefbf} style={{pointerEvents: "none"}} >
+                            <Dice size={100} cheatValue={cheatvalb1} rollingTime={500} />
+                            <Dice size={100} cheatValue={cheatvalb2} rollingTime={500}/>
                         </div>
                     ) : (
-                     <div ref={diceRefb} style={{ pointerEvents: "none" }}>
-                        <Dice size={100} onRoll={(value) => onSetDiceb(0,value)}/>
-                        <Dice size={100} onRoll={(value) => onSetDiceb(1,value)}/>
+                     <div ref={diceRefb} style={{pointerEvents: "none"}}>
+                        <Dice size={100} onRoll={(value) => onSetDiceb(0,value)} rollingTime={500}/>
+                        <Dice size={100} onRoll={(value) => onSetDiceb(1,value)} rollingTime={1000}/>
                      </div>
                 )}
                 <div className="check-container">
@@ -612,15 +612,15 @@ function BackamonPage() {
                             handlemove={handleBaseMove}
                     />
                     </div>
-                    {color1 === "White" && turn === "w" ? (<button className="buttongreen" onClick={onRollw}>Roll!</button>) : null}
+                    <button className="buttongreen" onClick={onRollw} disabled={color1 !== "White" || turn === "b" || disabledw}>Roll!</button>
                     {color1 === "White" ? ((<div>
-                        <div ref={diceRefw} style={{ pointerEvents: "none" }}>
-                            <Dice size={100} onRoll={(value) => onSetDicew(0, value)} />
-                            <Dice size={100} onRoll={(value) => onSetDicew(1, value)} />
+                        <div ref={diceRefw} style={{pointerEvents:"none"}}>
+                            <Dice size={100} onRoll={(value) => onSetDicew(0, value)} rollingTime={500}/>
+                            <Dice size={100} onRoll={(value) => onSetDicew(1, value)} rollingTime={1000}/>
                         </div></div>
                     )) : (<div ref={diceRefwf} style={{ pointerEvents: "none" }}>
-                            <Dice size={100} cheatValue={cheatvalw1} />
-                            <Dice size={100} cheatValue={cheatvalw2} />
+                            <Dice size={100} cheatValue={cheatvalw1} rollingTime={500}/>
+                            <Dice size={100} cheatValue={cheatvalw2} rollingTime={500}/>
                         </div>)}
                 
                 <div className="check-container">
@@ -716,6 +716,29 @@ function BackamonPage() {
                     </button>
                 </div>
             </div>
+            <BrowserView>
+                <div className="log">
+                    <div className="resp-table">
+                        <div className="resp-table-caption">
+                            Game log Table {roomId}
+                        </div>
+                        {messages.map((item, i) => (
+                            <div className="resp-table-row">
+                                <div className="table-body-cell">{item.user}</div>
+                                <div className="table-body-cell">{item.msg}</div>
+                            </div>
+                        ))}
+
+                        <div className="resp-table-row">
+                            <div className="table-body-cell">Channels {isLooker ? (<span>Looker</span>) : (<span>Player</span>)}</div>
+                            <div className="table-body-cell">{lobbyChannel}</div>
+                            <div className="table-body-cell">{gameChannel}</div>
+                        </div>
+
+
+                    </div>
+                 </div>
+            </BrowserView>
         </div >
         )
 }

@@ -377,7 +377,12 @@ input[type=text], select {
     .buttongreen:hover {
         background-color: #45a049;
     }
-
+    .buttongreen:disabled,
+    .buttongreen[disabled] {
+        border: 1px solid #999999;
+        background-color: #cccccc;
+        color: #666666;
+    }
 input[type=submit] {
     width: 100%;
     background-color: #4CAF50;

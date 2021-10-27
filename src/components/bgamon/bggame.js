@@ -16,7 +16,9 @@ function publishMessage(from, to, channel, user,dice) {
     });
     let messageObject = {
         text: JSON.stringify({ from: from, to: to, user: user,dice:dice}),
-        user: user
+        user: user,
+        cmd: "SETDICE",
+        msg: dice?"Set Dice " + dice + " " +from+" "+to:"Move piece from " + from+" to "+to
     };
 
     pubnub.publish({

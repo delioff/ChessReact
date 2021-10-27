@@ -157,14 +157,14 @@ class Backgammon {
             if (this.turn === "b" && this.instackb()) { this.dicesb = new Array().fill(0) }
             this.switchturn();
             //this.putinhistory();
-            this.putinmovrhistory(i,j);
+            //this.putinmovrhistory(i,j);
             return true;
         }
         else if (this.cancollect() && this.collect(i)) {
             if (this.turn === "w" && this.instackw()) { this.dicesw = new Array().fill(0) }
             if (this.turn === "b" && this.instackb()) { this.dicesb = new Array().fill(0) }
             this.switchturn();
-            this.putinmovrhistory(i, j);
+            //this.putinmovrhistory(i, j);
             //this.putinhistory()
             return true;
         }
@@ -181,7 +181,7 @@ class Backgammon {
                     if (this.turn === "w" && this.instackw()) { this.dicesw = new Array().fill(0) }
                     if (this.turn === "b" && this.instackb()) { this.dicesb = new Array().fill(0) }
                     this.switchturn();
-                    this.putinmovrhistory(i,j);
+                    //this.putinmovrhistory(i,j);
                     //this.putinhistory();
                     return true;
                 }
