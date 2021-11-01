@@ -180,6 +180,8 @@ function BackamonPage() {
                 })
             }
             if (message.cmd === "ACCEPTNEWGAME") {
+                setdisabledw(false)
+                setdisabledb(false)
                 newGame()
                 setisDisabledNewGame(false)
             }

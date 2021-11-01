@@ -40,6 +40,8 @@ class Backgammon {
         this.dicesb = new Array(4).fill(0);
         this.mapb = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12];
         this.mapw = [23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+        this.mapww = [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
+        this.mapbb = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
         this.handlemapw = [0, 0, 1, 2, 3, 4, 5];
         this.handlemapb = [0, 12, 13, 14, 15, 16, 17];
         this.history = new Array()
@@ -170,6 +172,7 @@ class Backgammon {
         }
         else {
             if (j > 25 || i > 25) return false;
+            if (this.havehandle()) return false;
             if (this.islegalmove(i, j)) {
 
                 var source = this.board[i];
@@ -187,6 +190,11 @@ class Backgammon {
                 }
                 return false
 
+            }
+            else {
+                if (this.turn === "w" && this.instackw()) { this.dicesw = new Array().fill(0) }
+                if (this.turn === "b" && this.instackb()) { this.dicesb = new Array().fill(0) }
+                this.switchturn();
             }
         }
         return false;
@@ -329,25 +337,22 @@ class Backgammon {
     instackw = () => {
         if (this.cancollectw()) return false
         if (this.handlew.length > 0) {
-            var free = 0;
             for (var j = 0; j < this.dicesw.length; j++) {
                     if (this.dicesw[j] === 0) continue;
                     var d = this.handlemapw[this.dicesw[j]];
                     var dest = this.board[d];
-                    if (dest.length === 0) return false;
-                    if (dest.length === 1 && dest[dest.length - 1] !== 'w') return false;
+                    if (dest.length === 0 || dest.length === 1) return false;
                     if (dest.length > 1 && dest[dest.length - 1] === 'w') return false;
-                    if (free > 0) return false
             }
         }
         else {
             for (var i = 0; i < this.board.length; i++) {
-                var curr = this.board[i];
+                var curr = this.board[this.mapww[i]];
                 if (curr.length === 0) continue;
                 if (curr.length > 0 && curr[curr.length - 1] !== 'w') continue;
                 for (var j = 0; j < this.dicesw.length; j++) {
                     if (this.dicesw[j] === 0) continue;
-                    var d = this.mapw[i] - this.dicesw[j];
+                    var d = this.mapww[i] - this.dicesw[j];
                     if (d < 0 || d > 23) continue
                     var dest = this.board[d];
                     if (dest.length === 0) return false;
@@ -360,15 +365,12 @@ class Backgammon {
     instackb = () => {
         if (this.cancollectb()) return false
         if (this.handleb.length > 0) {
-                var free = 0;
                 for (var j = 0; j < this.dicesb.length; j++) {
                     if (this.dicesb[j] === 0) continue;
                     var d = this.handlemapb[this.dicesb[j]];
                     var dest = this.board[d];
-                    if (dest.length === 0) free++;
-                    if (dest.length === 1 && dest[dest.length - 1] !== 'b') free++;
-                    if (dest.length > 1 && dest[dest.length - 1] === 'b') free++;
-                    if (free > 0) return false
+                    if (dest.length === 0 || dest.length === 1) return false;
+                    if (dest.length > 1 && dest[dest.length - 1] === 'b') return false;
                 }
             
         }
@@ -379,7 +381,7 @@ class Backgammon {
                 if (curr.length > 0 && curr[curr.length - 1] !== 'b') continue;
                 for (var j = 0; j < this.dicesb.length; j++) {
                     if (this.dicesb[j] === 0) continue;
-                    var d = this.mapb[i] - this.dicesb[j];
+                    var d = i - this.dicesb[j];
                     if (d < 0 || d > 23) continue;
                     var dest = this.board[d];
                     if (dest.length === 0) return false;

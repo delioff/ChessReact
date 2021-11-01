@@ -69,7 +69,8 @@ export function resendlastmove(channel, user) {
     const move = backgamon.getlastmove()
     if (move) publishMessage(move.i,move.j,channel, user)
 }
-export function move(i, j,frompush, channel, user) {
+export function move(i, j, frompush, channel, user) {
+    if (backgamon.gameover()) return false;
     if (backgamon.move(i, j)) {
         if (frompush)  publishMessage(i,j,channel, user);
         updateGame()
@@ -78,6 +79,7 @@ export function move(i, j,frompush, channel, user) {
     return false;
 }
 export function setdicew(pos, val, p, gameChannel, user) {
+    if (backgamon.gameover()) return false;
     backgamon.setdicesw(pos, val)
     if (p) {
         publishMessage(pos, val, gameChannel, user,"w")
@@ -85,6 +87,7 @@ export function setdicew(pos, val, p, gameChannel, user) {
     updateGame();
 }
 export function setdiceb(pos, val, p, gameChannel, user) {
+    if (backgamon.gameover()) return false;
     backgamon.setdicesb(pos, val)
     if (p) {
         publishMessage(pos, val, gameChannel, user,"b")
