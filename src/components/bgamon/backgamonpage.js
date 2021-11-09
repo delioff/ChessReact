@@ -308,69 +308,72 @@ function BackamonPage() {
     // Create a room channel
     const onPressUndo = (e) => {
         if (isLooker) return;
-        if (!((turn === "w" && color1 === "White") || (turn === "b" && color1 === "Black"))) {
-            pubnub.publish({
-                message: {
-                    cmd: "UNDO",
-                    user: user1,
-                    msg: " whant's undo last move"
-                },
-                channel: 'chesslobby--' + roomId
-            });
-            setisDisabledUndo(true);
-        }
-        else {
-            Swal.fire({
-                position: 'top',
-                allowOutsideClick: false,
-                title: isLooker ? "Can't UNDO you are Looker" : "Can't UNDO at this stage",
-                width: 275,
-                padding: '0.7em',
-                // Custom CSS
-                customClass: {
-                    heightAuto: false,
-                    title: 'title-class',
-                    popup: 'popup-class',
-                    confirmButton: 'button-class'
-                }
-            })
-        }
+        undo();
+        //if (!((turn === "w" && color1 === "White") || (turn === "b" && color1 === "Black"))) {
+        //    pubnub.publish({
+        //        message: {
+        //            cmd: "UNDO",
+        //            user: user1,
+        //            msg: " whant's undo last move"
+        //        },
+        //        channel: 'chesslobby--' + roomId
+        //    });
+        //    setisDisabledUndo(true);
+        //}
+        //else {
+        //    Swal.fire({
+        //        position: 'top',
+        //        allowOutsideClick: false,
+        //        title: isLooker ? "Can't UNDO you are Looker" : "Can't UNDO at this stage",
+        //        width: 275,
+        //        padding: '0.7em',
+        //        // Custom CSS
+        //        customClass: {
+        //            heightAuto: false,
+        //            title: 'title-class',
+        //            popup: 'popup-class',
+        //            confirmButton: 'button-class'
+        //        }
+        //    })
+        //}
     }
     // Create a room channel
     const onPressNewGame = (e) => {
-        if (isLooker) return;
-        pubnub.publish({
-            message: {
-                cmd: "NEWGAME",
-                user: user1,
-                msg: " whant's new game"
-            },
-            channel: 'chesslobby--' + roomId
-        });
-        setisDisabledNewGame(true);
+        newGame();
+        //if (isLooker) return;
+        //pubnub.publish({
+        //    message: {
+        //        cmd: "NEWGAME",
+        //        user: user1,
+        //        msg: " whant's new game"
+        //    },
+        //    channel: 'chesslobby--' + roomId
+        //});
+        //setisDisabledNewGame(true);
 
     }
     const handleBaseMove = (fromPosition, position) => {
         if (isLooker) return;
-        if ((turn === "w" && color1 === "White") || (turn === "b" && color1 === "Black")) {
-            move(fromPosition, position, true, gameChannel, user1)
-        }
-        else {
-            Swal.fire({
-                position: 'top',
-                allowOutsideClick: false,
-                title: 'Not your turn!',
-                width: 275,
-                padding: '0.7em',
-                // Custom CSS
-                customClass: {
-                    heightAuto: false,
-                    title: 'title-class',
-                    popup: 'popup-class',
-                    confirmButton: 'button-class'
-                }
-            })
-        }
+        move(fromPosition, position, false, gameChannel, user1)
+        //if ((turn === "w" && color1 === "White") || (turn === "b" && color1 === "Black")) {
+        //    move(fromPosition, position, true, gameChannel, user1)
+        //}
+        //else {
+        //    Swal.fire({
+        //        position: 'top',
+        //        allowOutsideClick: false,
+        //        title: 'Not your turn!',
+        //        width: 275,
+        //        padding: '0.7em',
+        //        // Custom CSS
+        //        customClass: {
+        //            heightAuto: false,
+        //            title: 'title-class',
+        //            popup: 'popup-class',
+        //            confirmButton: 'button-class'
+        //        }
+        //    })
+        //}
     }
 
     const onPressLF = (e) => {
@@ -509,7 +512,7 @@ function BackamonPage() {
     const setUserCol = (user, col) => { setUser1(user); setColor1(col); }
     const onRollw = () => {
         if (diceRefw && diceRefw.current) {
-            setdisabledw(true);
+            //setdisabledw(true);
             diceRefw.current.style.pointerEvents = "auto";
             diceRefw.current.children[0].click();
             diceRefw.current.children[1].click();
@@ -518,7 +521,7 @@ function BackamonPage() {
     };
     const onRollb = () => {
         if (diceRefb && diceRefb.current) {
-            setdisabledb(true);
+            //setdisabledb(true);
             diceRefb.current.style.pointerEvents = "auto";
             diceRefb.current.children[0].click();
             diceRefb.current.children[1].click();
@@ -561,10 +564,12 @@ function BackamonPage() {
         newGame();
     };
     const onSetDiceb = (pos, val) => {
-        setdiceb(pos, val, true, lobbyChannel, user1)
+        setdiceb(pos, val, false, lobbyChannel, user1)
+        //setdiceb(pos, val, true, lobbyChannel, user1)
     };
     const onSetDicew = (pos, val) => {
-        setdicew(pos, val, true, lobbyChannel, user1)
+        setdicew(pos, val, false, lobbyChannel, user1)
+        //setdicew(pos, val, true, lobbyChannel, user1)
     };
     return (
         <div>
@@ -579,18 +584,23 @@ function BackamonPage() {
                             handlemove={handleBaseMove}
                     />
                     </div>
-                    <button className="buttongreen" onClick={onRollb} disabled={color1 === "White" || turn === "w" || disabledb}>Roll!</button>
-                    {color1 === "White" ? (
-                        <div ref={diceRefbf} style={{pointerEvents: "none"}} >
-                            <Dice size={100} cheatValue={cheatvalb1} rollingTime={500} />
-                            <Dice size={100} cheatValue={cheatvalb2} rollingTime={500}/>
-                        </div>
-                    ) : (
+                    <button className="buttongreen" onClick={onRollb} disabled={turn === "w"}>Roll!</button>
                      <div ref={diceRefb} style={{pointerEvents: "none"}}>
                         <Dice size={100} onRoll={(value) => onSetDiceb(0,value)} rollingTime={500}/>
                         <Dice size={100} onRoll={(value) => onSetDiceb(1,value)} rollingTime={1000}/>
                      </div>
-                )}
+                    {/*<button className="buttongreen" onClick={onRollb} disabled={color1 === "White" || turn === "w" || disabledb}>Roll!</button>*/}
+                    {/*{color1 === "White" ? (*/}
+                    {/*    <div ref={diceRefbf} style={{pointerEvents: "none"}} >*/}
+                    {/*        <Dice size={100} cheatValue={cheatvalb1} rollingTime={500} />*/}
+                    {/*        <Dice size={100} cheatValue={cheatvalb2} rollingTime={500}/>*/}
+                    {/*    </div>*/}
+                    {/*) : (*/}
+                    {/* <div ref={diceRefb} style={{pointerEvents: "none"}}>*/}
+                    {/*    <Dice size={100} onRoll={(value) => onSetDiceb(0,value)} rollingTime={500}/>*/}
+                    {/*    <Dice size={100} onRoll={(value) => onSetDiceb(1,value)} rollingTime={1000}/>*/}
+                    {/* </div>*/}
+                    {/* )}*/}
                 <div className="check-container">
                     < BoardCheckers
                     piece={outb}
@@ -614,16 +624,21 @@ function BackamonPage() {
                             handlemove={handleBaseMove}
                     />
                     </div>
-                    <button className="buttongreen" onClick={onRollw} disabled={color1 !== "White" || turn === "b" || disabledw}>Roll!</button>
-                    {color1 === "White" ? ((<div>
+                    <button className="buttongreen" onClick={onRollw} disabled={turn === "b" }>Roll!</button>
                         <div ref={diceRefw} style={{pointerEvents:"none"}}>
                             <Dice size={100} onRoll={(value) => onSetDicew(0, value)} rollingTime={500}/>
                             <Dice size={100} onRoll={(value) => onSetDicew(1, value)} rollingTime={1000}/>
-                        </div></div>
-                    )) : (<div ref={diceRefwf} style={{ pointerEvents: "none" }}>
-                            <Dice size={100} cheatValue={cheatvalw1} rollingTime={500}/>
-                            <Dice size={100} cheatValue={cheatvalw2} rollingTime={500}/>
-                        </div>)}
+                        </div>
+                    {/*<button className="buttongreen" onClick={onRollw} disabled={color1 !== "White" || turn === "b" || disabledw}>Roll!</button>*/}
+                    {/*{color1 === "White" ? ((<div>*/}
+                    {/*    <div ref={diceRefw} style={{pointerEvents:"none"}}>*/}
+                    {/*        <Dice size={100} onRoll={(value) => onSetDicew(0, value)} rollingTime={500}/>*/}
+                    {/*        <Dice size={100} onRoll={(value) => onSetDicew(1, value)} rollingTime={1000}/>*/}
+                    {/*    </div></div>*/}
+                    {/*)) : (<div ref={diceRefwf} style={{ pointerEvents: "none" }}>*/}
+                    {/*        <Dice size={100} cheatValue={cheatvalw1} rollingTime={500}/>*/}
+                    {/*        <Dice size={100} cheatValue={cheatvalw2} rollingTime={500}/>*/}
+                    {/*    </div>)}*/}
                 
                 <div className="check-container">
                     <BoardCheckers
