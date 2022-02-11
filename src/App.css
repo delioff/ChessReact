@@ -8,8 +8,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background-image: url("./components/assets/barbi.png"), url("./components/assets/candi.png");
+    background-position: right center, left center;
+    background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
-    flex-direction:row;
+    flex-direction: row;
 }
 .itemcontainer {
     padding:40px;
@@ -408,6 +411,7 @@ input[type=submit] {
     background: black;
     width: 25%;
     height: 100%;
+    opacity:0.8;
 }
 
 .middlebox {
@@ -421,4 +425,5 @@ input[type=submit] {
     background: #F0D9B5;
     width: 25%;
     height: 100%;
+    opacity:0.8;
 }

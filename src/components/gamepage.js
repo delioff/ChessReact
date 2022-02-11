@@ -149,6 +149,12 @@ function GamePage() {
             if (message.cmd === "ACCEPTNEWGAME") {
                 resetGame()
                 setisDisabledNewGame(false)
+                if (color1 === "White") {
+                    setColor1("Black")
+                }
+                else {
+                    setColor1("White")
+                }
             }
             if (message.cmd === "ACCEPTUNDO") {
                 unduLastMove()
