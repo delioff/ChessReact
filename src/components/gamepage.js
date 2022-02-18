@@ -477,6 +477,8 @@ function GamePage() {
             }
         })
     }
+    var today = new Date();
+    const className = "container" + today.getDay();
     const setUserCol = (user, col) => { setUser1(user); setColor1(col);}
     // Join a room channel
    
@@ -505,7 +507,7 @@ function GamePage() {
                 RoomID={roomId}
                 IsDisabled={isDisabled}
                 SetColorUser={setUserCol} />
-             <div className="container">
+            <div className={className}>
 
                     <h2 className="vertical-text">
                         {isGameOver && ("GAME OVER")}
