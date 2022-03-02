@@ -62,7 +62,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assetsm4.png"), url("./components/assets/m15.png");
+    background-image: url("./components/assets/m4.png"), url("./components/assets/m15.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
