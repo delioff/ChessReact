@@ -477,10 +477,10 @@ function GamePage() {
             }
         })
     }
-    const className = "container" + Math.floor(Math.random() * 11);
+    const className = "container" + d.getDate();
     const setUserCol = (user, col) => { setUser1(user); setColor1(col);}
     // Join a room channel
-   
+    
     let inf = [];
     let x = ["a", "b", "c", "d", "e", "f", "g", "h"];
     let y = ["8", "7", "6", "5", "4", "3", "2", "1"];
