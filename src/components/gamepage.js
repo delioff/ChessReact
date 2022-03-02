@@ -477,7 +477,7 @@ function GamePage() {
             }
         })
     }
-    const className = "container" + d.getDate();
+    const className = "container" + new Date().getDate();
     const setUserCol = (user, col) => { setUser1(user); setColor1(col);}
     // Join a room channel
     
