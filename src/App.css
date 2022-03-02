@@ -8,7 +8,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/barbi0.png"), url("./components/assets/candi0.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -19,7 +18,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/barbi0.png"), url("./components/assets/candi0.png");
+    background-image: url("./components/assets/m0.png"), url("./components/assets/m11.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -30,7 +29,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/barbi1.png"), url("./components/assets/candi1.png");
+    background-image: url("./components/assets/m1.png"), url("./components/assets/m12.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -41,7 +40,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/barbi2.png"), url("./components/assets/candi2.png");
+    background-image: url("./components/assets/m2.png"), url("./components/assets/m13.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -52,7 +51,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/barbi3.png"), url("./components/assets/candi3.png");
+    background-image: url("./components/assets/m3.png"), url("./components/assets/m14.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -63,7 +62,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/barbi4.png"), url("./components/assets/candi4.png");
+    background-image: url("./components/assetsm4.png"), url("./components/assets/m15.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -74,7 +73,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/barbi5.png"), url("./components/assets/candi5.png");
+    background-image: url("./components/assets/m5.png"), url("./components/assets/m16.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -85,7 +84,62 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/barbi6.png"), url("./components/assets/candi6.png");
+    background-image: url("./components/assets/m6.png"), url("./components/assets/m17.png");
+    background-position: right center, left center;
+    background-repeat: no-repeat,no-repeat;
+    background-color: rgb(34, 34, 34);
+    flex-direction: row;
+}
+.container7 {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url("./components/assets/m7.png"), url("./components/assets/m18.png");
+    background-position: right center, left center;
+    background-repeat: no-repeat,no-repeat;
+    background-color: rgb(34, 34, 34);
+    flex-direction: row;
+}
+.container8 {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url("./components/assets/m8.png"), url("./components/assets/m19.png");
+    background-position: right center, left center;
+    background-repeat: no-repeat,no-repeat;
+    background-color: rgb(34, 34, 34);
+    flex-direction: row;
+}
+.container9 {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url("./components/assets/m9.png"), url("./components/assets/m20.png");
+    background-position: right center, left center;
+    background-repeat: no-repeat,no-repeat;
+    background-color: rgb(34, 34, 34);
+    flex-direction: row;
+}
+.container10 {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url("./components/assets/m10.png"), url("./components/assets/m21.png");
+    background-position: right center, left center;
+    background-repeat: no-repeat,no-repeat;
+    background-color: rgb(34, 34, 34);
+    flex-direction: row;
+}
+.container11 {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url("./components/assets/m11.png"), url("./components/assets/m22.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);

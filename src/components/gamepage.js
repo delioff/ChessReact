@@ -477,8 +477,7 @@ function GamePage() {
             }
         })
     }
-    var today = new Date();
-    const className = "container" + today.getDay();
+    const className = "container" + Math.floor(Math.random() * 11);
     const setUserCol = (user, col) => { setUser1(user); setColor1(col);}
     // Join a room channel
    
