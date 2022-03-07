@@ -52,8 +52,15 @@ function GamePage() {
             setTurn(game.turn)
             setHistory(game.history)
             setIncheck(game.incheck)
-            setuser1score(game.user1score)
-            setuser2score(game.user2score)
+            if (game.isNew) {
+                color1 === "White" ? setUserColNew("Black") : setUserColNew("White")
+                setuser1score(game.user2score)
+                setuser2score(game.user1score)
+            }
+            else {
+                setuser1score(game.user1score)
+                setuser2score(game.user2score)
+            }
         })
         return () => subscribe.unsubscribe()
     }, [])
@@ -149,12 +156,7 @@ function GamePage() {
             if (message.cmd === "ACCEPTNEWGAME") {
                 resetGame()
                 setisDisabledNewGame(false)
-                if (color1 === "White") {
-                    setColor1("Black")
-                }
-                else {
-                    setColor1("White")
-                }
+               
             }
             if (message.cmd === "ACCEPTUNDO") {
                 unduLastMove()
@@ -478,7 +480,9 @@ function GamePage() {
         })
     }
     const className = "container" + new Date().getDate();
-    const setUserCol = (user, col) => { setUser1(user); setColor1(col);}
+    const setUserCol = (user, col) => { setUser1(user); setColor1(col); }
+    const setUserColNew = (col) => { setColor1(col); }
+    const getColor = () => { return color1;}
     // Join a room channel
     
     let inf = [];
@@ -514,7 +518,7 @@ function GamePage() {
                     
                     <div className="board-container">
                         
-                    <Board board={board} handlemove={handleBaseMove} color={color1} />
+                    <Board board={board} handlemove={handleBaseMove} color={getColor()} />
                         
                     </div>
                     <div className="row">

@@ -17,8 +17,9 @@ export function initGame() {
 }
 
 export function resetGame() {
+
     chess.reset();
-    updateGame();
+    updateGame(null,true);
 }
 export function unduLastMove() {
     chess.undo();
@@ -101,7 +102,7 @@ export function move(from, to, promotion) {
     }
 }
 
-export function updateGame(pendingPromotion) {
+export function updateGame(pendingPromotion,isnew) {
     const isGameOver = chess.game_over()
     const currgame = gameSubject.getValue()
     const curruserscore1 = currgame && currgame.user1score ? currgame.user1score : 0
@@ -114,8 +115,9 @@ export function updateGame(pendingPromotion) {
         result: isGameOver ? getGameResult() : null,
         history: chess.history({ verbose: true }),
         incheck: getin_check(),
-        user1score: curruserscore1 + getPointResult("w"),
-        user2score: curruserscore2 + getPointResult("b")
+        user1score:curruserscore1 + getPointResult("w"),
+        user2score:curruserscore2 + getPointResult("b"),
+        isNew:isnew
     }
     //localStorage.setItem('savedGame', chess.fen())
     gameSubject.next(newGame)
