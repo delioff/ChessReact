@@ -62,7 +62,7 @@ export function updateGame() {
         counmoves: backgamon.counmoves(),
         winner: getWinner()
     }
-    //localStorage.setItem('savedGame', chess.fen())
+    //sessionStorage.setItem('savedGame', chess.fen())
     backgamonsubject.next(newGame)
 }
 export function resendlastmove(channel, user) {

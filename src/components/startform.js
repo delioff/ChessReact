@@ -88,7 +88,7 @@ export default function StartForm({ User, Color, RoomID, SetColorUser, IsDisable
             setLuser(value)
             seturl(window.location.origin + window.location.pathname + "?user=" + value + "&color=" + lcolor + "&room=" + lroomid)
             SetColorUser(value, lcolor)
-            localStorage.setItem(
+            sessionStorage.setItem(
                 'userinfo', JSON.stringify({
                     username: value,
                     color: lcolor,
@@ -98,7 +98,7 @@ export default function StartForm({ User, Color, RoomID, SetColorUser, IsDisable
             setLcolor(value)
             seturl(window.location.origin + window.location.pathname + "?user=" + luser + "&color=" + value + "&room=" + lroomid)
             SetColorUser(luser, value)
-            localStorage.setItem(
+            sessionStorage.setItem(
                 'userinfo', JSON.stringify({
                     username: luser,
                     color: value,
@@ -109,7 +109,7 @@ export default function StartForm({ User, Color, RoomID, SetColorUser, IsDisable
 
     const handleSubmit=(event) => {
         event.preventDefault();
-        localStorage.setItem(
+        sessionStorage.setItem(
             'userinfo', JSON.stringify({
                 username: luser,
                 color: lcolor,

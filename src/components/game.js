@@ -9,24 +9,24 @@ const chess = new Chess()
 export const gameSubject = new BehaviorSubject()
 
 export function initGame() {
-    //const savedGame = localStorage.getItem('savedGame')
+    //const savedGame = sessionStorage.getItem('savedGame')
     //if (savedGame) {
     //    chess.load(savedGame)
     //}
     updateGame();
 }
 
-export function resetGame() {
+export function resetGame(iswhite) {
 
     chess.reset();
-    updateGame(null,true);
+    updateGame(null,true,iswhite);
 }
 export function unduLastMove() {
     chess.undo();
     updateGame();
 }
 
-export function handleMove(from, to, frompush, channel, user, promotion) {
+export function handleMove(from, to, frompush, channel, user, promotion,iswhite) {
     if (promotion) {
         move(from, to, promotion)
         if (frompush) publishMessage(from, to, channel, user, promotion);
@@ -35,12 +35,12 @@ export function handleMove(from, to, frompush, channel, user, promotion) {
     const promotions = chess.moves({ verbose: true }).filter(m => m.promotion)
     if (promotions.some(p => `${p.from}:${p.to}` === `${from}:${to}`)) {
         const pendingPromotion = { from, to, color: promotions[0].color }
-        updateGame(pendingPromotion)
+        updateGame(pendingPromotion,iswhite)
     }
     const { pendingPromotion } = gameSubject.getValue()
 
     if (!pendingPromotion) {
-        move(from, to)
+        move(from, to,null,iswhite)
         if (frompush) publishMessage(from, to, channel, user);
     }
 }
@@ -62,7 +62,7 @@ function publishMessage(from, to, channel, user,promotion) {
     });
 }
 export function loadGame(gamename) {
-    const savedGame = localStorage.getItem(gamename)
+    const savedGame = sessionStorage.getItem(gamename)
     if (savedGame) {
         chess.load_pgn(savedGame)
         updateGame()
@@ -88,9 +88,9 @@ export function showFen(gamename) {
     return chess.fen();
 }
 export function saveGame(gamename) {
-    localStorage.setItem(gamename,chess.pgn())
+    sessionStorage.setItem(gamename,chess.pgn())
 }
-export function move(from, to, promotion) {
+export function move(from, to, promotion,iswhite) {
     let tempMove = { from, to }
     if (promotion) {
         tempMove.promotion = promotion
@@ -98,11 +98,11 @@ export function move(from, to, promotion) {
     const legalMove = chess.move(tempMove, { sloppy: true })
 
     if (legalMove) {
-        updateGame();
+        updateGame(null,null,iswhite);
     }
 }
 
-export function updateGame(pendingPromotion,isnew) {
+export function updateGame(pendingPromotion,isnew,iswhite) {
     const isGameOver = chess.game_over()
     const currgame = gameSubject.getValue()
     const curruserscore1 = currgame && currgame.user1score ? currgame.user1score : 0
@@ -115,11 +115,11 @@ export function updateGame(pendingPromotion,isnew) {
         result: isGameOver ? getGameResult() : null,
         history: chess.history({ verbose: true }),
         incheck: getin_check(),
-        user1score:curruserscore1 + getPointResult("w"),
-        user2score:curruserscore2 + getPointResult("b"),
+        user1score:iswhite?curruserscore1 + getPointResult("w"):curruserscore1 + getPointResult("b"),
+        user2score:iswhite?curruserscore2 + getPointResult("b"):curruserscore2 + getPointResult("w"),
         isNew:isnew
     }
-    //localStorage.setItem('savedGame', chess.fen())
+    //sessionStorage.setItem('savedGame', chess.fen())
     gameSubject.next(newGame)
 }
 function getPointResult(color) {

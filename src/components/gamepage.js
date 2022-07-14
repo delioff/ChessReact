@@ -15,7 +15,7 @@ function GamePage() {
     const ouser = new URLSearchParams(search).get('user');
     const ocolor = new URLSearchParams(search).get('color');
     const room= new URLSearchParams(search).get('room')
-    const userinfo = JSON.parse(localStorage.getItem('userinfo'));
+    const userinfo = JSON.parse(sessionStorage.getItem('userinfo'));
     let localuser = userinfo && userinfo.username ? userinfo.username : shortid.generate().substring(0, 5);
     const localcolor = userinfo && userinfo.color ? userinfo.color : "White";
     if (localuser === ouser) localuser = localuser + shortid.generate().substring(0, 5);
@@ -44,6 +44,14 @@ function GamePage() {
     const [user2score, setuser2score] = useState(0);
     const [isLooker, setisLooker] = useState(false);
     useEffect(() => {
+        sessionStorage.setItem(
+            'userinfo', JSON.stringify({
+                username: user1,
+                color: color1
+            }));
+
+    },[color1])
+    useEffect(() => {
         initGame()
         const subscribe = gameSubject.subscribe((game) => {
             setBoard(game.board)
@@ -53,7 +61,13 @@ function GamePage() {
             setHistory(game.history)
             setIncheck(game.incheck)
             if (game.isNew) {
-                color1 === "White" ? setUserColNew("Black") : setUserColNew("White")
+                color1 === "White" ? setColor1(col =>
+                {
+                    return "Black";
+                }) : setColor1(col =>
+                {
+                    return "White";
+                });
                 setuser1score(game.user2score)
                 setuser2score(game.user1score)
             }
@@ -154,7 +168,7 @@ function GamePage() {
                     }
                 })}
             if (message.cmd === "ACCEPTNEWGAME") {
-                resetGame()
+                resetGame(color1 === "White")
                 setisDisabledNewGame(false)
                
             }
@@ -481,7 +495,9 @@ function GamePage() {
     }
     const className = "container" + new Date().getDate();
     const setUserCol = (user, col) => { setUser1(user); setColor1(col); }
-    const setUserColNew = (col) => { setColor1(col); }
+    const setUserColNew = (color) => {
+        setColor1(col => color);
+    }
     const getColor = () => { return color1;}
     // Join a room channel
     
@@ -533,7 +549,7 @@ function GamePage() {
                         <div className="table-header-cell">
                             
                             <div className="board-square">
-                                <div className="square-user-white">{user1score}</div>
+                                <div className="square-user-white">{color1 === "White" ? user1score:user2score}</div>
                              </div>
      
                         </div>
@@ -541,7 +557,7 @@ function GamePage() {
                         <div className="table-header-cell">
                            
                             <div className="board-square">
-                                <div className="square-user-black">{user2score}</div>
+                                <div className="square-user-black">{color1 === "White" ? user2score:user1score}</div>
                              </div>
                             
                         </div>

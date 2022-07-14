@@ -13,23 +13,12 @@
     background-color: rgb(34, 34, 34);
     flex-direction: row;
 }
-.container0 {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-image: url("./components/assets/m0.png"), url("./components/assets/m11.png");
-    background-position: right center, left center;
-    background-repeat: no-repeat,no-repeat;
-    background-color: rgb(34, 34, 34);
-    flex-direction: row;
-}
 .container1 {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m1.png"), url("./components/assets/m12.png");
+    background-image: url("./components/assets/m1.png"), url("./components/assets/m31.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -40,7 +29,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m2.png"), url("./components/assets/m13.png");
+    background-image: url("./components/assets/m2.png"), url("./components/assets/m30.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -51,7 +40,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m3.png"), url("./components/assets/m14.png");
+    background-image: url("./components/assets/m3.png"), url("./components/assets/m29.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -62,7 +51,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m4.png"), url("./components/assets/m15.png");
+    background-image: url("./components/assets/m4.png"), url("./components/assets/m27.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -73,7 +62,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m5.png"), url("./components/assets/m16.png");
+    background-image: url("./components/assets/m5.png"), url("./components/assets/m26.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -84,7 +73,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m6.png"), url("./components/assets/m17.png");
+    background-image: url("./components/assets/m6.png"), url("./components/assets/m25.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -95,7 +84,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m7.png"), url("./components/assets/m18.png");
+    background-image: url("./components/assets/m7.png"), url("./components/assets/m24.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -106,7 +95,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m8.png"), url("./components/assets/m19.png");
+    background-image: url("./components/assets/m8.png"), url("./components/assets/m23.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -117,7 +106,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m9.png"), url("./components/assets/m20.png");
+    background-image: url("./components/assets/m9.png"), url("./components/assets/m22.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -139,7 +128,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m11.png"), url("./components/assets/m22.png");
+    background-image: url("./components/assets/m11.png"), url("./components/assets/m20.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -150,7 +139,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m11.png"), url("./components/assets/m12.png");
+    background-image: url("./components/assets/m12.png"), url("./components/assets/m19.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -162,7 +151,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m12.png"), url("./components/assets/m13.png");
+    background-image: url("./components/assets/m13.png"), url("./components/assets/m18.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -174,7 +163,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m13.png"), url("./components/assets/m14.png");
+    background-image: url("./components/assets/m14.png"), url("./components/assets/m17.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -186,7 +175,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m14.png"), url("./components/assets/m15.png");
+    background-image: url("./components/assets/m15.png"), url("./components/assets/m16.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -198,7 +187,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m15.png"), url("./components/assets/m16.png");
+    background-image: url("./components/assets/m16.png"), url("./components/assets/m0.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -210,7 +199,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m16.png"), url("./components/assets/m17.png");
+    background-image: url("./components/assets/m17.png"), url("./components/assets/m15.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -222,7 +211,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m17.png"), url("./components/assets/m18.png");
+    background-image: url("./components/assets/m18.png"), url("./components/assets/m14.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -234,7 +223,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m18.png"), url("./components/assets/m19.png");
+    background-image: url("./components/assets/m19.png"), url("./components/assets/m13.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -246,7 +235,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m19.png"), url("./components/assets/m20.png");
+    background-image: url("./components/assets/m20.png"), url("./components/assets/m12.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -257,7 +246,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m13.png"), url("./components/assets/m12.png");
+    background-image: url("./components/assets/m21.png"), url("./components/assets/m11.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -269,7 +258,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m2.png"), url("./components/assets/m3.png");
+    background-image: url("./components/assets/m22.png"), url("./components/assets/m10.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -281,7 +270,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m3.png"), url("./components/assets/m4.png");
+    background-image: url("./components/assets/m23.png"), url("./components/assets/m9.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -293,7 +282,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m4.png"), url("./components/assets/m5.png");
+    background-image: url("./components/assets/m24.png"), url("./components/assets/m8.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -305,7 +294,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m5.png"), url("./components/assets/m6.png");
+    background-image: url("./components/assets/m25.png"), url("./components/assets/m7.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -317,7 +306,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m6.png"), url("./components/assets/m7.png");
+    background-image: url("./components/assets/m26.png"), url("./components/assets/m6.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -329,7 +318,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m7.png"), url("./components/assets/m8.png");
+    background-image: url("./components/assets/m27.png"), url("./components/assets/m5.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -341,7 +330,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m8.png"), url("./components/assets/m9.png");
+    background-image: url("./components/assets/m28.png"), url("./components/assets/m4.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -353,7 +342,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m9.png"), url("./components/assets/m10.png");
+    background-image: url("./components/assets/m29.png"), url("./components/assets/m3.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -365,7 +354,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m10.png"), url("./components/assets/m11.png");
+    background-image: url("./components/assets/m30.png"), url("./components/assets/m2.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
@@ -377,7 +366,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("./components/assets/m11.png"), url("./components/assets/m12.png");
+    background-image: url("./components/assets/m31.png"), url("./components/assets/m1.png");
     background-position: right center, left center;
     background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);

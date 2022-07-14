@@ -14,7 +14,7 @@ function BackamonPage() {
     const ouser = new URLSearchParams(search).get('user');
     const ocolor = new URLSearchParams(search).get('color');
     const room = new URLSearchParams(search).get('room')
-    const userinfo = JSON.parse(localStorage.getItem('userinfo'));
+    const userinfo = JSON.parse(sessionStorage.getItem('userinfo'));
     let localuser = userinfo && userinfo.username ? userinfo.username : shortid.generate().substring(0, 5);
     const localcolor = userinfo && userinfo.color ? userinfo.color : "White";
     if (localuser === ouser) localuser = localuser + shortid.generate().substring(0, 5);
@@ -356,7 +356,7 @@ function BackamonPage() {
         if (isLooker) return;
         //move(fromPosition, position, false, gameChannel, user1)
         if ((turn === "w" && color1 === "White") || (turn === "b" && color1 === "Black")) {
-            move(fromPosition, position, true, gameChannel, user1)
+            move(fromPosition, position, true, gameChannel, user1, color1 === "White")
         }
         else {
             Swal.fire({
