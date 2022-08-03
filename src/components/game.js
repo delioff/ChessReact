@@ -9,7 +9,7 @@ const chess = new Chess()
 export const gameSubject = new BehaviorSubject()
 
 export function initGame() {
-    //const savedGame = sessionStorage.getItem('savedGame')
+    //const savedGame = localStorage.getItem('savedGame')
     //if (savedGame) {
     //    chess.load(savedGame)
     //}
@@ -62,7 +62,7 @@ function publishMessage(from, to, channel, user,promotion) {
     });
 }
 export function loadGame(gamename) {
-    const savedGame = sessionStorage.getItem(gamename)
+    const savedGame = localStorage.getItem(gamename)
     if (savedGame) {
         chess.load_pgn(savedGame)
         updateGame()
@@ -88,7 +88,7 @@ export function showFen(gamename) {
     return chess.fen();
 }
 export function saveGame(gamename) {
-    sessionStorage.setItem(gamename,chess.pgn())
+    localStorage.setItem(gamename,chess.pgn())
 }
 export function move(from, to, promotion,iswhite) {
     let tempMove = { from, to }
@@ -119,7 +119,7 @@ export function updateGame(pendingPromotion,isnew,iswhite) {
         user2score:iswhite?curruserscore2 + getPointResult("b"):curruserscore2 + getPointResult("w"),
         isNew:isnew
     }
-    //sessionStorage.setItem('savedGame', chess.fen())
+    //localStorage.setItem('savedGame', chess.fen())
     gameSubject.next(newGame)
 }
 function getPointResult(color) {

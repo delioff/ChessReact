@@ -9,7 +9,7 @@ const chess = new Chess()
 export const gameSubject = new BehaviorSubject()
 
 export function initGame() {
-    //const savedGame = sessionStorage.getItem('savedGame')
+    //const savedGame = localStorage.getItem('savedGame')
     //if (savedGame) {
     //    chess.load(savedGame)
     //}
@@ -26,7 +26,7 @@ export function unduLastMove() {
 }
 
 export function handleMove(from, to, frompush,channel,user) {
-    const userinfo = JSON.parse(sessionStorage.getItem('userinfo'));
+    const userinfo = JSON.parse(localStorage.getItem('userinfo'));
     if ((userinfo.color === "White" && chess.turn === "b") || (userinfo.color === "Black" && chess.turn === "w")) return;
     const promotions = chess.moves({ verbose: true }).filter(m => m.promotion)
     if (promotions.some(p => `${p.from}:${p.to}` === `${from}:${to}`)) {
@@ -63,7 +63,7 @@ export function canMovePiece(from, to) {
     return moves.some(p => p.to===to);
 }
 export function loadGame(gamename) {
-    const savedGame = sessionStorage.getItem(gamename)
+    const savedGame = localStorage.getItem(gamename)
     if (savedGame) {
         chess.load_pgn(savedGame)
         updateGame()
@@ -72,7 +72,7 @@ export function loadGame(gamename) {
     else return false
 }
 export function saveGame(gamename) {
-    sessionStorage.setItem(gamename, chess.pgn())
+    localStorage.setItem(gamename, chess.pgn())
 }
 export function move(from, to, promotion) {
     let tempMove = { from, to }
@@ -97,7 +97,7 @@ export function updateGame(pendingPromotion) {
         history: chess.history({ verbose: true }),
         incheck: getin_check(),
     }
-    //sessionStorage.setItem('savedGame', chess.fen())
+    //localStorage.setItem('savedGame', chess.fen())
     gameSubject.next(newGame)
 }
 function getGameResult() {

@@ -15,7 +15,7 @@ function GamePage() {
     const ouser = new URLSearchParams(search).get('user');
     const ocolor = new URLSearchParams(search).get('color');
     const room= new URLSearchParams(search).get('room')
-    const userinfo = JSON.parse(sessionStorage.getItem('userinfo'));
+    const userinfo = JSON.parse(LocalStorage.getItem('userinfo'));
     let localuser = userinfo && userinfo.username ? userinfo.username : shortid.generate().substring(0, 5);
     const localcolor = userinfo && userinfo.color ? userinfo.color : "White";
     if (localuser === ouser) localuser = localuser + shortid.generate().substring(0, 5);
@@ -44,7 +44,7 @@ function GamePage() {
     const [user2score, setuser2score] = useState(0);
     const [isLooker, setisLooker] = useState(false);
     useEffect(() => {
-        sessionStorage.setItem(
+        localStorage.setItem(
             'userinfo', JSON.stringify({
                 username: user1,
                 color: color1

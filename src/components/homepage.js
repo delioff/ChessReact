@@ -9,7 +9,7 @@ import { useLocation } from "react-router-dom";
 function HomePage() {
     const search = useLocation().search;
     const ocolor = new URLSearchParams(search).get('color');
-    const userinfo = JSON.parse(sessionStorage.getItem('userinfo'));
+    const userinfo = JSON.parse(localStorage.getItem('userinfo'));
     const localcolor = userinfo && userinfo.color ? userinfo.color : "White";
     let color = localcolor;
     if (ocolor) {
