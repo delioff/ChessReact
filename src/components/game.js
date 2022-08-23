@@ -35,7 +35,7 @@ export function handleMove(from, to, frompush, channel, user, promotion,iswhite)
     const promotions = chess.moves({ verbose: true }).filter(m => m.promotion)
     if (promotions.some(p => `${p.from}:${p.to}` === `${from}:${to}`)) {
         const pendingPromotion = { from, to, color: promotions[0].color }
-        updateGame(pendingPromotion,iswhite)
+        updateGame(pendingPromotion,null,iswhite)
     }
     const { pendingPromotion } = gameSubject.getValue()
 
@@ -116,7 +116,7 @@ export function updateGame(pendingPromotion,isnew,iswhite) {
         history: chess.history({ verbose: true }),
         incheck: getin_check(),
         user1score:iswhite?curruserscore1 + getPointResult("w"):curruserscore1 + getPointResult("b"),
-        user2score:iswhite?curruserscore2 + getPointResult("b"):curruserscore2 + getPointResult("w"),
+        user2score:iswhite?curruserscore2 + getPointResult("w"):curruserscore2 + getPointResult("b"),
         isNew:isnew
     }
     //localStorage.setItem('savedGame', chess.fen())
