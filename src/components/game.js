@@ -115,8 +115,8 @@ export function updateGame(pendingPromotion,isnew,iswhite) {
         result: isGameOver ? getGameResult() : null,
         history: chess.history({ verbose: true }),
         incheck: getin_check(),
-        user1score:iswhite?curruserscore1 + getPointResult("w"):curruserscore1 + getPointResult("b"),
-        user2score:iswhite?curruserscore2 + getPointResult("w"):curruserscore2 + getPointResult("b"),
+        user2score:iswhite?curruserscore1 + getPointResult("w"):curruserscore1 + getPointResult("b"),
+        user1score:iswhite?curruserscore2 + getPointResult("b"):curruserscore2 + getPointResult("w"),
         isNew:isnew
     }
     //localStorage.setItem('savedGame', chess.fen())
