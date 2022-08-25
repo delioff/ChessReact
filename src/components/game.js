@@ -105,8 +105,13 @@ export function move(from, to, promotion,iswhite) {
 export function updateGame(pendingPromotion,isnew,iswhite) {
     const isGameOver = chess.game_over()
     const currgame = gameSubject.getValue()
-    const curruserscore1 = currgame && currgame.user1score ? currgame.user1score : 0
-    const curruserscore2 = currgame && currgame.user2score ? currgame.user2score : 0
+    
+    var curruserscore1 = currgame && currgame.user1score ? currgame.user1score : 0
+    var curruserscore2 = currgame && currgame.user2score ? currgame.user2score : 0
+    if (isnew) {
+        curruserscore2 = currgame && currgame.user1score ? currgame.user1score : 0
+        curruserscore1 = currgame && currgame.user2score ? currgame.user2score : 0
+    }
     const newGame = {
         board: chess.board(),
         pendingPromotion,
