@@ -494,7 +494,7 @@ function GamePage() {
         })
     }
     let k = new Date().getDate();
-    if (new Date().getMonth() % 2 == 1) {
+    if (new Date().getMonth() % 2 == 0) {
         k += 31;
     }
     const className = "container" + k;
