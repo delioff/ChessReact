@@ -493,7 +493,11 @@ function GamePage() {
             }
         })
     }
-    const className = "container" + new Date().getDate();
+    let k = new Date().getDate();
+    if (new Date().getMonth() % 2 == 1) {
+        k += 31;
+    }
+    const className = "container" + k;
     const setUserCol = (user, col) => { setUser1(user); setColor1(col); }
     const setUserColNew = (color) => {
         setColor1(col => color);
