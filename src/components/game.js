@@ -16,17 +16,17 @@ export function initGame() {
     updateGame();
 }
 
-export function resetGame(iswhite) {
+export function resetGame(iswhite,resign) {
 
     chess.reset();
-    updateGame(null,true,iswhite);
+    updateGame(null,true,iswhite,resign);
 }
 export function unduLastMove() {
     chess.undo();
     updateGame();
 }
 
-export function handleMove(from, to, frompush, channel, user, promotion,iswhite) {
+export function handleMove(from, to, frompush, channel, user, promotion,color) {
     if (promotion) {
         move(from, to, promotion)
         if (frompush) publishMessage(from, to, channel, user, promotion);
@@ -35,12 +35,12 @@ export function handleMove(from, to, frompush, channel, user, promotion,iswhite)
     const promotions = chess.moves({ verbose: true }).filter(m => m.promotion)
     if (promotions.some(p => `${p.from}:${p.to}` === `${from}:${to}`)) {
         const pendingPromotion = { from, to, color: promotions[0].color }
-        updateGame(pendingPromotion,null,iswhite)
+        updateGame(pendingPromotion,null,color)
     }
     const { pendingPromotion } = gameSubject.getValue()
 
     if (!pendingPromotion) {
-        move(from, to,null,iswhite)
+        move(from, to,null,color)
         if (frompush) publishMessage(from, to, channel, user);
     }
 }
@@ -90,7 +90,7 @@ export function showFen(gamename) {
 export function saveGame(gamename) {
     localStorage.setItem(gamename,chess.pgn())
 }
-export function move(from, to, promotion,iswhite) {
+export function move(from, to, promotion,color) {
     let tempMove = { from, to }
     if (promotion) {
         tempMove.promotion = promotion
@@ -98,20 +98,51 @@ export function move(from, to, promotion,iswhite) {
     const legalMove = chess.move(tempMove, { sloppy: true })
 
     if (legalMove) {
-        updateGame(null,null,iswhite);
+        updateGame(null,null,color);
     }
 }
 
-export function updateGame(pendingPromotion,isnew,iswhite) {
+export function updateGame(pendingPromotion,isnew,color,resign) {
     const isGameOver = chess.game_over()
     const currgame = gameSubject.getValue()
     
-    var curruserscore2 = currgame && currgame.user1score ? currgame.user1score : 0
-    var curruserscore1 = currgame && currgame.user2score ? currgame.user2score : 0
-    if (isnew) {
-        curruserscore2 = currgame && currgame.user1score ? currgame.user1score : 0
-        curruserscore1 = currgame && currgame.user2score ? currgame.user2score : 0
+    var curruserscore1 = currgame && currgame.user1score ? currgame.user1score : 0
+    var curruserscore2 = currgame && currgame.user2score ? currgame.user2score : 0
+    if (isGameOver) {
+        if (color == "White") {
+            curruserscore1 += getPointResult("w");
+            curruserscore2 += getPointResult("b");
+        }
+        else {
+            curruserscore1 += getPointResult("b");
+            curruserscore2 += getPointResult("w");
+        }
     }
+    if (resign) { 
+        if (resign == 'White') {
+            if (color == "White") {
+                curruserscore1++
+            }
+            else {
+                curruserscore2++
+            }
+        }
+        else {
+            if (color == "White") {
+                curruserscore2++
+            }
+            else {
+                curruserscore1++
+            }
+        }
+  
+    }
+    if (isnew) {
+        let temp = curruserscore2;
+        curruserscore2 = curruserscore1
+        curruserscore1 = temp;
+    }
+  
     const newGame = {
         board: chess.board(),
         pendingPromotion,
@@ -120,8 +151,8 @@ export function updateGame(pendingPromotion,isnew,iswhite) {
         result: isGameOver ? getGameResult() : null,
         history: chess.history({ verbose: true }),
         incheck: getin_check(),
-        user1score:iswhite?curruserscore1 + getPointResult("w"):curruserscore1 + getPointResult("b"),
-        user2score:iswhite?curruserscore2 + getPointResult("b"):curruserscore2 + getPointResult("w"),
+        user1score: curruserscore1,
+        user2score: curruserscore2,
         isNew:isnew
     }
     //localStorage.setItem('savedGame', chess.fen())

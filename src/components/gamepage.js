@@ -42,6 +42,11 @@ function GamePage() {
     const [messages, setMessages] = useState([]);
     const [user1score, setuser1score] = useState(0);
     const [user2score, setuser2score] = useState(0);
+    let k = new Date().getDate();
+    if (new Date().getMonth() % 2 == 0) {
+        k += 31;
+    }
+    const [kk, setkk] = useState(k);
     const [isLooker, setisLooker] = useState(false);
     useEffect(() => {
         localStorage.setItem(
@@ -168,9 +173,12 @@ function GamePage() {
                     }
                 })}
             if (message.cmd === "ACCEPTNEWGAME") {
-                resetGame(color1 === "White")
+                resetGame(color1 === "White",null)
                 setisDisabledNewGame(false)
                
+            }
+            if (message.cmd === "RESIGN") {
+                resetGame(color1 === "White",color1)
             }
             if (message.cmd === "ACCEPTUNDO") {
                 unduLastMove()
@@ -293,6 +301,24 @@ function GamePage() {
         })
     }
     // Create a room channel
+    const onPressChangeBG = (e) => {
+        var min = 1;
+        var max = 62;
+        var rand = Math.floor(Math.random() * (max - min + 1)) + min;
+        setkk(rand);
+    }
+    const onPressResign = (e) => {
+        if (isLooker) return;
+        pubnub.publish({
+            message: {
+                cmd: "RESIGN",
+                user: user1,
+                msg: " you opponent resign"
+            },
+            channel: 'chesslobby--' + roomId
+        });
+        setisDisabledNewGame(true);
+    }
     const onPressUndo = (e) => {
         if (isLooker) return;
         if (!((turn === "TURN WHITE" && color1 === "White") || (turn === "TURN BLACK" && color1 === "Black"))) {
@@ -340,7 +366,7 @@ function GamePage() {
     const handleBaseMove = (fromPosition, position, promotion) => {
         if (isLooker) return;
         if ((turn === "TURN WHITE" && color1 === "White") || (turn === "TURN BLACK" && color1 === "Black")) {
-            handleMove(fromPosition, position, true, gameChannel, user1, promotion)
+            handleMove(fromPosition, position, true, gameChannel, user1, promotion,color1)
         }
         else {
             Swal.fire({
@@ -493,11 +519,8 @@ function GamePage() {
             }
         })
     }
-    let k = new Date().getDate();
-    if (new Date().getMonth() % 2 == 0) {
-        k += 31;
-    }
-    const className = "container" + k;
+   
+    const className = "container" + kk;
     const setUserCol = (user, col) => { setUser1(user); setColor1(col); }
     const setUserColNew = (color) => {
         setColor1(col => color);
@@ -618,6 +641,17 @@ function GamePage() {
                                 onClick={(e) => onPressLoad()}
                             > LOAD
                                 </button>
+                        </div>
+                        <div className="table-footer-cell"><button
+                            className="buttongreen"
+                            onClick={(e) => onPressResign()}
+                        > RESIGN
+                        </button>
+                            <button
+                                className="buttongreen"
+                                onClick={(e) => onPressChangeBG()}
+                            > CHANGE BG
+                            </button>
                         </div>
                     </div>
                  </div>
