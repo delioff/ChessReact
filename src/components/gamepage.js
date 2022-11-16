@@ -57,7 +57,7 @@ function GamePage() {
 
     },[color1])
     useEffect(() => {
-        initGame()
+        initGame(color1)
         const subscribe = gameSubject.subscribe((game) => {
             setBoard(game.board)
             setIsGameOver(game.isGameOver)
@@ -65,22 +65,11 @@ function GamePage() {
             setTurn(game.turn)
             setHistory(game.history)
             setIncheck(game.incheck)
-            if (game.isNew) {
-                color1 === "White" ? setColor1(col =>
-                {
-                    return "Black";
-                }) : setColor1(col =>
-                {
-                    return "White";
-                });
-                setuser1score(game.user2score)
-                setuser2score(game.user1score)
+            setuser1score(game.user1score)
+            setuser2score(game.user2score)
+            setColor1(game.color)
             }
-            else {
-                setuser1score(game.user1score)
-                setuser2score(game.user2score)
-            }
-        })
+        )
         return () => subscribe.unsubscribe()
     }, [])
     const pubnub = usePubNub();
@@ -97,7 +86,7 @@ function GamePage() {
                 const text = message.text || message;
                 if (text) {
                     const mes = JSON.parse(text);
-                    handleMove(mes.from, mes.to, false, "", "", mes.promotion);
+                    handleMove(mes.from, mes.to, false, "", "", mes.promotion,color1);
                 }
             }
         }
@@ -173,15 +162,15 @@ function GamePage() {
                     }
                 })}
             if (message.cmd === "ACCEPTNEWGAME") {
-                resetGame(color1 === "White",null)
+                resetGame(color1,null)
                 setisDisabledNewGame(false)
                
             }
             if (message.cmd === "RESIGN") {
-                resetGame(color1 === "White",color1)
+                resetGame(color1, message.text)
             }
             if (message.cmd === "ACCEPTUNDO") {
-                unduLastMove()
+                unduLastMove(color1)
                 setisDisabledUndo(false)
             }
             if (message.cmd === "NOTACCEPTNEWGAME") {
@@ -191,7 +180,7 @@ function GamePage() {
                 setisDisabledUndo(false)
             }
             if (message.cmd === "SENDPOSITION" && message.user !== user1) {
-                loadFen(message.fen);
+                loadFen(message.fen,color1);
             }
         }
     };
@@ -313,11 +302,11 @@ function GamePage() {
             message: {
                 cmd: "RESIGN",
                 user: user1,
-                msg: " you opponent resign"
+                msg: " you opponent resign",
+                text:color1
             },
             channel: 'chesslobby--' + roomId
         });
-        setisDisabledNewGame(true);
     }
     const onPressUndo = (e) => {
         if (isLooker) return;
@@ -499,7 +488,7 @@ function GamePage() {
             }
         }).then((formValues) => {
             if (formValues.value) {
-                if (!loadGame(formValues.value.filename)) {
+                if (!loadGame(formValues.value.filename,color1)) {
                     // Game in progress
                     Swal.fire({
                         position: 'top',

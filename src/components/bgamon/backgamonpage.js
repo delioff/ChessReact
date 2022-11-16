@@ -356,7 +356,7 @@ function BackamonPage() {
         if (isLooker) return;
         //move(fromPosition, position, false, gameChannel, user1)
         if ((turn === "w" && color1 === "White") || (turn === "b" && color1 === "Black")) {
-            move(fromPosition, position, true, gameChannel, user1, color1 === "White")
+            move(fromPosition, position, true, gameChannel, user1, color1 === "White" ,color1)
         }
         else {
             Swal.fire({

@@ -8,12 +8,12 @@ const chess = new Chess()
 
 export const gameSubject = new BehaviorSubject()
 
-export function initGame() {
+export function initGame(color) {
     //const savedGame = localStorage.getItem('savedGame')
     //if (savedGame) {
     //    chess.load(savedGame)
     //}
-    updateGame();
+    updateGame(null, null, color);
 }
 
 export function resetGame(iswhite,resign) {
@@ -21,14 +21,14 @@ export function resetGame(iswhite,resign) {
     chess.reset();
     updateGame(null,true,iswhite,resign);
 }
-export function unduLastMove() {
+export function unduLastMove(color) {
     chess.undo();
-    updateGame();
+    updateGame(null,null,color);
 }
 
 export function handleMove(from, to, frompush, channel, user, promotion,color) {
     if (promotion) {
-        move(from, to, promotion)
+        move(from, to, promotion, null, color)
         if (frompush) publishMessage(from, to, channel, user, promotion);
         return;
     }
@@ -40,7 +40,7 @@ export function handleMove(from, to, frompush, channel, user, promotion,color) {
     const { pendingPromotion } = gameSubject.getValue()
 
     if (!pendingPromotion) {
-        move(from, to,null,color)
+        move(from, to,null,null,color)
         if (frompush) publishMessage(from, to, channel, user);
     }
 }
@@ -61,11 +61,11 @@ function publishMessage(from, to, channel, user,promotion) {
         channel: channel
     });
 }
-export function loadGame(gamename) {
+export function loadGame(gamename,color) {
     const savedGame = localStorage.getItem(gamename)
     if (savedGame) {
         chess.load_pgn(savedGame)
-        updateGame()
+        updateGame(null,null,color)
         return true
     }
     else return false
@@ -74,10 +74,10 @@ export function canMovePiece(from, to) {
     const moves = chess.moves({ verbose: true }).filter(m => m.from === from);
     return moves.some(p => p.to === to);
 }
-export function loadFen(gamename) {
+export function loadFen(gamename,color) {
     try {
         chess.load(gamename)
-        updateGame()
+        updateGame(null,null,color)
     }
     catch (e) {
         return false
@@ -90,7 +90,7 @@ export function showFen(gamename) {
 export function saveGame(gamename) {
     localStorage.setItem(gamename,chess.pgn())
 }
-export function move(from, to, promotion,color) {
+export function move(from, to, promotion,color,boardcolor) {
     let tempMove = { from, to }
     if (promotion) {
         tempMove.promotion = promotion
@@ -98,18 +98,18 @@ export function move(from, to, promotion,color) {
     const legalMove = chess.move(tempMove, { sloppy: true })
 
     if (legalMove) {
-        updateGame(null,null,color);
+        updateGame(null, null, boardcolor);
     }
 }
 
 export function updateGame(pendingPromotion,isnew,color,resign) {
     const isGameOver = chess.game_over()
     const currgame = gameSubject.getValue()
-    
+    var col = currgame && currgame.color?currgame.color:color;
     var curruserscore1 = currgame && currgame.user1score ? currgame.user1score : 0
     var curruserscore2 = currgame && currgame.user2score ? currgame.user2score : 0
     if (isGameOver) {
-        if (color == "White") {
+        if (col == "White") {
             curruserscore1 += getPointResult("w");
             curruserscore2 += getPointResult("b");
         }
@@ -119,28 +119,30 @@ export function updateGame(pendingPromotion,isnew,color,resign) {
         }
     }
     if (resign) { 
-        if (resign == 'White') {
-            if (color == "White") {
-                curruserscore1++
-            }
-            else {
-                curruserscore2++
-            }
-        }
-        else {
-            if (color == "White") {
+
+        if (col == "White")
+            if (resign == "White") {
                 curruserscore2++
             }
             else {
                 curruserscore1++
             }
-        }
+        else
+            if (resign == "White") {
+                curruserscore1++
+            }
+            else {
+                curruserscore2++
+            }
   
     }
     if (isnew) {
-        let temp = curruserscore2;
-        curruserscore2 = curruserscore1
-        curruserscore1 = temp;
+        if (col == "White") {
+            col = "Black"
+        }
+        else {
+            col = "White";
+        }
     }
   
     const newGame = {
@@ -153,7 +155,8 @@ export function updateGame(pendingPromotion,isnew,color,resign) {
         incheck: getin_check(),
         user1score: curruserscore1,
         user2score: curruserscore2,
-        isNew:isnew
+        isNew: isnew,
+        color: col
     }
     //localStorage.setItem('savedGame', chess.fen())
     gameSubject.next(newGame)
