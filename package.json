@@ -33,7 +33,7 @@
   },
   "scripts": {
     "start": "react-scripts --openssl-legacy-provider start",
-    "predeploy": "npm run build",
+    "predeploy": "npm run build --legacy-peer-deps",
     "deploy": "gh-pages -b gh-pages -d build",
     "build": "react-scripts build",
     "test": "react-scripts test",
