@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
-import TouchBackend from "react-dnd-touch-backend";
+import {DndProvider } from 'react-dnd'
+import {HTML5Backend } from 'react-dnd-html5-backend'
+import {TouchBackend } from "react-dnd-touch-backend";
 import MultiBackend, { TouchTransition, MouseTransition } from "react-dnd-multi-backend";
 
 const CustomHTML5toTouch = {
