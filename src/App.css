@@ -8,10 +8,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-position: right center, left center;
-    background-repeat: no-repeat,no-repeat;
     background-color: rgb(34, 34, 34);
     flex-direction: row;
+}
+.containermob {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(34, 34, 34);
+    flex-direction: column;
 }
 .container1 {
     min-height: 100vh;
@@ -962,6 +967,17 @@
 .vertical-text {
     text-orientation: upright;
     writing-mode: vertical-lr;
+    font-family: sans-serif;
+    padding: 10px;
+    color: white;
+}
+.hor-text-cord {
+    font-weight: 100;
+    font-family: sans-serif;
+    color: white;
+}
+
+.hor-text {
     font-family: sans-serif;
     padding: 10px;
     color: white;

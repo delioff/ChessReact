@@ -1,4 +1,5 @@
 ﻿import React, { useEffect, useState } from 'react';
+import { BrowserView, MobileView } from 'react-device-detect';
 
 const expanderStyle = {
     margin: '6px 0',
@@ -117,29 +118,54 @@ export default function StartForm({ User, Color, RoomID, SetColorUser, IsDisable
     }
     
 
-    return (
-        <Expander title={"Currentplayer details ===== Invitation link ===="+url}>
-            <form onSubmit={handleSubmit}>
-                <label>
-                    Current Player:
-                    <input type="text" name="username" value={luser} onChange={handleChange} />
-                </label>
-                <label>
-                    Color:
-                    <select name="color" value={lcolor} onChange={handleChange} disabled={isDisabled}>
-                        <option value="White">White</option>
-                        <option value="Black">Black</option>
-                    </select>
-                </label>
-                <label>
-                    Invitation link:
-                    <input type="text" name="link" value={url} />
-                </label>
-                <img src={qrCode} alt="" />
-                <input type="submit" value="Save curren user setup in LS" />
-            </form>
-           
-        </Expander>
+    return (<div>
+        <BrowserView>
+            <Expander title={"Currentplayer details ===== Invitation link ===="+url}>
+                <form onSubmit={handleSubmit}>
+                    <label>
+                        Current Player:
+                        <input type="text" name="username" value={luser} onChange={handleChange} />
+                    </label>
+                    <label>
+                        Color:
+                        <select name="color" value={lcolor} onChange={handleChange} disabled={isDisabled}>
+                            <option value="White">White</option>
+                            <option value="Black">Black</option>
+                        </select>
+                    </label>
+                    <label>
+                        Invitation link:
+                        <input type="text" name="link" value={url} />
+                    </label>
+                    <img src={qrCode} alt="" />
+                    <input type="submit" value="Save curren user setup in LS" />
+                </form>
+            </Expander>
+        </BrowserView>
+         <MobileView>
+            <Expander title={"User and link"}>
+                <form onSubmit={handleSubmit}>
+                    <label>
+                        Current Player:
+                        <input type="text" name="username" value={luser} onChange={handleChange} />
+                    </label>
+                    <label>
+                        Color:
+                        <select name="color" value={lcolor} onChange={handleChange} disabled={isDisabled}>
+                            <option value="White">White</option>
+                            <option value="Black">Black</option>
+                        </select>
+                    </label>
+                    <label>
+                        Invitation link:
+                        <input type="text" name="link" value={url} />
+                    </label>
+                    <img src={qrCode} alt="" />
+                    <input type="submit" value="Save curren user setup in LS" />
+                </form>
+            </Expander>
+        </MobileView>
+    </div>
         );
    
 }
