@@ -17,7 +17,7 @@ const App = () => {
         subscribeKey: "sub-c-ee3e0f22-18b4-11ec-901d-e20c06117408",
     });
     return(<div className='app'>
-        <h1>Chess by uncle Tony</h1>
+        <h2>Chess by uncle Tony</h2>
         <Router>
             <Navigation />
             <PubNubProvider client={pubnub}>
@@ -32,7 +32,6 @@ const App = () => {
 };
 
 const Navigation = () => (
-    
     <nav>
         <ul>
             <li><NavLink exact activeClassName="current" to='/'>Training</NavLink></li>
@@ -40,8 +39,7 @@ const Navigation = () => (
             <li><NavLink exact activeClassName="current" to='/chat'>Chat</NavLink></li>
             <li><NavLink exact activeClassName="current" to='/bg'>Backgammon</NavLink></li>
         </ul>
-        </nav>
-   
+    </nav>
 );
 const Main = () => (
     <Switch>

@@ -5,6 +5,7 @@ import Board from './board1'
 import Coord from './coord'
 import Swal from "sweetalert2";
 import { useLocation } from "react-router-dom";
+import { BrowserView, MobileView } from 'react-device-detect';
 
 function HomePage() {
     const search = useLocation().search;
@@ -125,6 +126,7 @@ function HomePage() {
     }
     return (
         <div>
+        <BrowserView>
         <div className="row">
             <div className="column">
                 <div className="container">
@@ -208,7 +210,59 @@ function HomePage() {
                     </button>
                 </div>
                 </div>
-            </div>
+                </div>
+            </BrowserView>
+            <MobileView>
+                <div className="containermob">
+                    <h6>
+                        <p className="hor-text">{turn + ' ' + incheck}</p>
+                    </h6>
+                    <div className="board-container">
+                        <Board board={board} handlemove={handleBaseMove} color={color1} />
+                    </div>
+                    <h6 className="hor-text">
+                        {isGameOver && ("GAME OVER")}
+                    </h6>
+                    <h6>
+                        {result && <p className="hor-text">{result}</p>}
+                    </h6>
+                </div>
+                <div className="resp-table">
+                    <div className="resp-table-footer">
+                        <div className="table-footer-cell">
+                            <button className="buttongreen"
+                                onClick={(e) => onPressNewGame()}
+                            >
+                                NEW 
+                            </button>
+                        
+                            <button
+                                className="buttongreen"
+                                onClick={(e) => onPressUndo()}
+                            >
+                                UNDO
+                            </button></div>
+                        <div className="table-footer-cell">
+                            <button
+                                className="buttongreen"
+                                onClick={(e) => onPressReverse()}
+                            > REVERSE
+                            </button>
+                            <button
+                                className="buttongreen"
+                                onClick={(e) => onPressLoad()}
+                            > LOAD
+                            </button>
+                            <button
+                                className="buttongreen"
+                                onClick={(e) => onPressSave()}
+                            > SAVE
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </MobileView>
+
          </div>   )
 
 }

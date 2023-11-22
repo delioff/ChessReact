@@ -748,6 +748,7 @@
     background-color: rgb(34, 34, 34);
     flex-direction: row;
 }
+
 .itemcontainer {
     padding:40px;
     min-height: 100vh;
