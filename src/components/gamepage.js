@@ -709,9 +709,9 @@ function GamePage() {
                     SetColorUser={setUserCol} />
                 
                 <div className="containermob">
-                    <h5 className="hor-text">
+                    <h6 className="hor-text">
                         {result && <p className="hor-text">{result}</p>}
-                        <p className="hor-text">{turn + ' ' + incheck}</p></h5>
+                        <p className="hor-text">{turn + ' ' + incheck}</p></h6>
                    
 
                     <div className="board-container">
@@ -719,9 +719,9 @@ function GamePage() {
                         <Board board={board} handlemove={handleBaseMove} color={getColor()} />
 
                     </div>
-                    <h5 className="hor-text">
-                        {isGameOver && ("GAME OVER")}
-                    </h5>
+                    <h6 className="hor-text">
+                         <p className="hor-text">{isGameOver && ("GAME OVER")}</p>
+                    </h6>
                     
                 
 
