@@ -719,11 +719,9 @@ function GamePage() {
                          <p className="hor-text">{isGameOver && ("GAME OVER")}</p>
                     </h6>
                 </div>
-                <div>
-                    <div className="resp-table">
+                 <div className="resp-table">
                         <div className="resp-table-header">
                             <div className="table-header-cell">
-
                                 <h6 className="board-square">
                                     <span>{color1 === "White" ? user1 : user2}</span>
                                     <span className="square-user-white">{color1 === "White" ? user2score : user1score}</span>
@@ -736,61 +734,55 @@ function GamePage() {
                                     <span >{color1 === "White" ? user2 : user1}</span>
                                 </h6>
                             </div>
-                            <div className="table-header-cell">
-                                <button
-                                    className="buttongreen"
-                                    onClick={(e) => onPressResign()}
-                                > RESIGN
-                                </button>
-                            </div>
-                           
+                            <div className="table-header-cell"> <button
+                                className="buttongreen"
+                                onClick={(e) => onPressUndo()}
+                                disabled={isDisabledUndo}                            >
+                                UNDO
+                        </button>
+                        </div>
                         </div>
                         <div className="resp-table-footer">
                             <div className="table-footer-cell">
+                                <button
+                                        className="buttongreen"
+                                        onClick={(e) => onPressResign()}>
+                                        RESIGN
+                                </button>
                                 <button
                                     className="buttongreen"
                                     onClick={(e) => onPressCreate()}
                                     disabled={isDisabled}
                                 > CREATE
                                 </button>
-                                <button
-                                    className="buttongreen"
-                                    onClick={(e) => onPressUndo()}
-                                    disabled={isDisabledUndo}                            >
-                                    UNDO
-                                </button>
-                                
                             </div>
                             <div className="table-footer-cell">
-                              
                                <button
-                                className="buttongreen"
-                                onClick={(e) => onPressSave()}
-                            > SAVE
-                            </button> <button
                                     className="buttongreen"
-                                    onClick={(e) => onPressLoad()}
-                                > LOAD
+                                    onClick={(e) => onPressSave()}>
+                                    SAVE
+                               </button>
+                               <button
+                                    className="buttongreen"
+                                        onClick={(e) => onPressLoad()}>
+                                        LOAD
                                 </button>
                             </div>
                             <div className="table-footer-cell">
                                 <button className="buttongreen"
                                     onClick={(e) => onPressNewGame()}
-                                    disabled={isDisabledNewGame}
-                                >
+                                    disabled={isDisabledNewGame}>
                                     NEW
                                 </button>
                                 <button
                                     className="buttongreen"
-                                    onClick={(e) => onPressRepear()}
-                                > FiX
+                                    onClick={(e) => onPressRepear()}>
+                                    FiX
                                 </button>
                             </div>
-                        </div>
-                    </div>
-                </div>
+                        </div> 
+                 </div>
             </MobileView>
-
          </div>
             )
 
