@@ -712,21 +712,13 @@ function GamePage() {
                     <h6 className="hor-text">
                         {result && <p className="hor-text">{result}</p>}
                         <p className="hor-text">{turn + ' ' + incheck}</p></h6>
-                   
-
                     <div className="board-container">
-
                         <Board board={board} handlemove={handleBaseMove} color={getColor()} />
-
                     </div>
                     <h6 className="hor-text">
                          <p className="hor-text">{isGameOver && ("GAME OVER")}</p>
                     </h6>
-                    
-                
-
                 </div>
-               
                 <div>
                     <div className="resp-table">
                         <div className="resp-table-header">
