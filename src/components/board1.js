@@ -22,7 +22,7 @@ export default function Board({ board, color, handlemove }) {
 
     function isBlack(i) {
         const { x, y } = getXYPosition(i)
-        return (x + y) % 2 === 1
+        return (x + y) % 2 === 0
     }
 
     function getPosition(i) {

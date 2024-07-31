@@ -15,6 +15,7 @@ const App = () => {
     const pubnub = new PubNub({
         publishKey: "pub-c-e0419b3b-6aa9-4e4f-af8a-8dc193d1805a",
         subscribeKey: "sub-c-ee3e0f22-18b4-11ec-901d-e20c06117408",
+        uuid: "tonkobobonko"
     });
     return(<div className='app'>
         <h2>Chess by uncle Tony</h2>
