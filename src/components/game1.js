@@ -71,6 +71,16 @@ export function loadGame(gamename) {
     }
     else return false
 }
+export function loadFen(gamename) {
+    try {
+        chess.load(gamename)
+        updateGame()
+    }
+    catch (e) {
+        return false
+    }
+    return true
+}
 export function saveGame(gamename) {
     localStorage.setItem(gamename, chess.pgn())
 }

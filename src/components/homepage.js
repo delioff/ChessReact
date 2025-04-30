@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { gameSubject, initGame, handleMove, resetGame, unduLastMove, saveGame, loadGame} from './game1'
+import { gameSubject, initGame, handleMove, resetGame, unduLastMove, saveGame, loadGame, loadFen } from './game1'
 import inforow from './inforow'
 import Board from './board1'
 import Coord from './coord'
@@ -124,6 +124,41 @@ function HomePage() {
             }
         })
     }
+    // The 'Load' button was pressed
+    const onPressLoadFen = (e) => {
+        Swal.fire({
+            title: 'Enter name of the game',
+            html:
+                '<input id="swal-input1" class="swal2-input">',
+            focusConfirm: false,
+            preConfirm: () => {
+                return {
+                    filename: document.getElementById('swal-input1').value,
+
+                }
+            }
+        }).then((formValues) => {
+            if (formValues.value) {
+                if (!loadFen(formValues.value.filename)) {
+                    // Game in progress
+                    Swal.fire({
+                        position: 'top',
+                        allowOutsideClick: false,
+                        title: 'Error',
+                        text: 'Game ' + formValues.value.filename + ' not found. Try another name.',
+                        width: 275,
+                        padding: '0.7em',
+                        customClass: {
+                            heightAuto: false,
+                            title: 'title-class',
+                            popup: 'popup-class',
+                            confirmButton: 'button-class'
+                        }
+                    })
+                }
+            }
+        })
+    }
     return (
         <div>
         <BrowserView>
@@ -200,7 +235,13 @@ function HomePage() {
                     > LOAD
                     </button>
                 </div>
-           
+            <div className="table-footer-cell">
+                    <button
+                        className="buttongreen"
+                                onClick={(e) => onPressLoadFen()}
+                    > LOAD FEN
+                    </button>
+                </div>
            
                 <div className="table-footer-cell">
                     <button
