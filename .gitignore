@@ -7,3 +7,6 @@
 /src/.vs
 /.vs/my-app/v16
 /.vs
+/src/components/tanks-main/.vs/*
+
+/src/components/tanks-main/.vscode
