@@ -159,7 +159,7 @@ function SaPage() {
                 <iframe
                     src="entry.html"
                     width="100%"
-                    height="600"
+                    height="900"
                     title="Tanks Main"
                     style={{ border: 'none' }}
                     sandbox="allow-scripts allow-popups"
@@ -169,7 +169,7 @@ function SaPage() {
                 <iframe
                     src="entry.html"
                     width="100%"
-                    height="600"
+                    height="900"
                     title="Tanks Main"
                     style={{ border: 'none' }}
                     sandbox="allow-scripts allow-popups"
