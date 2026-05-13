@@ -1,0 +1,146 @@
+/*
+tanks
+*/
+
+/* COLOR PALETTES FROM COOLORS.CO */
+:root {
+  /* CSS HEX SET1*/
+  --fire-opal: #eb5e55;
+  /* split compliments #56EBC3 #EBC356 */
+  /*  tetratic #97EB55 #55E2EB #A955EB */
+  --black-coffee: #3a3335;
+  --ruby: #d81e5b;
+  /* tetra #B8D81E #1ED89B #3E1ED8 */
+  /* #1DD75B #1DD7D7 */
+  --papaya-whip: #fdf0d5;
+  /* compliment #D3E1FD */
+  --opal: #c6d8d3;
+
+  /* CSS HEX SET2*/
+  --middle-green: #4b7f52;
+  --mantis: #7dd181;
+  --magic-mint: #96e8bc;
+  --magic-mint-2: #b6f9c9;
+  --aero-blue: #c9ffe2;
+}
+
+body {
+  /* background-color: transparent !important; */
+  background-image: url('../clouds.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+}
+#canvasClouds {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  z-index: -1;
+}
+#canvas {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  z-index: 0;
+}
+#jcanvas {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  z-index: 1;
+}
+.navbar {
+  z-index: 1000;
+}
+
+/* HIDDEN BY DEFAULT */
+#change-players-container,
+#resume-button {
+  display: none;
+}
+
+#fire-button,
+#options,
+#nav-title,
+#nav-text,
+#modal-title,
+.btn {
+  font-family: 'Allerta Stencil', sans-serif;
+}
+
+/* FOR PLEASE ROTATE SCREEN */
+#pleaserotate-graphic {
+  fill: var(--opal);
+}
+#pleaserotate-backdrop {
+  color: var(--opal);
+  background-color: var(--black-coffee);
+}
+
+/* BOOTSTRAP OVERRIDES */
+
+.navbar {
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  border-bottom: 10px solid var(--black-coffee);
+  border-left: 10px solid var(--black-coffee);
+  border-right: 10px solid var(--black-coffee);
+
+  /* background-color: transparent !important; */
+}
+#nav-title,
+#nav-text {
+  font-size: 1.2em !important;
+  text-shadow: 1px 1px var(--middle-green);
+}
+
+.btn-success:hover,
+.btn-primary:hover,
+.btn-secondary:hover,
+.btn-danger:hover {
+  background-color: var(--papaya-whip);
+}
+.btn-outline-success,
+.btn-success:hover {
+  border-color: var(--ruby);
+  color: var(--ruby);
+}
+.btn-success,
+.btn-outline-success:hover {
+  background-color: var(--ruby);
+}
+
+.btn-outline-danger,
+.btn-danger:hover {
+  border-color: var(--fire-opal);
+  color: var(--fire-opal);
+}
+.btn-danger,
+.btn-outline-danger:hover {
+  background-color: var(--fire-opal);
+}
+
+.btn-outline-primary,
+.btn-primary:hover {
+  border-color: var(--black-coffee);
+  color: var(--black-coffee);
+}
+.btn-primary,
+.btn-outline-primary:hover {
+  background-color: var(--black-coffee);
+  color: var(--papaya-whip);
+}
+
+.btn-outline-secondary,
+.btn-secondary:hover {
+  border-color: var(--fire-opal);
+  color: var(--fire-opal);
+}
+.btn-secondary,
+.btn-outline-secondary:hover {
+  background-color: var(--fire-opal);
+}
+
+#modal {
+  opacity: 0.9 !important;
+}

@@ -8,5 +8,4 @@
 /.vs/my-app/v16
 /.vs
 /src/components/tanks-main/.vs/*
-
-/src/components/tanks-main/.vscode
+/src/components/tanks-main/.vscode/*
