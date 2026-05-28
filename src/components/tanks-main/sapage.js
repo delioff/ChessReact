@@ -1,6 +1,7 @@
 import React, { useEffect, useRef,useState} from 'react'
 import { BrowserView, MobileView } from 'react-device-detect';
 import Swal from "sweetalert2";
+import StartFormSA from './startformsa';
 
 function SaPage() {
     const canvasRef = useRef(null);
@@ -21,20 +22,47 @@ function SaPage() {
     // GAME CONSTANTS
     const PLAYER_COLORS = [`#56EBC3`, `#A955EB`, `#97EB55`, `#55E2EB`, `#B8D81E`, `#EBC356`, `#1ED89B`, `#3E1ED8`, `#1DD75B`, `#1DD7D7`, `#D3E1FD`,
         '#fdf0d5', '#eb5e55', '#c6d8d3', '#4b7f52'];
-    const TURRET_INCREMENT = 0.5;
-    const TANK_SIZE = 25;
-    const EXPLOSION_RADIUS = 50;
-    const EXPLOSION_DELAY = 2500;
-    const TERRAIN_BUMPS = 18 ;
-    const STEEPNESS = 3;
-    const HORIZON_DEPTH = 0.25; // 0-1
+    let TURRET_INCREMENT = 0.5;
+    let TANK_SIZE = 25;
+    let EXPLOSION_RADIUS = 50;
+    let TERRAIN_BUMPS = 18 ;
+    let STEEPNESS = 3;
+    let HORIZON_DEPTH = 0.25; // 0-1
     let DEFAULT_NUM_HUMANS = 3;
     if (TEST_MODE) DEFAULT_NUM_HUMANS = 6;
-    const DEFAULT_NUM_ROBOTS = 0;
-    const GRAVITY = 0.06;
-    const SHOT_DELAY = 3;
-    const X_BOOSTER = 1.5;
-    
+    let DEFAULT_NUM_ROBOTS = 0;
+    let GRAVITY = 0.06;
+    let SHOT_DELAY = 3;
+    let X_BOOSTER = 1.5;
+    let Settings = JSON.parse(localStorage.getItem('Settings'));
+    if (Settings) {
+        if (Settings.numHumans) DEFAULT_NUM_HUMANS = Settings.numHumans;
+        if (Settings.numRobots) DEFAULT_NUM_ROBOTS = Settings.numRobots;
+        if (Settings.turretIncrement) TURRET_INCREMENT = Settings.turretIncrement;
+        if (Settings.tankSize) TANK_SIZE = Settings.tankSize;
+        if (Settings.explosionRadius) EXPLOSION_RADIUS = Settings.explosionRadius;
+        if (Settings.terrainBumps) TERRAIN_BUMPS = Settings.terrainBumps;
+        if (Settings.steepness) STEEPNESS = Settings.steepness;
+        if (Settings.horizonDepth) HORIZON_DEPTH = Settings.horizonDepth;
+        if (Settings.gravity) GRAVITY = Settings.gravity;
+        if (Settings.shotDelay) SHOT_DELAY = Settings.shotDelay;
+        if (Settings.xBooster) X_BOOSTER = Settings.xBooster;
+    }
+    else {
+        Settings = {};
+        Settings.numHumans = DEFAULT_NUM_HUMANS;
+        Settings.numRobots = DEFAULT_NUM_ROBOTS;
+        Settings.turretIncrement = TURRET_INCREMENT;
+        Settings.tankSize = TANK_SIZE;
+        Settings.explosionRadius = EXPLOSION_RADIUS;
+        Settings.terrainBumps = TERRAIN_BUMPS;
+        Settings.steepness = STEEPNESS;
+        Settings.horizonDepth = HORIZON_DEPTH;
+        Settings.gravity = GRAVITY;
+        Settings.shotDelay = SHOT_DELAY;
+        Settings.xBooster = X_BOOSTER;
+        localStorage.setItem('Settings', JSON.stringify(Settings));
+    }
     //////////////////////////////////////
     class Bullet {
         constructor(x, y) {
@@ -590,7 +618,7 @@ function SaPage() {
     return (
         <div>
             <BrowserView>
-                < canvas ref={canvasRef} width="1600px" height="800px" style={{ border: 5, backgroundColor: "lightblue" }} />
+                < canvas ref={canvasRef} width="1600px" height="800px" style={{ borderColor: "black", borderWidth: "5px", backgroundColor: "lightblue" }} />
                 <div className="resp-table-footer">
                     <div className="table-footer-cell">
                         <button className="buttongreen"
@@ -610,14 +638,14 @@ function SaPage() {
                     <div className="table-footer-cell">
                         <button
                             className="buttongreen"
-                            onClick={(e) => onPressUp()}
+                            onClick={(e) => onPressDown()}
                         > Slide Left
                         </button>
                     </div>
                     <div className="table-footer-cell">
                         <button
                             className="buttongreen"
-                            onClick={(e) => onPressDown()}
+                            onClick={(e) => onPressUp()}
 
                         > Slide Right
                         </button>
@@ -637,43 +665,19 @@ function SaPage() {
                     > Fire
                     </button>
                     </div>
+                    <div className="table-footer-cell" >Current Player:</div>
+                    <div className="table-footer-cell" style={{ backgroundColor: PLAYER_COLORS[currentplayer]}}>
+                        {currentplayer}
+                    </div>
                 </div>
-                <div className="table-footer-cell">Current Player:</div>
-                <div className="table-footer-cell">
-                    {currentplayer}
-                </div>
-       
+                <StartFormSA Settings={Settings}
+                    />
+             
             </BrowserView>
             <MobileView>
                 < canvas ref={canvasRef} />
             </MobileView>
         </div>
     )
-   // return (
-        //<div>
-        //    <BrowserView>
-        //        <iframe
-        //            src="entry.html"
-        //            width="100%"
-        //            height="900"
-        //            title="Tanks Main"
-        //            style={{ border: 'none' }}
-        //            sandbox="allow-scripts allow-popups"
-        //        />
-        //</BrowserView>
-        //    <MobileView>
-        //        <iframe
-        //            src="entry.html"
-        //            width="100%"
-        //            height="900"
-        //            title="Tanks Main"
-        //            style={{ border: 'none' }}
-        //            sandbox="allow-scripts allow-popups"
-        //        />
-        //</MobileView>
-        //</div>
-
-   // )
-
 }
 export default SaPage
