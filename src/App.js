@@ -10,6 +10,7 @@ import Footer from './components/foother'
 import PubNub from 'pubnub';
 import { PubNubProvider } from 'pubnub-react';
 import { BrowserView, MobileView } from 'react-device-detect';
+import Sa3d from './components/sa3d/sa3d';
 
 
 const App = () => {
@@ -41,6 +42,7 @@ const Navigation = () => (
             <li><NavLink exact activeClassName="current" to='/chat'>Chat</NavLink></li>
             <li><NavLink exact activeClassName="current" to='/bg'>Backgammon</NavLink></li>
             <li><NavLink exact activeClassName="current" to='/sa'>Super Artillery</NavLink></li>
+            <li><NavLink exact activeClassName="current" to='/sa3d'>Super Artillery 3D</NavLink></li>
         </ul>
     </nav>
 );
@@ -51,6 +53,7 @@ const Main = () => (
         <Route exact path='/chat' component={ChatPage}></Route>
         <Route exact path='/bg' component={BackamonPage}></Route>
         <Route exact path='/sa' component={SaPage}></Route>
+        <Route exact path='/sa3d' component={Sa3d}></Route>
      </Switch>
 );
 

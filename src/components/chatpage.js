@@ -6,7 +6,7 @@ import useInput from './useInput';
 import PubNub from 'pubnub';
 
 //Material UI Components
-import { Card, CardActions, CardContent, List, ListItem, Button, Typography, Input } from '@material-ui/core';
+import { Card, CardActions, CardContent, List, ListItem, Button, Typography, Input } from '@mui/material';
 
 function ChatPage() {
     //Set a default channel incase someone navigates to the base url without

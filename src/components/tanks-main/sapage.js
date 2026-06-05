@@ -618,7 +618,7 @@ function SaPage() {
     return (
         <div>
             <BrowserView>
-                < canvas ref={canvasRef} width="1600px" height="800px" style={{ borderColor: "black", borderWidth: "5px", backgroundColor: "lightblue" }} />
+                < canvas ref={canvasRef} width="1600px" height="1000px" style={{ borderColor: "black", borderWidth: "5px", backgroundColor: "lightblue" }} />
                 <div className="resp-table-footer">
                     <div className="table-footer-cell">
                         <button className="buttongreen"
