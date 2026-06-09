@@ -9,6 +9,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/material": "^9.0.1",
+    "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
     "@rxjs/rx": "^4.1.0",
     "@testing-library/jest-dom": "^5.14.1",

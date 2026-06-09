@@ -1174,3 +1174,10 @@ input[type=submit] {
     height: 100%;
     opacity:0.8;
 }
+
+.canvas {
+    width: 100%;
+    min-height: 800px;
+    background-color: #000;
+    border: 5px solid #B59963;
+}
