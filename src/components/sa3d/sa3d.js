@@ -1,24 +1,54 @@
 import React, { useRef, useState } from 'react'
 import { Canvas, useFrame } from 'react-three-fiber'
+import { useControls } from 'leva' 
 import * as THREE from "three"
 //import { Stats } from '@react-three/drei'
 function Polyhedron({ position, polyhedron }) {
     const ref = useRef()
     const [coef, setcoef] = useState(1)
     const [count, setCount] = useState(0)
-
-    console.log(polyhedron)
+    const [speedz, setSpeedZ] = useState(1)
+    const [speedx, setSpeedX] = useState(1)
+    const [speedy, setSpeedY] = useState(1)
+    useControls({
+        rotationSpeedX: {
+            value: 1,
+            min: 0,
+            max: 20,
+            onchange: (value) => {
+                setSpeedX(value);
+            }
+        },
+        rotationSpeedY: {
+            value: 1,
+            min: 0,
+            max: 20,
+            onchange: (value) => {
+                setSpeedY(value);
+            }
+        },
+        moveSpeed: {
+            value: 0.5,
+            min: 0,
+            max: 5,
+            onchange: (value) => {
+                setSpeedZ(value);
+            }
+        }
+    })
+   // console.log(polyhedron)
 
     useFrame((state, delta) => {
-        ref.current.rotation.x += 0.5 * delta
-        ref.current.rotation.y += 0.5 * delta
-        if (ref.current.position.z > 3) {
+        ref.current.rotation.x += speedx * delta;
+        ref.current.rotation.y += speedy * delta;
+
+        if (ref.current.position.z > 50) {
             setcoef(-1);
         }
-        if (ref.current.position.z < -10) {
+        if (ref.current.position.z < -50) {
             setcoef(1);
         }
-        ref.current.position.z =  ref.current.position.z + coef*0.01
+           ref.current.position.z += coef * speedz 
         })
 
     return (
