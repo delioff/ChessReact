@@ -5,8 +5,6 @@ import useInput from './useInput';
 //Lets us import PubNub for our chat infrastructure capabailites.
 import PubNub from 'pubnub';
 
-//Material UI Components
-import { Card, CardActions, CardContent, List, ListItem, Button, Typography, Input } from '@mui/material';
 
 function ChatPage() {
     //Set a default channel incase someone navigates to the base url without
@@ -167,46 +165,8 @@ function ChatPage() {
         }
     }
     return (
-                <Card >
-                    <CardContent>
-                        <div className="top">
-                            <Typography variant="h4" inline >
-                                PubNub React Chat
-                            </Typography>
-                            <Input
-                                style={{ width: '100px' }}
-                                className="channel"
-                                id="channelInput"
-                                onKeyDown={handleKeyDown}
-                                placeholder={channel}
-                                onChange={tempChannel.onChange}
-                                value={tempChannel.value}
-                            />
-                        </div>
-                        <div >
-                            <Log messages={messages} />
-                        </div>
-                    </CardContent>
-                    <CardActions>
-                        <Input
-                            placeholder="Enter a message"
-                            fullWidth={true}
-                            id="messageInput"
-                            value={tempMessage.value}
-                            onChange={tempMessage.onChange}
-                            onKeyDown={handleKeyDown}
-                            inputProps={{ 'aria-label': 'Message Field', }}
-                            autoFocus={true}
-                        />
-                        <Button
-                            size="small"
-                            color="primary"
-                            onClick={publishMessage}
-                        >
-                            Submit
-                        </Button>
-                    </CardActions>
-                </Card>
+        <div>
+        </div>
                
     )
 }
@@ -214,15 +174,7 @@ function ChatPage() {
 function Log(props) {
 
     return (
-        <List component="nav">
-            <ListItem>
-                <Typography component="div">
-                    {props.messages.map((item, index) => (
-                        <Message key={index} uuid={item.uuid} text={item.text} />
-                    ))}
-                </Typography>
-            </ListItem>
-        </List>
+        <div></div>
     )
 };
 
