@@ -1,15 +1,44 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef, useImperativeHandle, forwardRef } from 'react'
 import * as THREE from "three"
 
-function Terrain({
+const Terrain = forwardRef(({
     heightMapUrl = '/gc.png',
     width = 30,
     depth = 30,
     segments = 180,
     heightScale = 6,
     yOffset = -2,
-}) {
+}, ref) => {
     const [geometry, setGeometry] = useState(null)
+    const meshRef = useRef()
+
+    useImperativeHandle(ref, () => ({
+        getMesh: () => meshRef.current,
+        deformTerrainAtPoint: (position, radius, depth) => {
+            if (meshRef.current && meshRef.current.geometry) {
+                const geometry = meshRef.current.geometry
+                const vertices = geometry.attributes.position
+                
+                for (let i = 0; i < vertices.count; i++) {
+                    const x = vertices.getX(i)
+                    const y = vertices.getY(i)
+                    const z = vertices.getZ(i)
+                    
+                    const vPos = new THREE.Vector3(x, z, y)
+                    const distance = vPos.distanceTo(position)
+                    
+                    if (distance < radius) {
+                        const falloff = 1 - (distance / radius)
+                        const deformation = -depth * falloff * falloff
+                        vertices.setZ(i, z + deformation)
+                    }
+                }
+                
+                vertices.needsUpdate = true
+                geometry.computeVertexNormals()
+            }
+        }
+    }), [])
 
     useEffect(() => {
         let isCancelled = false
@@ -76,10 +105,11 @@ function Terrain({
     if (!geometry) return null
 
     return (
-        <mesh geometry={geometry} rotation-x={-Math.PI / 2} position={[0, yOffset, 0]} receiveShadow >
+        <mesh ref={meshRef} geometry={geometry} rotation-x={-Math.PI / 2} position={[0, yOffset, 0]} receiveShadow >
             <meshStandardMaterial color={'#efd1b5'} roughness={0.9} metalness={0.05} />
         </mesh>
     )
-}
+})
 
+Terrain.displayName = 'Terrain'
 export default Terrain
