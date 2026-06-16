@@ -8,6 +8,7 @@ const Terrain = forwardRef(({
     segments = 180,
     heightScale = 6,
     yOffset = -2,
+    onPointerDown,
 }, ref) => {
     const [geometry, setGeometry] = useState(null)
     const meshRef = useRef()
@@ -18,13 +19,15 @@ const Terrain = forwardRef(({
             if (meshRef.current && meshRef.current.geometry) {
                 const geometry = meshRef.current.geometry
                 const vertices = geometry.attributes.position
+                const meshY = meshRef.current.position.y
                 
                 for (let i = 0; i < vertices.count; i++) {
                     const x = vertices.getX(i)
                     const y = vertices.getY(i)
                     const z = vertices.getZ(i)
-                    
-                    const vPos = new THREE.Vector3(x, z, y)
+
+                    // Plane is rotated -PI/2 around X, so local (x, y, z) maps to world (x, z, -y).
+                    const vPos = new THREE.Vector3(x, z + meshY, -y)
                     const distance = vPos.distanceTo(position)
                     
                     if (distance < radius) {
@@ -105,7 +108,14 @@ const Terrain = forwardRef(({
     if (!geometry) return null
 
     return (
-        <mesh ref={meshRef} geometry={geometry} rotation-x={-Math.PI / 2} position={[0, yOffset, 0]} receiveShadow >
+        <mesh
+            ref={meshRef}
+            geometry={geometry}
+            rotation-x={-Math.PI / 2}
+            position={[0, yOffset, 0]}
+            onPointerDown={onPointerDown}
+            receiveShadow
+        >
             <meshStandardMaterial color={'#efd1b5'} roughness={0.9} metalness={0.05} />
         </mesh>
     )

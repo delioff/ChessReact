@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { Canvas } from 'react-three-fiber'
 import { OrbitControls } from '@react-three/drei'
 import { useControls } from 'leva'
@@ -12,9 +12,36 @@ import ExplosionSprite from './explosion-sprite'
 import { useKeyboard, useMouse } from './useInput'
 //import { Stats } from '@react-three/drei'
 
+// Play explosion sound
+const playExplosionSound = () => {
+    try {
+        const audio = new Audio('/bomb.mp3')
+        const playPromise = audio.play()
+        if (playPromise !== undefined) {
+            playPromise.then(() => {}).catch(() => {})
+        }
+    } catch (e) {
+        // Silently fail
+    }
+}
+
+// Play fire sound when bullet starts moving.
+const playFireSound = () => {
+    try {
+        const audio = new Audio('/fire.mp3')
+        const playPromise = audio.play()
+        if (playPromise !== undefined) {
+            playPromise.then(() => {}).catch(() => {})
+        }
+    } catch (e) {
+        // Silently fail
+    }
+}
+
 const Sa3d = () => {
     const targetCount = 3
     const targetSurfaceOffset = 1.75
+    const tankSurfaceOffset = 0
     const polyhedron = [
         new THREE.BoxGeometry(),
         new THREE.SphereGeometry(0.785398),
@@ -24,6 +51,7 @@ const Sa3d = () => {
     const [bullets, setBullets] = useState([])
     const [explosions, setExplosions] = useState([])
     const [targets, setTargets] = useState([])
+    const [tankPosition, setTankPosition] = useState([-5, 8, -15])
     const [hitInfo, setHitInfo] = useState('No impact yet')
     const tankRef = useRef()
     const terrainRef = useRef()
@@ -33,6 +61,7 @@ const Sa3d = () => {
     const targetIdRef = useRef(1)
     const respawnTimerRef = useRef(null)
     const terrainSpawnReadyRef = useRef(false)
+    const terrainClickDebounceRef = useRef(false)
 
     const {
         bulletSpeed,
@@ -53,22 +82,6 @@ const Sa3d = () => {
         craterRadius: { value: 2, min: 0.5, max: 20, step: 0.1 },
         craterDepth: { value: 3, min: 0.2, max: 20, step: 0.1 },
     })
-
-    // Play explosion sound
-    const playExplosionSound = () => {
-        const audio = new Audio('/bomb.mp3')
-        audio.play().catch(() => {
-            console.log('bomb.mp3 not found in public folder')
-        })
-    }
-
-    // Play fire sound when bullet starts moving.
-    const playFireSound = () => {
-        const audio = new Audio('/fire.mp3')
-        audio.play().catch(() => {
-            console.log('fire.mp3 not found in public folder')
-        })
-    }
 
     const getTerrainPointAt = (x, z) => {
         const terrainMesh = terrainRef.current?.getMesh?.()
@@ -111,6 +124,17 @@ const Sa3d = () => {
         return nextTargets
     }
 
+    const settleToHeight = (currentY, targetY) => {
+        const delta = targetY - currentY
+        if (Math.abs(delta) < 0.01) {
+            return targetY
+        }
+
+        const maxStep = 0.75
+        const nextStep = Math.sign(delta) * Math.min(maxStep, Math.abs(delta) * 0.3)
+        return currentY + nextStep
+    }
+
     // Handle tank controls
     useEffect(() => {
         let cancelled = false
@@ -121,6 +145,10 @@ const Sa3d = () => {
             if (!terrainSpawnReadyRef.current) {
                 if (terrainRef.current?.getMesh?.()) {
                     terrainSpawnReadyRef.current = true
+                    setTankPosition((previous) => {
+                        const terrainPoint = getTerrainPointAt(previous[0], previous[2])
+                        return [previous[0], terrainPoint.y + tankSurfaceOffset, previous[2]]
+                    })
                     setTargets(createRandomTargets())
                     return
                 }
@@ -167,8 +195,8 @@ const Sa3d = () => {
             if (tankRef.current) {
                 if (keys.current.ArrowLeft) tankRef.current.rotateLeft()
                 if (keys.current.ArrowRight) tankRef.current.rotateRight()
-                if (keys.current.ArrowUp) tankRef.current.rotateUp()
-                if (keys.current.ArrowDown) tankRef.current.rotateDown()
+                if (keys.current.ArrowDown) tankRef.current.rotateUp()
+                if (keys.current.ArrowUp) tankRef.current.rotateDown()
 
                 if (keys.current.Enter && !fireDebounceRef.current) {
                     fireDebounceRef.current = true
@@ -176,7 +204,7 @@ const Sa3d = () => {
                     setTimeout(() => {
                         fireDebounceRef.current = false
                     }, fireCooldownMs)
-                } else if ((keys.current[' '] || mouse.current.rightClicked) && !fireDebounceRef.current) {
+                } else if (keys.current[' ']  && !fireDebounceRef.current) {
                     fireDebounceRef.current = true
                     tankRef.current.fire()
                     setTimeout(() => {
@@ -188,6 +216,64 @@ const Sa3d = () => {
 
         return () => clearInterval(inputLoop)
     }, [keys, mouse, fireCooldownMs, inputTickMs])
+
+    useEffect(() => {
+        const settleLoop = setInterval(() => {
+            if (!terrainRef.current?.getMesh?.()) {
+                return
+            }
+
+            setTankPosition((previous) => {
+                const terrainPoint = getTerrainPointAt(previous[0], previous[2])
+                const nextY = settleToHeight(previous[1], terrainPoint.y + tankSurfaceOffset)
+
+                if (Math.abs(nextY - previous[1]) < 0.05) {
+                    return previous
+                }
+
+                return [previous[0], nextY, previous[2]]
+            })
+
+            setTargets((previousTargets) => {
+                let changed = false
+
+                const nextTargets = previousTargets.map((target) => {
+                    const terrainPoint = getTerrainPointAt(target.position[0], target.position[2])
+                    const nextY = settleToHeight(target.position[1], terrainPoint.y + targetSurfaceOffset)
+
+                    if (Math.abs(nextY - target.position[1]) < 0.05) {
+                        return target
+                    }
+
+                    changed = true
+                    return {
+                        ...target,
+                        position: [target.position[0], nextY, target.position[2]],
+                    }
+                })
+
+                return changed ? nextTargets : previousTargets
+            })
+        }, 200)
+
+        return () => clearInterval(settleLoop)
+    }, [])
+
+    const handleTerrainPointerDown = (event) => {
+        if (event.button !== 2 || terrainClickDebounceRef.current) {
+            return
+        }
+
+        terrainClickDebounceRef.current = true
+        setTimeout(() => {
+            terrainClickDebounceRef.current = false
+        }, 200)
+
+        event.stopPropagation()
+        const hit = event.point
+        setTankPosition([hit.x, hit.y + tankSurfaceOffset, hit.z])
+        setHitInfo(`Tank moved to x:${hit.x.toFixed(1)} z:${hit.z.toFixed(1)}`)
+    }
 
     // Handle bullet hit and terrain deformation
     const handleBulletHit = (bulletIndex, hitPosition) => {
@@ -257,10 +343,10 @@ const Sa3d = () => {
         setBullets((prev) => prev.filter((_, i) => i !== bulletIndex))
     }
 
-    const handleTankFire = (shots, options = {}) => {
+    const handleTankFire = useCallback((shots, options = {}) => {
         const nextBullets = shots.map((shot) => ({
             id: Math.random(),
-            position: shot.bulletOrigin,
+            position: [shot.bulletOrigin.x, shot.bulletOrigin.y, shot.bulletOrigin.z],
             direction: shot.direction,
         }))
 
@@ -269,7 +355,7 @@ const Sa3d = () => {
         if (options.playSound) {
             playFireSound()
         }
-    }
+    }, [])
 
     return (
         <div style={{ position: 'relative', height: '90vh' }}>
@@ -283,13 +369,14 @@ const Sa3d = () => {
                 heightMapUrl={'/gc.png'} 
                 width={300}
                 depth={300}
-                segments={500}
+                segments={200}
                 heightScale={9}
                 yOffset = {-2}
+                onPointerDown={handleTerrainPointerDown}
             />
             
             {/* Tank on terrain - closer to camera */}
-            <Tank ref={tankRef} position={[-5, 8, -15]} onFire={handleTankFire} />
+            <Tank ref={tankRef} position={tankPosition} onFire={handleTankFire} />
             
             {/* Targets scattered on terrain */}
             {targets.map((target) => (
@@ -304,7 +391,7 @@ const Sa3d = () => {
             {bullets.map((bullet, idx) => (
                 <Bullet
                     key={bullet.id}
-                    position={[bullet.position.x, bullet.position.y, bullet.position.z]}
+                    position={bullet.position}
                     direction={bullet.direction}
                     speed={bulletSpeed}
                     gravity={bulletGravity}

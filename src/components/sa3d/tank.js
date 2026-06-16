@@ -1,4 +1,4 @@
-import React, { useRef, useImperativeHandle, forwardRef } from 'react'
+import React, { useRef, useEffect, useImperativeHandle, forwardRef } from 'react'
 import { useFrame } from 'react-three-fiber'
 import * as THREE from 'three'
 import { useControls } from 'leva'
@@ -12,6 +12,7 @@ const Tank = forwardRef(({ position = [0, 0, 0], onFire }, ref) => {
     const targetAngleVRef = useRef(0)
     const currentAngleHRef = useRef(0)
     const currentAngleVRef = useRef(0)
+    const controlledPositionRef = useRef(new THREE.Vector3(position[0], position[1], position[2]))
 
     const {
         tankPosX,
@@ -39,10 +40,6 @@ const Tank = forwardRef(({ position = [0, 0, 0], onFire }, ref) => {
         maxElevation,
         cannonAnimSpeed,
     } = useControls('Tank', {
-        tankPosX: { value: position[0], min: -150, max: 150, step: 1 },
-        tankPosY: { value: position[1], min: -20, max: 80, step: 0.5 },
-        tankPosZ: { value: position[2], min: -150, max: 150, step: 1 },
-
         bodyTopRadius: { value: 0.8, min: 0.2, max: 2, step: 0.05 },
         bodyBottomRadius: { value: 0.9, min: 0.2, max: 2, step: 0.05 },
         bodyHeight: { value: 0.6, min: 0.2, max: 2, step: 0.05 },
@@ -70,6 +67,47 @@ const Tank = forwardRef(({ position = [0, 0, 0], onFire }, ref) => {
         cannonAnimSpeed: { value: 7, min: 1, max: 20, step: 0.5 },
     })
 
+    useEffect(() => {
+        controlledPositionRef.current.set(position[0], position[1], position[2])
+    }, [position])
+
+    const buildShots = React.useCallback((horizontalMultiplier, verticalMultiplier) => {
+        const basePosition = controlledPositionRef.current
+        let barrelTip = new THREE.Vector3(basePosition.x + barrelLength, basePosition.y + 1.1, basePosition.z)
+        let direction = new THREE.Vector3(1, 0, 0)
+
+        // Use the real rendered barrel transform so the projectile starts at the visible muzzle.
+        if (barrelRef.current) {
+            barrelRef.current.updateWorldMatrix(true, false)
+            barrelTip = barrelRef.current.localToWorld(new THREE.Vector3(barrelLength, 0, 0))
+
+            const forwardPoint = barrelRef.current.localToWorld(new THREE.Vector3(barrelLength + 1, 0, 0))
+            direction = forwardPoint.sub(barrelTip).normalize()
+
+        }
+
+        if (horizontalMultiplier !== 0 || verticalMultiplier !== 0) {
+            const worldUp = new THREE.Vector3(0, 1, 0)
+            const right = new THREE.Vector3().crossVectors(direction, worldUp)
+
+            if (right.lengthSq() < 1e-6) {
+                right.set(0, 0, 1).cross(direction)
+            }
+
+            right.normalize()
+
+            const yaw = horizontalMultiplier * turnStep
+            const pitch = verticalMultiplier * elevStep
+
+            direction = direction.clone()
+                .applyAxisAngle(worldUp, yaw)
+                .applyAxisAngle(right, pitch)
+                .normalize()
+        }
+
+        return [{ bulletOrigin: barrelTip, direction }]
+    }, [barrelLength, turnStep, elevStep])
+
     useImperativeHandle(ref, () => ({
         rotateLeft: () => { targetAngleHRef.current += turnStep },
         rotateRight: () => { targetAngleHRef.current -= turnStep },
@@ -89,25 +127,26 @@ const Tank = forwardRef(({ position = [0, 0, 0], onFire }, ref) => {
             if (onFire) {
                 const shots = [
                     ...buildShots(0, 0),
-                    ...buildShots(-0.5, -0.5),
-                    ...buildShots(-0.5, 0.5),
-                    ...buildShots(0.5, -0.5),
-                    ...buildShots(0.5, 0.5
-                        
-                    ),
+                    ...buildShots(-1, 0),
+                    ...buildShots(1, 0),
+                    ...buildShots(0, -1),
+                    ...buildShots(0, 1),
                 ].slice(0, 5)
 
                 onFire(shots, { playSound: true })
             }
         },
-        getPosition: () => new THREE.Vector3(tankPosX, tankPosY, tankPosZ),
+        getPosition: () => {
+            if (tankRef.current) {
+                return tankRef.current.getWorldPosition(new THREE.Vector3())
+            }
+            return controlledPositionRef.current.clone()
+        },
         getTurretAngle: () => currentAngleHRef.current,
         getBarrelAngle: () => currentAngleVRef.current,
     }), [
         onFire,
-        tankPosX,
-        tankPosY,
-        tankPosZ,
+        buildShots,
         turnStep,
         elevStep,
         minElevation,
@@ -115,25 +154,11 @@ const Tank = forwardRef(({ position = [0, 0, 0], onFire }, ref) => {
         barrelLength,
     ])
 
-    const buildShots = (horizontalMultiplier, verticalMultiplier) => {
-        const basePosition = new THREE.Vector3(tankPosX, tankPosY, tankPosZ)
-        const horizontalAngle = currentAngleHRef.current + (horizontalMultiplier * turnStep)
-        const verticalAngle = currentAngleVRef.current + (verticalMultiplier * elevStep)
-
-        const muzzleOffset = new THREE.Vector3(barrelLength * 0.5, 1.1, 0)
-        muzzleOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), horizontalAngle)
-        muzzleOffset.applyAxisAngle(new THREE.Vector3(1, 0, 0), verticalAngle)
-        const barrelTip = basePosition.clone().add(muzzleOffset)
-
-        const direction = new THREE.Vector3(1, 0, 0)
-        direction.applyAxisAngle(new THREE.Vector3(0, 1, 0), horizontalAngle)
-        direction.applyAxisAngle(new THREE.Vector3(1, 0, 0), verticalAngle)
-        direction.normalize()
-
-        return [{ bulletOrigin: barrelTip, direction }]
-    }
-
     useFrame((state, delta) => {
+        if (tankRef.current) {
+            tankRef.current.position.copy(controlledPositionRef.current)
+        }
+
         const alpha = Math.min(1, cannonAnimSpeed * delta)
         currentAngleHRef.current = THREE.MathUtils.lerp(currentAngleHRef.current, targetAngleHRef.current, alpha)
         currentAngleVRef.current = THREE.MathUtils.lerp(currentAngleVRef.current, targetAngleVRef.current, alpha)
@@ -142,12 +167,12 @@ const Tank = forwardRef(({ position = [0, 0, 0], onFire }, ref) => {
             turretRef.current.rotation.y = currentAngleHRef.current
         }
         if (barrelRef.current) {
-            barrelRef.current.rotation.x = currentAngleVRef.current
+            barrelRef.current.rotation.z = currentAngleVRef.current
         }
     })
 
     return (
-        <group ref={tankRef} position={[tankPosX, tankPosY, tankPosZ]} castShadow>
+        <group ref={tankRef} position={position} castShadow>
             {/* Tank body - cylinder */}
             <mesh position={[0, 0.5, 0]} castShadow>
                 <cylinderGeometry args={[bodyTopRadius, bodyBottomRadius, bodyHeight, 8]} />

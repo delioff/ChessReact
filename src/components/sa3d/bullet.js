@@ -15,9 +15,13 @@ function Bullet({
     onTargetHit,
 }) {
     const bulletRef = useRef()
-    const velocityRef = useRef(new THREE.Vector3())
+    const velocityRef = useRef(null)
+    if (!velocityRef.current) {
+        velocityRef.current = direction.clone().multiplyScalar(speed)
+    }
     const distanceTraveledRef = useRef(0)
     const raycasterRef = useRef(new THREE.Raycaster())
+    const hitTriggeredRef = useRef(false)
 
     useEffect(() => {
         // Initialize velocity with direction and speed
@@ -26,6 +30,7 @@ function Bullet({
 
     useFrame(() => {
         if (bulletRef.current) {
+            if (hitTriggeredRef.current) return
             const oldPos = bulletRef.current.position.clone()
 
             // Apply gravity to vertical velocity
@@ -92,11 +97,13 @@ function Bullet({
             const targetDistance = closestTargetHit ? closestTargetHit.distance : Number.POSITIVE_INFINITY
 
             if (closestTargetHit && targetDistance <= terrainDistance) {
+                hitTriggeredRef.current = true
                 if (onTargetHit) onTargetHit(closestTargetHit)
                 return
             }
 
             if (terrainHit) {
+                hitTriggeredRef.current = true
                 onHit(terrainHit.point.clone())
                 return
             }
@@ -105,6 +112,7 @@ function Bullet({
 
             // Remove bullet if it traveled too far or fell too far below terrain.
             if (distanceTraveledRef.current > maxDistance || bulletRef.current.position.y < minY) {
+                hitTriggeredRef.current = true
                 onHit(null)
             }
         }
