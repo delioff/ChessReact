@@ -86,6 +86,10 @@ const Sa3d = () => {
         craterDepth: { value: 3, min: 0.2, max: 20, step: 0.1 },
     })
 
+    const [quickBulletSpeed, setQuickBulletSpeed] = useState(bulletSpeed)
+    const [quickTurnStep, setQuickTurnStep] = useState(0.1)
+    const [quickElevStep, setQuickElevStep] = useState(0.1)
+
     useEffect(() => {
         const onKeyDown = (event) => {
             if (event.key.toLowerCase() === 'c') {
@@ -372,6 +376,36 @@ const Sa3d = () => {
         }
     }, [])
 
+    const triggerTankControl = (action) => {
+        if (!tankRef.current) {
+            return
+        }
+
+        if (action === 'turnMinus') tankRef.current.rotateLeft()
+        if (action === 'turnPlus') tankRef.current.rotateRight()
+        if (action === 'elevMinus') tankRef.current.rotateUp()
+        if (action === 'elevPlus') tankRef.current.rotateDown()
+        if (action === 'fire') tankRef.current.fire()
+        if (action === 'volley') tankRef.current.fireVolley()
+    }
+
+    const clampValue = (value, min, max) => Math.max(min, Math.min(max, value))
+    const adjustQuickValue = (name, direction) => {
+        if (name === 'bulletSpeed') {
+            setQuickBulletSpeed((previous) => clampValue(previous + (direction * 0.05), 0.1, 4))
+            return
+        }
+
+        if (name === 'turnStep') {
+            setQuickTurnStep((previous) => clampValue(previous + (direction * 0.01), 0.01, 0.4))
+            return
+        }
+
+        if (name === 'elevStep') {
+            setQuickElevStep((previous) => clampValue(previous + (direction * 0.01), 0.01, 0.4))
+        }
+    }
+
     const toMinimapPoint = (x, z) => {
         const nx = (x + worldHalfExtent) / (worldHalfExtent * 2)
         const nz = (z + worldHalfExtent) / (worldHalfExtent * 2)
@@ -433,7 +467,13 @@ const Sa3d = () => {
             />
             
             {/* Tank on terrain - closer to camera */}
-            <Tank ref={tankRef} position={tankPosition} onFire={handleTankFire} />
+            <Tank
+                ref={tankRef}
+                position={tankPosition}
+                onFire={handleTankFire}
+                turnStepOverride={quickTurnStep}
+                elevStepOverride={quickElevStep}
+            />
             
             {/* Targets scattered on terrain */}
             {targets.map((target) => (
@@ -450,7 +490,7 @@ const Sa3d = () => {
                     key={bullet.id}
                     position={bullet.position}
                     direction={bullet.direction}
-                    speed={bulletSpeed}
+                    speed={quickBulletSpeed}
                     gravity={bulletGravity}
                     maxDistance={bulletMaxDistance}
                     minY={bulletMinY}
@@ -486,6 +526,119 @@ const Sa3d = () => {
                 }}
             >
                 {hitInfo}
+            </div>
+
+            <div
+                style={{
+                    position: 'absolute',
+                    left: 12,
+                    bottom: 12,
+                    background: 'rgba(10,12,18,0.78)',
+                    border: '1px solid rgba(255,255,255,0.35)',
+                    boxShadow: '0 8px 22px rgba(0,0,0,0.35)',
+                    borderRadius: 8,
+                    padding: 10,
+                    color: '#e8eef9',
+                    zIndex: 12,
+                    width: 190,
+                    fontFamily: 'monospace',
+                }}
+            >
+                <div style={{ fontSize: 12, marginBottom: 8, opacity: 0.9 }}>
+                    Quick Controls
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: 6, alignItems: 'center' }}>
+                    <span style={{ fontSize: 12 }}>Bullet Speed</span>
+                    <button
+                        onClick={() => adjustQuickValue('bulletSpeed', -1)}
+                        style={{ border: '1px solid rgba(255,255,255,0.35)', borderRadius: 4, background: '#1c1f2b', color: '#f4f8ff', cursor: 'pointer', width: 32, height: 26 }}
+                    >
+                        -
+                    </button>
+                    <span style={{ fontSize: 12, textAlign: 'center', minWidth: 40 }}>{quickBulletSpeed.toFixed(2)}</span>
+                    <button
+                        onClick={() => adjustQuickValue('bulletSpeed', 1)}
+                        style={{ border: '1px solid rgba(255,255,255,0.35)', borderRadius: 4, background: '#1c1f2b', color: '#f4f8ff', cursor: 'pointer', width: 32, height: 26 }}
+                    >
+                        +
+                    </button>
+
+                    <span style={{ fontSize: 12 }}>Turn Step</span>
+                    <button
+                        onClick={() => adjustQuickValue('turnStep', -1)}
+                        style={{ border: '1px solid rgba(255,255,255,0.35)', borderRadius: 4, background: '#1c1f2b', color: '#f4f8ff', cursor: 'pointer', width: 32, height: 26 }}
+                    >
+                        -
+                    </button>
+                    <span style={{ fontSize: 12, textAlign: 'center', minWidth: 40 }}>{quickTurnStep.toFixed(2)}</span>
+                    <button
+                        onClick={() => adjustQuickValue('turnStep', 1)}
+                        style={{ border: '1px solid rgba(255,255,255,0.35)', borderRadius: 4, background: '#1c1f2b', color: '#f4f8ff', cursor: 'pointer', width: 32, height: 26 }}
+                    >
+                        +
+                    </button>
+
+                    <span style={{ fontSize: 12 }}>Elev Step</span>
+                    <button
+                        onClick={() => adjustQuickValue('elevStep', -1)}
+                        style={{ border: '1px solid rgba(255,255,255,0.35)', borderRadius: 4, background: '#1c1f2b', color: '#f4f8ff', cursor: 'pointer', width: 32, height: 26 }}
+                    >
+                        -
+                    </button>
+                    <span style={{ fontSize: 12, textAlign: 'center', minWidth: 40 }}>{quickElevStep.toFixed(2)}</span>
+                    <button
+                        onClick={() => adjustQuickValue('elevStep', 1)}
+                        style={{ border: '1px solid rgba(255,255,255,0.35)', borderRadius: 4, background: '#1c1f2b', color: '#f4f8ff', cursor: 'pointer', width: 32, height: 26 }}
+                    >
+                        +
+                    </button>
+
+                    <span style={{ fontSize: 12 }}>Turn</span>
+                    <button
+                        onClick={() => triggerTankControl('turnMinus')}
+                        style={{ border: '1px solid rgba(255,255,255,0.35)', borderRadius: 4, background: '#1c1f2b', color: '#f4f8ff', cursor: 'pointer', width: 32, height: 26 }}
+                    >
+                        -
+                    </button>
+                    <span style={{ fontSize: 12, textAlign: 'center', minWidth: 40 }}>now</span>
+                    <button
+                        onClick={() => triggerTankControl('turnPlus')}
+                        style={{ border: '1px solid rgba(255,255,255,0.35)', borderRadius: 4, background: '#1c1f2b', color: '#f4f8ff', cursor: 'pointer', width: 32, height: 26 }}
+                    >
+                        +
+                    </button>
+
+                    <span style={{ fontSize: 12 }}>Elevation</span>
+                    <button
+                        onClick={() => triggerTankControl('elevMinus')}
+                        style={{ border: '1px solid rgba(255,255,255,0.35)', borderRadius: 4, background: '#1c1f2b', color: '#f4f8ff', cursor: 'pointer', width: 32, height: 26 }}
+                    >
+                        -
+                    </button>
+                    <span style={{ fontSize: 12, textAlign: 'center', minWidth: 40 }}>now</span>
+                    <button
+                        onClick={() => triggerTankControl('elevPlus')}
+                        style={{ border: '1px solid rgba(255,255,255,0.35)', borderRadius: 4, background: '#1c1f2b', color: '#f4f8ff', cursor: 'pointer', width: 32, height: 26 }}
+                    >
+                        +
+                    </button>
+                </div>
+
+                <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
+                    <button
+                        onClick={() => triggerTankControl('fire')}
+                        style={{ flex: 1, border: '1px solid rgba(255,255,255,0.35)', borderRadius: 4, background: '#2a3d24', color: '#f4f8ff', cursor: 'pointer', height: 28 }}
+                    >
+                        Fire
+                    </button>
+                    <button
+                        onClick={() => triggerTankControl('volley')}
+                        style={{ flex: 1, border: '1px solid rgba(255,255,255,0.35)', borderRadius: 4, background: '#3a2a24', color: '#f4f8ff', cursor: 'pointer', height: 28 }}
+                    >
+                        Volley
+                    </button>
+                </div>
             </div>
 
             <div

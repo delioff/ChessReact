@@ -3,7 +3,7 @@ import { useFrame } from 'react-three-fiber'
 import * as THREE from 'three'
 import { useControls } from 'leva'
 
-const Tank = forwardRef(({ position = [0, 0, 0], onFire }, ref) => {
+const Tank = forwardRef(({ position = [0, 0, 0], onFire, turnStepOverride, elevStepOverride }, ref) => {
     const tankRef = useRef()
     const turretRef = useRef()
     const barrelRef = useRef()
@@ -62,10 +62,13 @@ const Tank = forwardRef(({ position = [0, 0, 0], onFire }, ref) => {
 
         turnStep: { value: 0.1, min: 0.01, max: 0.4, step: 0.01 },
         elevStep: { value: 0.1, min: 0.01, max: 0.4, step: 0.01 },
-        minElevation: { value: -Math.PI / 3, min: -1.4, max: 0, step: 0.01 },
-        maxElevation: { value: Math.PI / 6, min: 0, max: 1.4, step: 0.01 },
+        minElevation: { value: 0, min: -1.4, max: 0, step: 0.01 },
+        maxElevation: { value: 1.4, min: 0, max: 1.4, step: 0.01 },
         cannonAnimSpeed: { value: 7, min: 1, max: 20, step: 0.5 },
     })
+
+    const effectiveTurnStep = turnStepOverride ?? turnStep
+    const effectiveElevStep = elevStepOverride ?? elevStep
 
     useEffect(() => {
         controlledPositionRef.current.set(position[0], position[1], position[2])
@@ -96,8 +99,8 @@ const Tank = forwardRef(({ position = [0, 0, 0], onFire }, ref) => {
 
             right.normalize()
 
-            const yaw = horizontalMultiplier * turnStep
-            const pitch = verticalMultiplier * elevStep
+            const yaw = horizontalMultiplier * effectiveTurnStep
+            const pitch = verticalMultiplier * effectiveElevStep
 
             direction = direction.clone()
                 .applyAxisAngle(worldUp, yaw)
@@ -106,16 +109,16 @@ const Tank = forwardRef(({ position = [0, 0, 0], onFire }, ref) => {
         }
 
         return [{ bulletOrigin: barrelTip, direction }]
-    }, [barrelLength, turnStep, elevStep])
+    }, [barrelLength, effectiveTurnStep, effectiveElevStep])
 
     useImperativeHandle(ref, () => ({
-        rotateLeft: () => { targetAngleHRef.current += turnStep },
-        rotateRight: () => { targetAngleHRef.current -= turnStep },
+        rotateLeft: () => { targetAngleHRef.current += effectiveTurnStep },
+        rotateRight: () => { targetAngleHRef.current -= effectiveTurnStep },
         rotateUp: () => {
-            targetAngleVRef.current = Math.max(targetAngleVRef.current - elevStep, minElevation)
+            targetAngleVRef.current = Math.max(targetAngleVRef.current - effectiveElevStep, minElevation)
         },
         rotateDown: () => {
-            targetAngleVRef.current = Math.min(targetAngleVRef.current + elevStep, maxElevation)
+            targetAngleVRef.current = Math.min(targetAngleVRef.current + effectiveElevStep, maxElevation)
         },
         fire: () => {
             if (onFire) {
@@ -151,8 +154,8 @@ const Tank = forwardRef(({ position = [0, 0, 0], onFire }, ref) => {
     }), [
         onFire,
         buildShots,
-        turnStep,
-        elevStep,
+        effectiveTurnStep,
+        effectiveElevStep,
         minElevation,
         maxElevation,
         barrelLength,
