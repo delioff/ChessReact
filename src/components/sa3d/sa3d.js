@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
-import { Canvas } from 'react-three-fiber'
-import { OrbitControls } from '@react-three/drei'
 import { useControls } from 'leva'
 import * as THREE from "three"
+import Scene from './scene'
 import Terrain from './terrain'
 import Polyhedron from './polyhedron'
 import Tank from './tank'
@@ -39,6 +38,9 @@ const playFireSound = () => {
 }
 
 const Sa3d = () => {
+    const textureUrl = '/texturesky.png'
+    const mapSize = 170
+    const worldHalfExtent = 150
     const targetCount = 3
     const targetSurfaceOffset = 1.75
     const tankSurfaceOffset = 0
@@ -53,6 +55,7 @@ const Sa3d = () => {
     const [targets, setTargets] = useState([])
     const [tankPosition, setTankPosition] = useState([-5, 8, -15])
     const [hitInfo, setHitInfo] = useState('No impact yet')
+    const [cameraMode, setCameraMode] = useState('main')
     const tankRef = useRef()
     const terrainRef = useRef()
     const keys = useKeyboard()
@@ -82,6 +85,18 @@ const Sa3d = () => {
         craterRadius: { value: 2, min: 0.5, max: 20, step: 0.1 },
         craterDepth: { value: 3, min: 0.2, max: 20, step: 0.1 },
     })
+
+    useEffect(() => {
+        const onKeyDown = (event) => {
+            if (event.key.toLowerCase() === 'c') {
+                event.preventDefault()
+                setCameraMode((previous) => (previous === 'main' ? 'tank' : 'main'))
+            }
+        }
+
+        window.addEventListener('keydown', onKeyDown)
+        return () => window.removeEventListener('keydown', onKeyDown)
+    }, [])
 
     const getTerrainPointAt = (x, z) => {
         const terrainMesh = terrainRef.current?.getMesh?.()
@@ -357,10 +372,52 @@ const Sa3d = () => {
         }
     }, [])
 
+    const toMinimapPoint = (x, z) => {
+        const nx = (x + worldHalfExtent) / (worldHalfExtent * 2)
+        const nz = (z + worldHalfExtent) / (worldHalfExtent * 2)
+
+        const px = Math.max(0, Math.min(mapSize, nx * mapSize))
+        const py = Math.max(0, Math.min(mapSize, (1 - nz) * mapSize))
+        return [px, py]
+    }
+
+    const [tankMapX, tankMapY] = toMinimapPoint(tankPosition[0], tankPosition[2])
+    const aimDirection = tankRef.current?.getAimDirection?.()
+    const aimFlat = aimDirection
+        ? new THREE.Vector2(aimDirection.x, aimDirection.z)
+        : new THREE.Vector2(1, 0)
+
+    if (aimFlat.lengthSq() < 1e-6) {
+        aimFlat.set(1, 0)
+    }
+    aimFlat.normalize()
+
+    const headingDx = aimFlat.x
+    const headingDy = -aimFlat.y
+    const headingLength = 14
+    const headingBaseLength = 7
+    const headingHalfWidth = 3
+
+    const headingTipX = tankMapX + (headingDx * headingLength)
+    const headingTipY = tankMapY + (headingDy * headingLength)
+    const baseCenterX = tankMapX + (headingDx * headingBaseLength)
+    const baseCenterY = tankMapY + (headingDy * headingBaseLength)
+
+    const perpX = -headingDy
+    const perpY = headingDx
+    const headingLeftX = baseCenterX + (perpX * headingHalfWidth)
+    const headingLeftY = baseCenterY + (perpY * headingHalfWidth)
+    const headingRightX = baseCenterX - (perpX * headingHalfWidth)
+    const headingRightY = baseCenterY - (perpY * headingHalfWidth)
+
     return (
         <div style={{ position: 'relative', height: '90vh' }}>
-            <Canvas style={{height: "90vh", borderColor: "white", borderWidth: "5px", backgroundColor: "black" }}>
-            <OrbitControls enableDamping />
+            <Scene
+                textureUrl={textureUrl}
+                camera={{ position: [0, 20, 40], fov: 60 }}
+                cameraMode={cameraMode}
+                tankRef={tankRef}
+            >
             <ambientLight intensity={0.35} />
             <directionalLight position={[10, 20, 6]} intensity={1.1} />
             <hemisphereLight position={[10, 10, 10]} skyColor={"lightBlue"} groundColor={"Brown"} />
@@ -369,7 +426,7 @@ const Sa3d = () => {
                 heightMapUrl={'/gc.png'} 
                 width={300}
                 depth={300}
-                segments={200}
+                segments={100}
                 heightScale={9}
                 yOffset = {-2}
                 onPointerDown={handleTerrainPointerDown}
@@ -413,8 +470,7 @@ const Sa3d = () => {
                     }}
                 />
             ))}
- 
-            </Canvas>
+            </Scene>
             <div
                 style={{
                     position: 'absolute',
@@ -430,6 +486,81 @@ const Sa3d = () => {
                 }}
             >
                 {hitInfo}
+            </div>
+
+            <div
+                style={{
+                    position: 'absolute',
+                    top: 12,
+                    right: 12,
+                    width: mapSize,
+                    background: 'rgba(10,12,18,0.75)',
+                    border: '1px solid rgba(255,255,255,0.35)',
+                    boxShadow: '0 8px 22px rgba(0,0,0,0.35)',
+                    borderRadius: 8,
+                    padding: 8,
+                    color: '#e8eef9',
+                    zIndex: 12,
+                }}
+            >
+                <div
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginBottom: 8,
+                        fontFamily: 'monospace',
+                        fontSize: 12,
+                    }}
+                >
+                    <span>Map</span>
+                    <button
+                        onClick={() => setCameraMode((previous) => (previous === 'main' ? 'tank' : 'main'))}
+                        style={{
+                            border: '1px solid rgba(255,255,255,0.35)',
+                            background: cameraMode === 'tank' ? '#274b87' : '#1c1f2b',
+                            color: '#f4f8ff',
+                            borderRadius: 4,
+                            padding: '2px 6px',
+                            cursor: 'pointer',
+                            fontFamily: 'monospace',
+                            fontSize: 11,
+                        }}
+                    >
+                        {cameraMode === 'tank' ? 'Tank Cam' : 'Main Cam'}
+                    </button>
+                </div>
+
+                <svg width={mapSize} height={mapSize} style={{ display: 'block', background: 'rgba(15,20,30,0.9)', borderRadius: 6 }}>
+                    <rect x="0" y="0" width={mapSize} height={mapSize} fill="rgba(38,53,78,0.55)" />
+                    <line x1={mapSize / 2} y1="0" x2={mapSize / 2} y2={mapSize} stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+                    <line x1="0" y1={mapSize / 2} x2={mapSize} y2={mapSize / 2} stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+
+                    {targets.map((target) => {
+                        const [tx, ty] = toMinimapPoint(target.position[0], target.position[2])
+                        return <circle key={`map-target-${target.id}`} cx={tx} cy={ty} r="4" fill={target.color} opacity="0.95" />
+                    })}
+
+                    <line
+                        x1={tankMapX}
+                        y1={tankMapY}
+                        x2={headingTipX}
+                        y2={headingTipY}
+                        stroke="#7ef2c4"
+                        strokeWidth="2"
+                        opacity="0.9"
+                    />
+                    <polygon
+                        points={`${headingTipX},${headingTipY} ${headingLeftX},${headingLeftY} ${headingRightX},${headingRightY}`}
+                        fill="#7ef2c4"
+                        opacity="0.95"
+                    />
+                    <circle cx={tankMapX} cy={tankMapY} r="5" fill="#39d98a" />
+                </svg>
+
+                <div style={{ marginTop: 6, fontFamily: 'monospace', fontSize: 11, opacity: 0.9 }}>
+                    C: switch camera
+                </div>
             </div>
         </div>
     )

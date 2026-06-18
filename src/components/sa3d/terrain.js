@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useRef, useImperativeHandle, forwardRef } from 'react'
 import * as THREE from "three"
+import { useLoader } from 'react-three-fiber'
 
 const Terrain = forwardRef(({
     heightMapUrl = '/gc.png',
+    textureUrl = '/texture.png',
     width = 30,
     depth = 30,
     segments = 180,
@@ -12,7 +14,7 @@ const Terrain = forwardRef(({
 }, ref) => {
     const [geometry, setGeometry] = useState(null)
     const meshRef = useRef()
-
+        const texture = useLoader(THREE.TextureLoader, textureUrl)
     useImperativeHandle(ref, () => ({
         getMesh: () => meshRef.current,
         deformTerrainAtPoint: (position, radius, depth) => {
@@ -116,7 +118,7 @@ const Terrain = forwardRef(({
             onPointerDown={onPointerDown}
             receiveShadow
         >
-            <meshStandardMaterial color={'#efd1b5'} roughness={0.9} metalness={0.05} />
+            <meshStandardMaterial color={'#efd1b5'} roughness={0.9} metalness={0.05} map={texture} />
         </mesh>
     )
 })

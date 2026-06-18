@@ -142,6 +142,10 @@ const Tank = forwardRef(({ position = [0, 0, 0], onFire }, ref) => {
             }
             return controlledPositionRef.current.clone()
         },
+        getAimDirection: () => {
+            const shot = buildShots(0, 0)[0]
+            return shot.direction.clone()
+        },
         getTurretAngle: () => currentAngleHRef.current,
         getBarrelAngle: () => currentAngleVRef.current,
     }), [
